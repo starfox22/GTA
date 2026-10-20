@@ -45,6 +45,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/vehicles-and-driving-handling.md | Steering and grip, brakes and assists, drifts and the handbrake (`driftTest`) |
 | areas/people-and-crowd.md | Crowd behaviour, perception, speech bubbles |
 | areas/people-and-crowd-rig.md | The character rig: one instanced rig for everyone, key-ring outlines, looks, skeleton and gait, body sets, the chase view's near set (sculpted faces, hands, shoes, the near paint shader) |
+| areas/people-and-crowd-launcher.md | Downloaded RPG-7, measured grip and shoulder fit, shared near/far weapon geometry |
 | areas/people-and-crowd-player.md | The player's own body: one skinned mesh (SDF-built man in his forties, black tee, jeans), dual quaternion skinning on the rig's skeleton, the grip, the paint, its test |
 | areas/people-and-crowd-avatars.md | The street avatars: the people nearest the camera drawn as skinned Rocketbox avatars (slots by tier, casting by role and sex, the rig painted to match, fitting, gore, cost) |
 | areas/people-and-crowd-avatars-cast.md | Who is which avatar: the cast table by role and sex, story characters by name, painted variants (traffic hi-vis, FED, stewards) and tints (gangs, kits, bikers, the player's suit) |
@@ -58,6 +59,7 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/police-and-combat-armour.md | NPC body armour: soft vests and plates by calibre and hit zone, shots to kill per weapon, no knock-back from rounds |
 | areas/police-and-combat-driveby.md | Drive-bys: firing arcs per window and body, the aim clamp, the rear screen, the lean-out pose |
 | areas/police-and-combat-mounted.md | Mounted guns: the LAV-8's 25 mm and coax, the gun jeep's .50 cal, the Black Hawk's door guns |
+| areas/police-and-combat-apache.md | Apache weapon selection, guided target acquisition and loss, ammunition, rearming and source hardpoints |
 | areas/missions-and-demo.md | Mission list and lifecycle, adding a mission, harbor/hotel mission contracts |
 | areas/missions-and-demo-campaign.md | Campaign saves, public demo gates, story frontier, retry, replay and abandon |
 | areas/missions-and-demo-godmode.md | God mode (the cheat, its panel, teleport) and skipping a cab, train or liner ride |
@@ -77,6 +79,8 @@ Start with `/CLAUDE.md` (commands, rules, workflow). Then open only what the tas
 | areas/chase-view-input.md | The chase view's input: pointer lock and CURSOR LOOK, look behind, pad and touch look, camera-relative movement |
 | areas/rendering-chase.md | The chase view's draw distance and level of detail: far cells drawn from the far copy, shadow casters and proxies, small props and pools, people and vehicles by distance, the `chaseCamera().view` report |
 | areas/rendering-chase-budget.md | The chase view's draw budget: props, static groups' parts, signs, small batches, vehicle parts and effect sprites by their size against distance and the haze (CHASE PROPS, PARTS, HAZE SIZES), per-batch / pool / part shadow tests, the `chaseBudget` A/B, calls per tier |
+| areas/rendering-effects-footprint.md | Conservative transparent-border trimming and effect raster-area diagnostics |
+| areas/rendering-combat-budget.md | Shared vehicle-stain work allowance and weapon HUD bitmap cache in heavy combat |
 | areas/rendering-effects.md | Effect particles: smoke, fire, sparks, muzzle flashes, glass and drops in one sorted, lit, instanced pool (`fxAdd`), the atlas, the recipes (blasts, muzzle, bullet strikes, flames), `effectParticles()` |
 | areas/rendering-effects-mud.md | The 4x4 trail mud: the TRAIL MUD sheet (Poly Haven and Kenney CC0, tools/trail_mud.py), textured clods, lit spray sprites, drops and mist in the effect pool, lit rut and splat decals (2x modulate), mud on bodies, `MUD_TIER`, `trailMud()` |
 | areas/rendering-hiccups.md | First-use hitches: what the title-screen prewarm warms (programs, off-screen passes, stand-in models, the far copy), the first-use log (`renderHiccups`), the rules a new effect follows, dormant lights, numbers |

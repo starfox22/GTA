@@ -1,0 +1,209 @@
+{
+  "files": [
+    {
+      "file": "images/after-apache.png",
+      "sha256": "5da7d02536ddeeee4784d902197bc895cb6e5d2032dbb6828a45cb319660f6e2",
+      "bytes": 673268,
+      "viewport": [
+        960,
+        600
+      ],
+      "native": true,
+      "unedited": true,
+      "normalHUD": true,
+      "artifactSha256": "e73c7022c2659d1690b3de2a884d575f2e228d78437c1930c41e9b305051f968",
+      "artifactKind": "monolith",
+      "renderBackend": "Chromium ANGLE Vulkan SwiftShader",
+      "quality": "HIGH",
+      "notes": "Source-pinned normal game output; no cropping, resizing, compositing or retouching. Final-only CSS wraps Apache weapon text; other 656 inputs match integration."
+    },
+    {
+      "file": "images/after-bazooka.png",
+      "sha256": "0d4cb19847935abb81c4a7bba0e0215f3543e2787ecdddd3a047391863786b79",
+      "bytes": 837956,
+      "viewport": [
+        960,
+        600
+      ],
+      "native": true,
+      "unedited": true,
+      "normalHUD": true,
+      "artifactSha256": "e73c7022c2659d1690b3de2a884d575f2e228d78437c1930c41e9b305051f968",
+      "artifactKind": "monolith",
+      "renderBackend": "Chromium ANGLE Vulkan SwiftShader",
+      "quality": "HIGH",
+      "notes": "Source-pinned normal game output; no cropping, resizing, compositing or retouching. Final-only CSS wraps Apache weapon text; other 656 inputs match integration."
+    },
+    {
+      "file": "images/after-heavy-combat.png",
+      "sha256": "2c797ee37e792d38ea185d3acae5292035bf87dd4c1f256c71a53c7552c6d966",
+      "bytes": 784418,
+      "viewport": [
+        960,
+        600
+      ],
+      "native": true,
+      "unedited": true,
+      "normalHUD": true,
+      "artifactSha256": "e73c7022c2659d1690b3de2a884d575f2e228d78437c1930c41e9b305051f968",
+      "artifactKind": "monolith",
+      "renderBackend": "Chromium ANGLE Vulkan SwiftShader",
+      "quality": "HIGH",
+      "notes": "Source-pinned normal game output; no cropping, resizing, compositing or retouching. Final-only CSS wraps Apache weapon text; other 656 inputs match integration."
+    },
+    {
+      "file": "images/apache-hellfire-native.png",
+      "sha256": "4f23fcecc88f1b09b6ace1fe4db55779f1849708cd87d7e4086e1119c5a61d67",
+      "bytes": 749991,
+      "viewport": [
+        960,
+        600
+      ],
+      "native": true,
+      "unedited": true,
+      "normalHUD": true,
+      "artifactSha256": "e73c7022c2659d1690b3de2a884d575f2e228d78437c1930c41e9b305051f968",
+      "artifactKind": "monolith",
+      "renderBackend": "Chromium ANGLE Vulkan SwiftShader",
+      "quality": "HIGH",
+      "notes": "Source-pinned normal game output; no cropping, resizing, compositing or retouching. Final-only CSS wraps Apache weapon text; other 656 inputs match integration."
+    },
+    {
+      "file": "images/apache-rockets-native.png",
+      "sha256": "1e9ea4f018fa74bfe0f5aaf7e86a4fe9b4b9f5e62a181847560c6cc529242ca3",
+      "bytes": 750803,
+      "viewport": [
+        960,
+        600
+      ],
+      "native": true,
+      "unedited": true,
+      "normalHUD": true,
+      "artifactSha256": "e73c7022c2659d1690b3de2a884d575f2e228d78437c1930c41e9b305051f968",
+      "artifactKind": "monolith",
+      "renderBackend": "Chromium ANGLE Vulkan SwiftShader",
+      "quality": "HIGH",
+      "notes": "Source-pinned normal game output; no cropping, resizing, compositing or retouching. Final-only CSS wraps Apache weapon text; other 656 inputs match integration."
+    },
+    {
+      "file": "images/apache-takeoff-native.png",
+      "sha256": "4ab343b7addcaf219ef4f099b91be4e05743e3f1f6a430c3221893c31567d8de",
+      "bytes": 854691,
+      "viewport": [
+        960,
+        600
+      ],
+      "native": true,
+      "unedited": true,
+      "normalHUD": true,
+      "artifactSha256": "e73c7022c2659d1690b3de2a884d575f2e228d78437c1930c41e9b305051f968",
+      "artifactKind": "monolith",
+      "renderBackend": "Chromium ANGLE Vulkan SwiftShader",
+      "quality": "HIGH",
+      "notes": "Source-pinned normal game output; no cropping, resizing, compositing or retouching. Final-only CSS wraps Apache weapon text; other 656 inputs match integration."
+    },
+    {
+      "file": "images/apache-wrapped-hellfire-desktop.png",
+      "sha256": "c5090d3a2d9f6e7b4309eed86a09c8cf06a966ce94934b4311ada2f3fa8dd05e",
+      "bytes": 717767,
+      "viewport": [
+        960,
+        600
+      ],
+      "native": true,
+      "unedited": true,
+      "normalHUD": true,
+      "artifactSha256": "c06dcb00f91c27a15c2d82d904cc7e22c80139bfcd3a5e1d44393304e16b319b",
+      "artifactKind": "split entry",
+      "renderBackend": "Chromium ANGLE Vulkan SwiftShader",
+      "quality": "HIGH",
+      "notes": "Source-pinned normal game output; no cropping, resizing, compositing or retouching. Final-only CSS wraps Apache weapon text; other 656 inputs match integration."
+    },
+    {
+      "file": "images/bazooka-fired-native.png",
+      "sha256": "f63cb32a9e753657720896137635cd43e87aebe292232ce2741fd046e2803982",
+      "bytes": 821632,
+      "viewport": [
+        960,
+        600
+      ],
+      "native": true,
+      "unedited": true,
+      "normalHUD": true,
+      "artifactSha256": "e73c7022c2659d1690b3de2a884d575f2e228d78437c1930c41e9b305051f968",
+      "artifactKind": "monolith",
+      "renderBackend": "Chromium ANGLE Vulkan SwiftShader",
+      "quality": "HIGH",
+      "notes": "Source-pinned normal game output; no cropping, resizing, compositing or retouching. Final-only CSS wraps Apache weapon text; other 656 inputs match integration."
+    },
+    {
+      "file": "images/bazooka-reload-native.png",
+      "sha256": "3ad06ddb9658a86d4584622fe3e8a00159597d022d8824e0e767a217ef1a05a4",
+      "bytes": 828350,
+      "viewport": [
+        960,
+        600
+      ],
+      "native": true,
+      "unedited": true,
+      "normalHUD": true,
+      "artifactSha256": "e73c7022c2659d1690b3de2a884d575f2e228d78437c1930c41e9b305051f968",
+      "artifactKind": "monolith",
+      "renderBackend": "Chromium ANGLE Vulkan SwiftShader",
+      "quality": "HIGH",
+      "notes": "Source-pinned normal game output; no cropping, resizing, compositing or retouching. Final-only CSS wraps Apache weapon text; other 656 inputs match integration."
+    },
+    {
+      "file": "images/before-apache.png",
+      "sha256": "c69986240b5457a894d917a27a16b1042d32cd7bd484f11ec0faa1c342cf5b37",
+      "bytes": 658957,
+      "viewport": [
+        960,
+        600
+      ],
+      "native": true,
+      "unedited": true,
+      "normalHUD": true,
+      "artifactSha256": "a0777806af596daf716c1f8eaed4a3cbc1aa2192506b2ff0f449dce1ee7969c0",
+      "artifactKind": "monolith",
+      "renderBackend": "Chromium ANGLE Vulkan SwiftShader",
+      "quality": "HIGH",
+      "notes": "Source-pinned normal game output; no cropping, resizing, compositing or retouching. Final-only CSS wraps Apache weapon text; other 656 inputs match integration."
+    },
+    {
+      "file": "images/before-bazooka.png",
+      "sha256": "879fae3242c848434c25f9fb802f170ffd5e44a503c45c4db4108462894ebc90",
+      "bytes": 843664,
+      "viewport": [
+        960,
+        600
+      ],
+      "native": true,
+      "unedited": true,
+      "normalHUD": true,
+      "artifactSha256": "a0777806af596daf716c1f8eaed4a3cbc1aa2192506b2ff0f449dce1ee7969c0",
+      "artifactKind": "monolith",
+      "renderBackend": "Chromium ANGLE Vulkan SwiftShader",
+      "quality": "HIGH",
+      "notes": "Source-pinned normal game output; no cropping, resizing, compositing or retouching. Final-only CSS wraps Apache weapon text; other 656 inputs match integration."
+    },
+    {
+      "file": "images/before-heavy-combat.png",
+      "sha256": "d47bcbc82a910f6d6bce4254cd28d7df2595090bbda696c07b0e5db29dc547b4",
+      "bytes": 783170,
+      "viewport": [
+        960,
+        600
+      ],
+      "native": true,
+      "unedited": true,
+      "normalHUD": true,
+      "artifactSha256": "a0777806af596daf716c1f8eaed4a3cbc1aa2192506b2ff0f449dce1ee7969c0",
+      "artifactKind": "monolith",
+      "renderBackend": "Chromium ANGLE Vulkan SwiftShader",
+      "quality": "HIGH",
+      "notes": "Source-pinned normal game output; no cropping, resizing, compositing or retouching. Final-only CSS wraps Apache weapon text; other 656 inputs match integration."
+    }
+  ],
+  "measurementLimit": "Profiling FPS chips include batched stepped/CDP timings; not hardware frame-rate evidence."
+}

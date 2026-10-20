@@ -5,6 +5,7 @@
           // Split CPU timings of the frame for DeadEndCity.stats() (`r:` parts).
           let lap = performance.now();
           hiccupBegin();
+          cbBeginFrame();
           nightAmount = clamp(1 - litDaylight() * 1.6, 0, 1);
           updateCivicVisuals();
           // A boat passing under a road bridge is dropped 30 units below the deck

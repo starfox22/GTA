@@ -43,9 +43,60 @@
         // many of the flash and fire lights each tier lets light the smoke (a loop at each corner).
         FX_TIER_SHARE = { LOW: 0.55, MEDIUM: 0.8, HIGH: 1, ULTRA: 1 },
         FX_TIER_LIGHTS = { LOW: 1, MEDIUM: 2, HIGH: 4, ULTRA: 4 },
+        // Exact alpha support through these atlas mip levels; smaller sprites keep
+        // their original quad. No extra render targets, draws or quality switch.
+        FX_FOOTPRINT_LEVELS = 4,
         FX_FIELDS = ['x', 'y', 'z', 'vx', 'vy', 'vz', 'life', 'max', 'delay', 'size', 'grow', 'r', 'g', 'b', 'alpha', 'heat', 'cool', 'glow', 'twinkle', 'rot', 'spin', 'frame', 'floor', 'rise', 'drag', 'gravity', 'bounce', 'wind', 'streak', 'fadeIn', 'thin'];
       const fxs = { n: 0, peak: 0, emitted: 0, dropped: 0, drawn: 0, legacy: 0 };
       for (const name of FX_FIELDS) fxs[name] = new Float32Array(FX_CAPACITY);
+      const fxFootprintBounds = Array.from({ length: 8 * FX_FOOTPRINT_LEVELS }, () => new Three.Vector4(0, 0, 1, 1)),
+        fxFullFootprint = new Three.Vector4(0, 0, 1, 1);
+      let fxFootprintReady = false;
+      /* A nonzero mip texel may influence samples one texel away under bilinear
+         filtering. Include adjacent atlas tiles, retain every lower mip for
+         trilinear filtering, and add one original texel for numerical/raster
+         margins. Max pooling is conservative for every 2x2 averaged mip chain:
+         a zero cell cannot gain alpha. This runs once, after the atlas bake. */
+      function fxBuildFootprints(data = fxAtlasData) {
+        let width = FX_FRAME * FX_ATLAS_COLUMNS, height = FX_FRAME * FX_ATLAS_ROWS,
+          alpha = new Uint8Array(width * height);
+        for (let i = 0; i < alpha.length; i++) alpha[i] = data[i * 4 + 3] > 0 ? 1 : 0;
+        for (let level = 0; level < FX_FOOTPRINT_LEVELS; level++) {
+          const tile = FX_FRAME >> level, guard = 1 / FX_FRAME;
+          for (let frame = 0; frame < FX_GLASS; frame++) {
+            const left = (frame % FX_ATLAS_COLUMNS) * tile, bottom = Math.floor(frame / FX_ATLAS_COLUMNS) * tile,
+              bounds = fxFootprintBounds[frame * FX_FOOTPRINT_LEVELS + level];
+            let x0 = 1, y0 = 1, x1 = 0, y1 = 0;
+            for (let y = -1; y <= tile; y++) for (let x = -1; x <= tile; x++) {
+              const sx = Math.max(0, Math.min(width - 1, left + x)), sy = Math.max(0, Math.min(height - 1, bottom + y));
+              if (!alpha[sy * width + sx]) continue;
+              x0 = Math.min(x0, (x - .5) / tile - guard); y0 = Math.min(y0, (y - .5) / tile - guard);
+              x1 = Math.max(x1, (x + 1.5) / tile + guard); y1 = Math.max(y1, (y + 1.5) / tile + guard);
+            }
+            if (level) {
+              const previous = fxFootprintBounds[frame * FX_FOOTPRINT_LEVELS + level - 1];
+              x0 = Math.min(x0, previous.x); y0 = Math.min(y0, previous.y);
+              x1 = Math.max(x1, previous.z); y1 = Math.max(y1, previous.w);
+            }
+            if (x1 < x0 || y1 < y0) bounds.set(0, 0, 1, 1);
+            else bounds.set(Math.max(0, x0), Math.max(0, y0), Math.min(1, x1), Math.min(1, y1));
+          }
+          if (level + 1 < FX_FOOTPRINT_LEVELS) {
+            const next = new Uint8Array((width >> 1) * (height >> 1));
+            for (let y = 0; y < height; y += 2) for (let x = 0; x < width; x += 2)
+              next[(y >> 1) * (width >> 1) + (x >> 1)] = alpha[y * width + x] | alpha[y * width + x + 1] | alpha[(y + 1) * width + x] | alpha[(y + 1) * width + x + 1];
+            alpha = next; width >>= 1; height >>= 1;
+          }
+        }
+        fxFootprintReady = true;
+      }
+      function fxFootprintRect(frame, pixels) {
+        if (!fxFootprintReady || frame >= FX_GLASS || !(pixels > 0)) return fxFullFootprint;
+        // A three-percent derivative margin includes projection roundoff and
+        // conservative upper trilinear mip selection at integer boundaries.
+        const level = Math.max(0, Math.ceil(Math.log2(Math.max(1, FX_FRAME * 1.03 / pixels))));
+        return level < FX_FOOTPRINT_LEVELS ? fxFootprintBounds[frame * FX_FOOTPRINT_LEVELS + level] : fxFullFootprint;
+      }
       const fxColumns = FX_FIELDS.map((name) => fxs[name]);
       let fxSeed = 0x2545f491;
       // The renderer's own random numbers (xorshift): effects never draw from the game's Math.random stream.
@@ -143,6 +194,8 @@
         uDepthSoft: { value: 0 },
         uDepthTexel: { value: new Three.Vector2(1, 1) },
         uNearFar: { value: new Three.Vector2(1, 1000) },
+        uFxViewport: { value: new Three.Vector2(1, 1) },
+        uFxBounds: { value: fxFootprintBounds },
       };
       const fxMaterial = new Three.ShaderMaterial({
         uniforms: fxUniforms,
@@ -154,6 +207,8 @@
           attribute vec4 iShape;   // rotation, atlas frame, heat, ground height
           attribute vec4 iStreak;  // motion streak (world units), glow gain
           uniform vec2 uAtlas;
+          uniform vec2 uFxViewport;
+          uniform vec4 uFxBounds[ ${8 * FX_FOOTPRINT_LEVELS} ];
           uniform vec4 uPointPos[ ${FX_POINT_LIGHTS} ];
           uniform vec4 uPointColor[ ${FX_POINT_LIGHTS} ];
           uniform int uPointCount;
@@ -185,8 +240,19 @@
               tall = size + len;
               centre -= iStreak.xyz * 0.5;
             }
-            vec3 p = centre + ax * ( position.x * size ) + ay * ( position.y * tall );
-            vUv = ( vec2( mod( iShape.y, uAtlas.x ), floor( iShape.y / uAtlas.x ) ) + position.xy + 0.5 ) / uAtlas;
+            // Keep original world/UV scale while omitting the atlas's provably
+            // transparent border. Streaking only increases the second axis, so
+            // size gives a conservative upper mip bound through any rotation.
+            vec2 corner = position.xy;
+            float centreDepth = -( viewMatrix * vec4( centre, 1.0 ) ).z;
+            float pixels = size * 0.5 * min( abs( projectionMatrix[0][0] ) * uFxViewport.x, abs( projectionMatrix[1][1] ) * uFxViewport.y ) / ( isOrthographic ? 1.0 : max( centreDepth, 0.0001 ) );
+            float mip = max( 0.0, ceil( log2( max( 1.0, ${FX_FRAME.toFixed(1)} * 1.03 / max( pixels, 0.0001 ) ) ) ) );
+            if ( iShape.y < ${FX_GLASS.toFixed(1)} && mip < ${FX_FOOTPRINT_LEVELS.toFixed(1)} ) {
+              vec4 bounds = uFxBounds[ int( iShape.y ) * ${FX_FOOTPRINT_LEVELS} + int( mip ) ];
+              corner = mix( bounds.xy, bounds.zw, position.xy + 0.5 ) - 0.5;
+            }
+            vec3 p = centre + ax * ( corner.x * size ) + ay * ( corner.y * tall );
+            vUv = ( vec2( mod( iShape.y, uAtlas.x ), floor( iShape.y / uAtlas.x ) ) + corner + 0.5 ) / uAtlas;
             vColor = iColor;
             vHeatGlow = vec2( iShape.z, iStreak.w );
             vAx = ax;
@@ -253,6 +319,9 @@
           }
           void main() {
             vec4 t = texture2D( uMap, vUv );
+            // Zero atlas alpha contributes neither coverage nor additive light.
+            // Reject it before the scene-depth fetch and the lighting work.
+            if ( t.a == 0.0 ) discard;
             float fade = vFade * smoothstep( 0.0, 1.0, vSoft );
             // Soft particles: thinning out as it nears whatever stands behind it (the scene's depth).
             if ( uDepthSoft > 0.5 ) {
@@ -321,6 +390,7 @@
         u.uDepthSoft.value = depthTexture ? 1 : 0;
         u.uDepthTexel.value.set(1 / width, 1 / height);
         u.uNearFar.value.set(camera.near, camera.far);
+        u.uFxViewport.value.set(width > 1 ? width : renderer.domElement.width || 1, height > 1 ? height : renderer.domElement.height || 1);
         if (fxScene.fog !== scene.fog) fxScene.fog = scene.fog;
         const autoClear = renderer.autoClear;
         renderer.autoClear = false;
@@ -455,6 +525,7 @@
           fxLastDrawAt = now;
           if (fxAtlasStep(clamp(gap * (gameMode === 'menu' ? 0.25 : 0.06), gameMode === 'menu' ? 4 : 1.5, 60))) fxWarmPending = true;
         }
+        if (!fxAtlasBake && !fxFootprintReady) fxBuildFootprints();
         if (deltaSeconds > 0) fxStep(deltaSeconds);
         const e = camera.matrixWorld.elements,
           cx = e[12],
@@ -604,6 +675,33 @@
       /* DeadEndCity.effectParticles(): the pool now (live, waiting on a delay, drawn last frame, of them the
          game's particles), its capacity, the peak, emitted since boot and dropped for want of room, and the tier's
          share of the big recipes. */
+      function fxFootprintReport() {
+        const P = fxPosAttribute.array, H = fxShapeAttribute.array, T = fxStreakAttribute.array,
+          view = camera.matrixWorldInverse.elements, projection = camera.projectionMatrix.elements,
+          viewport = fxUniforms.uFxViewport.value,
+          scale = Math.abs(projection[0] * projection[5]) * viewport.x * viewport.y * .25,
+          least = Math.min(Math.abs(projection[0]) * viewport.x, Math.abs(projection[5]) * viewport.y) * .5;
+        let full = 0, trimmed = 0;
+        for (let i = 0; i < fxs.drawn; i++) {
+          const k = i * 4, size = P[k + 3];
+          if (!(size > 0)) continue;
+          const along = T[k] * view[2] + T[k + 1] * view[6] + T[k + 2] * view[10],
+            streak = Math.sqrt(Math.max(0, T[k] ** 2 + T[k + 1] ** 2 + T[k + 2] ** 2 - along * along)),
+            streaking = streak > .05 * size,
+            x = P[k] - (streaking ? T[k] * .5 : 0), y = P[k + 1] - (streaking ? T[k + 1] * .5 : 0), z = P[k + 2] - (streaking ? T[k + 2] * .5 : 0),
+            depth = -(view[2] * x + view[6] * y + view[10] * z + view[14]),
+            divisor = camera.isOrthographicCamera ? 1 : Math.max(.0001, depth),
+            tall = size + (streaking ? streak : 0),
+            area = size * tall * scale / (divisor * divisor),
+            bounds = fxFootprintRect(Math.floor(H[k + 1]), size * least / divisor);
+          full += area; trimmed += area * (bounds.z - bounds.x) * (bounds.w - bounds.y);
+        }
+        return { ready: fxFootprintReady, levels: FX_FOOTPRINT_LEVELS,
+          // Unclipped projected billboard area, before depth/alpha tests. This
+          // measures raster work, not occupied screen area or hardware timing.
+          fullQuadPixels: Math.round(full), trimmedQuadPixels: Math.round(trimmed),
+          rasterShare: full > 0 ? Math.round(trimmed / full * 10000) / 10000 : 1 };
+      }
       function fxReport() {
         let waiting = 0;
         for (let i = 0; i < fxs.n; i++) if (fxs.delay[i] > 0) waiting++;
@@ -619,6 +717,7 @@
           dropped: fxs.dropped,
           tierShare: fxTierShare(),
           drawCalls: fxMesh.visible ? 1 : 0,
+          footprint: fxFootprintReport(),
           atlas: { baked: !fxAtlasBake, ms: Math.round(fxAtlasBakeMs * 10) / 10 },
           // Seconds since the last blast (fx3d-recipes.js), null before one.
           blastAge: fxBlast.born < 0 ? null : Math.round((gameTime - fxBlast.born) * 100) / 100,

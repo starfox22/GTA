@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "totalInputs": 658,
+  "unchanged": 656,
+  "changes": [
+    {
+      "file": "src/game-ui.js",
+      "before": "20aac69b06cc43207464269cc7d85c88d1205884008ab2db3e15c77565edf6bd",
+      "after": "9176b771698fa0c81bec534f63ed68131a7f3db0a215673c96ba008ccb211acd"
+    },
+    {
+      "file": "src/ui/hud-bottom.css",
+      "before": "c6258fa3ec13fa2cb427831aad9855193b6f39221a052304be218bbf3ae5d03f",
+      "after": "af3185cf8b78c9712a4e6598c24c7ff68ef510a1c099d49c725c1a9350d9070b"
+    }
+  ],
+  "integration": "e73c7022c2659d1690b3de2a884d575f2e228d78437c1930c41e9b305051f968",
+  "final": "c14ca0aed95ef2dce45519f5c4e354fa6e17d001f230db2f1861a270a79f5f21",
+  "scope": "Guarded Apache-only weapon chip class and CSS wrapping; no assets, combat, physics, controls, particle or stain scheduler changes. Integration/performance images retain their original artifact identities; final smoke/UI receipts use candidate2."
+}

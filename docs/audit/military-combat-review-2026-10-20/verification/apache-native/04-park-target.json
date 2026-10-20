@@ -1,0 +1,20 @@
+[
+  {
+    "started": "2026-10-20T21:05:11.024Z",
+    "op": {
+      "op": "call",
+      "method": "park",
+      "args": [
+        "sedan",
+        300,
+        0,
+        0
+      ]
+    },
+    "reply": {
+      "result": 284,
+      "ms": 5,
+      "newErrors": 0
+    }
+  }
+]

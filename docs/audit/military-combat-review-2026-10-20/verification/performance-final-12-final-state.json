@@ -1,0 +1,647 @@
+[
+  {
+    "started": "2026-10-20T21:01:21.780Z",
+    "op": {
+      "op": "call",
+      "method": "carBloodReport",
+      "args": [
+        false
+      ]
+    },
+    "reply": {
+      "result": {
+        "car": "apc",
+        "hits": 0,
+        "load": 0,
+        "stains": [],
+        "skin": {
+          "skins": 2,
+          "maxSkins": 5,
+          "spare": 1,
+          "builds": 1,
+          "paintMs": 69.3,
+          "paintSlices": 9,
+          "buildMs": 123.7,
+          "buildSlices": 15,
+          "triangles": 0,
+          "sourceTriangles": 0,
+          "gatherCache": {
+            "hits": 0,
+            "misses": 2,
+            "types": 0
+          },
+          "events": 0,
+          "fitted": 0,
+          "painted": 0,
+          "piled": 0,
+          "piledPainted": 0,
+          "visible": false,
+          "panels": [],
+          "warm": {
+            "compiles": 2,
+            "linked": true,
+            "key": "hdr:shadow",
+            "ms": 10.8
+          },
+          "work": {
+            "worstFrameMs": 24.8,
+            "worstSliceMs": 24.8,
+            "frames": 36,
+            "slices": 38,
+            "tileUploadMs": 14.9,
+            "tileUploads": 3,
+            "slow": []
+          },
+          "frameGaps": {
+            "n": 25,
+            "median": 67.4,
+            "p95": 461.5,
+            "worst": 931.3
+          },
+          "textures": 94,
+          "geometries": 544,
+          "programs": 137
+        }
+      },
+      "ms": 4,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:01:21.785Z",
+    "op": {
+      "op": "call",
+      "method": "damageReport",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "id": 282,
+        "type": "apc",
+        "hp": 950,
+        "maxhp": 950,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 9794,
+        "y": 9009,
+        "a": 3.14
+      },
+      "ms": 5,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:01:21.794Z",
+    "op": {
+      "op": "call",
+      "method": "military",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "alert": true,
+        "lockdown": true,
+        "challenge": 3,
+        "gate": [
+          {
+            "arm": 0,
+            "bollards": 1,
+            "slide": 1,
+            "broken": []
+          },
+          {
+            "arm": 0,
+            "bollards": 1,
+            "slide": 1,
+            "broken": []
+          }
+        ],
+        "soldiers": {
+          "gate": 3,
+          "post": 9,
+          "tower": 8,
+          "range": 4,
+          "patrol": 9,
+          "drill": 12,
+          "sergeant": 1
+        },
+        "aiming": 9,
+        "vehicles": [
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9511,
+            "y": 8950,
+            "hp": 268,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9532,
+            "y": 8950,
+            "hp": 34,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9594,
+            "y": 8950,
+            "hp": 0,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9665,
+            "y": 8950,
+            "hp": 0,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9719,
+            "y": 8950,
+            "hp": 0,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9780,
+            "y": 8950,
+            "hp": 758,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9830,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "tank",
+            "x": 9490,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "tank",
+            "x": 9565,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "apc",
+            "x": 9645,
+            "y": 9080,
+            "hp": 734,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 9080,
+            "hp": 312,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9765,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9835,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9880,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9925,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 10160,
+            "y": 9042,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9510,
+            "y": 8160,
+            "hp": 380,
+            "ai": true,
+            "role": "qrf"
+          },
+          {
+            "type": "jeep",
+            "x": 9565,
+            "y": 8221,
+            "hp": 353,
+            "ai": true,
+            "role": "qrf"
+          },
+          {
+            "type": "helicopter",
+            "x": 9492,
+            "y": 7936,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9466,
+            "y": 8234,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9514,
+            "y": 8234,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 10332,
+            "y": 7850,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "jeep",
+            "x": 9568,
+            "y": 9850,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "helicopter",
+            "x": 9550,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 9810,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10340,
+            "y": 9365,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10200,
+            "y": 9365,
+            "hp": 640,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9794,
+            "y": 9134,
+            "hp": 810,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9794,
+            "y": 9009,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          }
+        ],
+        "supply": null,
+        "drill": {
+          "x": 9650,
+          "y": 8330,
+          "active": false
+        }
+      },
+      "ms": 4,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:01:21.818Z",
+    "op": {
+      "op": "call",
+      "method": "shotLog",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "bySource": {
+          "fort-sentinel-apc": {
+            "shots": 18,
+            "hits": 0,
+            "damage": 0,
+            "offscreen": 0,
+            "nearest": 158,
+            "farthest": 165
+          }
+        },
+        "recent": [
+          {
+            "t": 1.4,
+            "source": "fort-sentinel-apc",
+            "distance": 158,
+            "onScreen": true,
+            "stars": 5,
+            "rocket": false
+          },
+          {
+            "t": 1.6,
+            "source": "fort-sentinel-apc",
+            "distance": 158,
+            "onScreen": true,
+            "stars": 5,
+            "rocket": false
+          },
+          {
+            "t": 1.7,
+            "source": "fort-sentinel-apc",
+            "distance": 158,
+            "onScreen": true,
+            "stars": 5,
+            "rocket": false
+          },
+          {
+            "t": 1.8,
+            "source": "fort-sentinel-apc",
+            "distance": 158,
+            "onScreen": true,
+            "stars": 5,
+            "rocket": false
+          },
+          {
+            "t": 1.9,
+            "source": "fort-sentinel-apc",
+            "distance": 158,
+            "onScreen": true,
+            "stars": 5,
+            "rocket": false
+          },
+          {
+            "t": 3,
+            "source": "fort-sentinel-apc",
+            "distance": 158,
+            "onScreen": true,
+            "stars": 5,
+            "rocket": false
+          },
+          {
+            "t": 3.1,
+            "source": "fort-sentinel-apc",
+            "distance": 158,
+            "onScreen": true,
+            "stars": 5,
+            "rocket": false
+          },
+          {
+            "t": 3.3,
+            "source": "fort-sentinel-apc",
+            "distance": 158,
+            "onScreen": true,
+            "stars": 5,
+            "rocket": false
+          },
+          {
+            "t": 3.4,
+            "source": "fort-sentinel-apc",
+            "distance": 158,
+            "onScreen": true,
+            "stars": 5,
+            "rocket": false
+          },
+          {
+            "t": 3.5,
+            "source": "fort-sentinel-apc",
+            "distance": 158,
+            "onScreen": true,
+            "stars": 5,
+            "rocket": false
+          },
+          {
+            "t": 4.6,
+            "source": "fort-sentinel-apc",
+            "distance": 158,
+            "onScreen": true,
+            "stars": 5,
+            "rocket": false
+          },
+          {
+            "t": 4.7,
+            "source": "fort-sentinel-apc",
+            "distance": 158,
+            "onScreen": true,
+            "stars": 5,
+            "rocket": false
+          },
+          {
+            "t": 4.8,
+            "source": "fort-sentinel-apc",
+            "distance": 158,
+            "onScreen": true,
+            "stars": 5,
+            "rocket": false
+          },
+          {
+            "t": 4.9,
+            "source": "fort-sentinel-apc",
+            "distance": 158,
+            "onScreen": true,
+            "stars": 5,
+            "rocket": false
+          },
+          {
+            "t": 5.1,
+            "source": "fort-sentinel-apc",
+            "distance": 158,
+            "onScreen": true,
+            "stars": 5,
+            "rocket": false
+          },
+          {
+            "t": 6.2,
+            "source": "fort-sentinel-apc",
+            "distance": 158,
+            "onScreen": true,
+            "stars": 5,
+            "rocket": false
+          },
+          {
+            "t": 6.3,
+            "source": "fort-sentinel-apc",
+            "distance": 158,
+            "onScreen": true,
+            "stars": 5,
+            "rocket": false
+          },
+          {
+            "t": 6.5,
+            "source": "fort-sentinel-apc",
+            "distance": 165,
+            "onScreen": true,
+            "stars": 5,
+            "rocket": false
+          }
+        ],
+        "total": 18,
+        "offscreen": 0
+      },
+      "ms": 2,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:01:21.824Z",
+    "op": {
+      "op": "call",
+      "method": "holdSimulation",
+      "args": [
+        true
+      ]
+    },
+    "reply": {
+      "result": true,
+      "ms": 2,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:01:21.827Z",
+    "op": {
+      "op": "call",
+      "method": "status",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 9794,
+        "y": 9009,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 5,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "apc",
+        "weapon": "9MM PISTOL",
+        "clock": "13:06",
+        "renderer": "3d",
+        "vehicles": 282,
+        "pedestrians": 595
+      },
+      "ms": 1,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:01:21.831Z",
+    "op": {
+      "op": "call",
+      "method": "stateHash",
+      "args": []
+    },
+    "reply": {
+      "result": "24c1e06f13c8e960",
+      "ms": 5,
+      "newErrors": 0
+    }
+  }
+]

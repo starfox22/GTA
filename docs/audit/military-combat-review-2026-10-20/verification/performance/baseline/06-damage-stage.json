@@ -1,0 +1,858 @@
+[
+  {
+    "started": "2026-10-20T20:39:23.160Z",
+    "op": {
+      "op": "call",
+      "method": "blast",
+      "args": [
+        9605,
+        8950,
+        1
+      ]
+    },
+    "reply": {
+      "result": 1,
+      "ms": 12,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:39:23.191Z",
+    "op": {
+      "op": "call",
+      "method": "blast",
+      "args": [
+        9665,
+        8950,
+        1
+      ]
+    },
+    "reply": {
+      "result": 1,
+      "ms": 3,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:39:23.197Z",
+    "op": {
+      "op": "call",
+      "method": "blast",
+      "args": [
+        9715,
+        8950,
+        1
+      ]
+    },
+    "reply": {
+      "result": 1,
+      "ms": 17,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:39:23.215Z",
+    "op": {
+      "op": "call",
+      "method": "blast",
+      "args": [
+        9605,
+        8950,
+        1
+      ]
+    },
+    "reply": {
+      "result": 1,
+      "ms": 2,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:39:23.219Z",
+    "op": {
+      "op": "call",
+      "method": "blast",
+      "args": [
+        9665,
+        8950,
+        1
+      ]
+    },
+    "reply": {
+      "result": 1,
+      "ms": 6,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:39:23.227Z",
+    "op": {
+      "op": "call",
+      "method": "blast",
+      "args": [
+        9715,
+        8950,
+        1
+      ]
+    },
+    "reply": {
+      "result": 1,
+      "ms": 2,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:39:23.231Z",
+    "op": {
+      "op": "call",
+      "method": "mountedGunAim",
+      "args": [
+        9645,
+        9080
+      ]
+    },
+    "reply": {
+      "result": {
+        "kind": "apc",
+        "targets": {
+          "car": null,
+          "person": null
+        },
+        "title": "LAV-8",
+        "weapon": "cannon",
+        "name": "25 MM CANNON",
+        "slot": 0,
+        "x": 9794,
+        "y": 9134,
+        "hull": 180,
+        "turret": 10,
+        "aim": 10,
+        "laidError": 0,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 13,
+        "guns": [
+          {
+            "id": "cannon",
+            "belt": 197,
+            "stowed": 420,
+            "loading": 0
+          },
+          {
+            "id": "coax",
+            "belt": 400,
+            "stowed": 1200,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 9645,
+          "y": 9080
+        },
+        "reticle": {
+          "shown": true,
+          "ring": "translate(-368px, 158px)",
+          "pip": "translate(-368px, 158px)",
+          "ready": true
+        }
+      },
+      "ms": 5,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:39:23.238Z",
+    "op": {
+      "op": "call",
+      "method": "hitchRun",
+      "args": [
+        2,
+        [
+          "KeyF"
+        ],
+        5,
+        false,
+        false
+      ],
+      "cpu": true
+    },
+    "reply": {
+      "result": {
+        "mode": "stepped",
+        "frames": 120,
+        "wrappersLeft": 0,
+        "seconds": 2,
+        "avgMs": 4.41,
+        "p50Ms": 3.5,
+        "p95Ms": 9.9,
+        "p99Ms": 20.1,
+        "maxMs": 27.8,
+        "longLimitMs": 7.5,
+        "long": 11,
+        "over16": 2,
+        "over33": 0,
+        "gaps": {
+          "p50": 16.67,
+          "p95": 16.67,
+          "max": 16.67,
+          "over2x": 0,
+          "over33": 0
+        },
+        "causes": {
+          "cars": 5,
+          "bullets": 2,
+          "ui": 2,
+          "sound": 1,
+          "military": 1
+        },
+        "tags": {
+          "gc": 2
+        },
+        "excessMs": {
+          "cars": 35.38,
+          "bullets": 25.38,
+          "sound": 12.48,
+          "military": 11.6,
+          "ui": 9.55,
+          "people": 3.57,
+          "f:pre": 1.24,
+          "civic": 1.16
+        },
+        "sections": {
+          "cars": [
+            2.09,
+            19
+          ],
+          "phys:control": [
+            0.72,
+            3.9
+          ],
+          "phys:broadphase": [
+            0.51,
+            18
+          ],
+          "phys:post": [
+            0.34,
+            1.6
+          ],
+          "ui": [
+            0.33,
+            6.6
+          ],
+          "bullets": [
+            0.31,
+            21
+          ],
+          "civic": [
+            0.18,
+            1.8
+          ],
+          "military": [
+            0.18,
+            11.5
+          ],
+          "phys:contacts": [
+            0.16,
+            5.2
+          ],
+          "people": [
+            0.13,
+            3.2
+          ],
+          "sound": [
+            0.12,
+            12.6
+          ],
+          "police:officers": [
+            0.04,
+            1.7
+          ],
+          "sports": [
+            0.04,
+            0.6
+          ],
+          "f:pre": [
+            0.03,
+            1
+          ],
+          "waypoint": [
+            0.02,
+            2
+          ],
+          "police:wanted": [
+            0.02,
+            1.2
+          ]
+        },
+        "totals": {
+          "dom": 285,
+          "allocKB": 54627,
+          "canvasDraws": 20,
+          "canvasText": 100,
+          "gcMB": 48.6
+        },
+        "perSecond": {
+          "dom": 142.5,
+          "allocKB": 27313.5,
+          "canvasDraws": 10,
+          "canvasText": 50,
+          "gcMB": 24.3
+        },
+        "domTargets": [
+          [
+            "weaponSlot (children)",
+            40
+          ],
+          [
+            "weaponName (children)",
+            40
+          ],
+          [
+            "ammo (children)",
+            40
+          ],
+          [
+            "reserve (children)",
+            40
+          ],
+          [
+            "reloadHint (children)",
+            40
+          ],
+          [
+            "weaponArt [data-tank-icon]",
+            40
+          ],
+          [
+            "tankBarrelPip [style]",
+            27
+          ],
+          [
+            "carFill [style]",
+            5
+          ]
+        ],
+        "worst": [
+          {
+            "frame": 97,
+            "t": 5.78,
+            "ms": 27.8,
+            "cause": "bullets +20.69",
+            "tags": [
+              "gc"
+            ],
+            "parts": {
+              "bullets": 21,
+              "cars": 5
+            },
+            "c": {
+              "gcMB": 3.1
+            }
+          },
+          {
+            "frame": 75,
+            "t": 5.42,
+            "ms": 20.1,
+            "cause": "cars +16.91",
+            "tags": [],
+            "parts": {
+              "cars": 19,
+              "civic": 0.2
+            },
+            "c": {
+              "allocKB": 463
+            }
+          },
+          {
+            "frame": 30,
+            "t": 4.67,
+            "ms": 15.7,
+            "cause": "sound +12.48",
+            "tags": [],
+            "parts": {
+              "sound": 12.6,
+              "cars": 1.8,
+              "military": 0.2
+            },
+            "c": {
+              "allocKB": 549
+            }
+          },
+          {
+            "frame": 118,
+            "t": 6.13,
+            "ms": 13.5,
+            "cause": "military +11.32",
+            "tags": [],
+            "parts": {
+              "military": 11.5,
+              "cars": 1.2,
+              "bullets": 0.2
+            },
+            "c": {
+              "allocKB": 481
+            }
+          },
+          {
+            "frame": 10,
+            "t": 4.33,
+            "ms": 10.7,
+            "cause": "bullets +4.69",
+            "tags": [],
+            "parts": {
+              "bullets": 5,
+              "people": 3.2,
+              "cars": 1.5,
+              "civic": 0.2
+            },
+            "c": {
+              "allocKB": 890,
+              "dom": 1
+            }
+          }
+        ]
+      },
+      "ms": 590,
+      "cpuMs": 440,
+      "heapMB": [
+        239.9,
+        245.3,
+        264.8
+      ],
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:39:23.840Z",
+    "op": {
+      "op": "call",
+      "method": "military",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "alert": true,
+        "lockdown": true,
+        "challenge": 3,
+        "gate": [
+          {
+            "arm": 0,
+            "bollards": 1,
+            "slide": 1,
+            "broken": []
+          },
+          {
+            "arm": 0,
+            "bollards": 1,
+            "slide": 1,
+            "broken": []
+          }
+        ],
+        "soldiers": {
+          "gate": 3,
+          "post": 9,
+          "tower": 8,
+          "range": 4,
+          "patrol": 9,
+          "drill": 12,
+          "sergeant": 1
+        },
+        "aiming": 9,
+        "vehicles": [
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9511,
+            "y": 8950,
+            "hp": 268,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9532,
+            "y": 8950,
+            "hp": 40,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9594,
+            "y": 8950,
+            "hp": 0,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9665,
+            "y": 8950,
+            "hp": 0,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9719,
+            "y": 8950,
+            "hp": 0,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9780,
+            "y": 8950,
+            "hp": 758,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9830,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "tank",
+            "x": 9490,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "tank",
+            "x": 9565,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "apc",
+            "x": 9645,
+            "y": 9080,
+            "hp": 734,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 9080,
+            "hp": 336,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9765,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9835,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9880,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9925,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 10160,
+            "y": 9042,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9510,
+            "y": 8160,
+            "hp": 380,
+            "ai": true,
+            "role": "qrf"
+          },
+          {
+            "type": "jeep",
+            "x": 9565,
+            "y": 8221,
+            "hp": 353,
+            "ai": true,
+            "role": "qrf"
+          },
+          {
+            "type": "helicopter",
+            "x": 9492,
+            "y": 7936,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9466,
+            "y": 8234,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9514,
+            "y": 8234,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 10282,
+            "y": 7850,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "jeep",
+            "x": 9618,
+            "y": 9850,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "helicopter",
+            "x": 9550,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 9810,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10340,
+            "y": 9365,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10200,
+            "y": 9365,
+            "hp": 640,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9794,
+            "y": 9134,
+            "hp": 826,
+            "ai": false,
+            "role": "parked"
+          }
+        ],
+        "supply": null,
+        "drill": {
+          "x": 9650,
+          "y": 8330,
+          "active": false
+        }
+      },
+      "ms": 3,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:39:23.846Z",
+    "op": {
+      "op": "call",
+      "method": "soakReport",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "gameTime": 6.1,
+        "clock": "13:06",
+        "mode": "play",
+        "lists": {
+          "vehicles": 281,
+          "pedestrians": 595,
+          "bullets": 0,
+          "particles": 120,
+          "skids": 9,
+          "enemies": 0,
+          "debris": 9,
+          "fires": 9,
+          "officers": 2,
+          "gangMembers": 62,
+          "storyActors": 3,
+          "wildlife": 25,
+          "beachgoers": 270,
+          "roadblocks": 0,
+          "sirenUnits": 0,
+          "seaEvents": 0,
+          "dolphinPods": 0,
+          "gulls": 60,
+          "bloodPools": 304,
+          "bleeders": 4,
+          "carStained": 3,
+          "severedParts": 2,
+          "goreStumps": 3,
+          "goreTracked": 7,
+          "goreEvents": 3,
+          "bloodTrackSources": 0,
+          "knockedProps": 0,
+          "streetProps": 6968,
+          "impactContacts": 2,
+          "staticBodies": 6981,
+          "specRadii": 61,
+          "crimeLog": 12,
+          "unreportedCrimes": 0,
+          "offstageCalls": 0,
+          "offstageCallTails": 0,
+          "runOvers": 0,
+          "riderThrows": 0,
+          "voiceLog": 1,
+          "speechShown": 0,
+          "crashLog": 2,
+          "crashRecent": 1,
+          "crashPairs": 2,
+          "fallLog": 0,
+          "cliffLog": 0,
+          "seaLog": 0,
+          "engineTrace": 0,
+          "aircraftCrashes": 0,
+          "shotLogRecent": 15,
+          "shotLogSources": 1,
+          "bikeShareSkipped": 0,
+          "notices": 0,
+          "hudPops": 0,
+          "mapPointers": 0,
+          "minimapPointers": 0,
+          "promptRanges": 42,
+          "worldPointers": 0,
+          "physicalKeysDown": 0,
+          "audioBuffers": 0,
+          "audioLoops": 0,
+          "drivingCharacterCache": 1,
+          "arcCache": 0,
+          "seatCache": 0,
+          "policeProfiles": 0,
+          "airframeSpecCache": 5,
+          "mountainGroundCache": 3,
+          "railLiftCache": 13,
+          "bikePointCache": null,
+          "godRoadCache": null,
+          "countyMarkingCache": 141,
+          "oceanPalmCache": 39,
+          "benchCache": 191,
+          "streetEndCache": 8,
+          "streetEndSolidCache": 22,
+          "crosswalkCache": 503,
+          "promenadeCache": 1138,
+          "ladderCache": 102,
+          "staticGrid": 1719,
+          "buildingGrid": 800,
+          "vehicleGrid": 0,
+          "vehicleDenseCells": 461,
+          "shoreGrid": null
+        },
+        "counts": {
+          "awake": 72,
+          "awake_ai": 64,
+          "awake_cop": 1,
+          "awake_burning": 0,
+          "awake_moving": 0,
+          "awake_other": 7,
+          "resting": 209,
+          "wrecks": 3,
+          "abandoned": 1,
+          "wreckRetired": 0,
+          "wreckRetiredByCap": 0,
+          "ai": 75,
+          "carStainEntries": 4,
+          "pedestrianContacts": 0,
+          "react": 0,
+          "flee": 0,
+          "pending": 15,
+          "hidden": 0
+        },
+        "bad": {
+          "count": 0,
+          "first": null
+        },
+        "dom": {
+          "total": 1094,
+          "top": {
+            "carRadio": 90,
+            "flightHud": 33,
+            "bottom": 78,
+            "touchControls": 24,
+            "menu": 39,
+            "missionSelect": 25,
+            "demoComplete": 27,
+            "arsenalOverlay": 32,
+            "serviceOverlay": 24,
+            "sportsbook": 80,
+            "settingsOverlay": 27,
+            "help": 21,
+            "mapOverlay": 46,
+            "credits": 75,
+            "godSplash": 56
+          }
+        },
+        "heapMB": 894.8,
+        "gpu": {
+          "programs": 107,
+          "textures": 89,
+          "geometries": 454,
+          "models": 25
+        }
+      },
+      "ms": 4,
+      "newErrors": 0
+    }
+  }
+]

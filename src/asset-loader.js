@@ -16,6 +16,8 @@ const embeddedAssetReferences = {
   "harbor": "media-harbor",
   "arsenal": "media-arsenal",
   "unicorn": "media-unicorn",
+  "apacheModel": "media-apache-model",
+  "rocketLauncherModel": "media-rocket-launcher-model",
   "playerModel": "media-player-model",
   "playerSkin": "media-player-skin",
   "playerDetail": "media-player-detail",
@@ -204,7 +206,7 @@ function embeddedMediaDataUrl(identifier) {
 }
 
 const gameAssets = {};
-for (const name of ['architecture', 'ground', 'weapons', 'harbor', 'arsenal', 'unicorn', 'playerModel', 'playerSkin', 'playerDetail', 'vehicleModels', 'vehicleAtlas', 'approvedVehicleModels', 'approvedVehicleAlbedo', 'approvedVehicleOrm', 'approvedVehicleAlbedoLow', 'approvedVehicleOrmLow', 'sportsVehicleModels', 'sportsVehicleAlbedo', 'sportsVehicleOrm', 'sportsVehicleEmissive', 'sportsVehicleAlbedoLow', 'sportsVehicleOrmLow', 'sportsVehicleEmissiveLow', 'hotrodVehicleModels', 'hotrodVehicleAlbedo', 'hotrodVehicleOrm', 'hotrodVehicleAlbedoLow', 'hotrodVehicleOrmLow', 'aircraftModels', 'aircraftSkin', 'jetModels', 'jetSkin', 'dogModel', 'npcModels', 'npcSkin', 'wallSkin', 'trailMud']) {
+for (const name of ['apacheModel', 'architecture', 'ground', 'weapons', 'harbor', 'arsenal', 'unicorn', 'rocketLauncherModel', 'playerModel', 'playerSkin', 'playerDetail', 'vehicleModels', 'vehicleAtlas', 'approvedVehicleModels', 'approvedVehicleAlbedo', 'approvedVehicleOrm', 'approvedVehicleAlbedoLow', 'approvedVehicleOrmLow', 'sportsVehicleModels', 'sportsVehicleAlbedo', 'sportsVehicleOrm', 'sportsVehicleEmissive', 'sportsVehicleAlbedoLow', 'sportsVehicleOrmLow', 'sportsVehicleEmissiveLow', 'hotrodVehicleModels', 'hotrodVehicleAlbedo', 'hotrodVehicleOrm', 'hotrodVehicleAlbedoLow', 'hotrodVehicleOrmLow', 'aircraftModels', 'aircraftSkin', 'jetModels', 'jetSkin', 'dogModel', 'npcModels', 'npcSkin', 'wallSkin', 'trailMud']) {
   gameAssets[name] = embeddedMediaDataUrl(embeddedAssetReferences[name]);
 }
 for (const name of ['dolcatiVehicleModels', 'dolcatiVehicleAlbedo', 'dolcatiVehicleOrm', 'dolcatiVehicleEmissive', 'dolcatiVehicleAlbedoLow', 'dolcatiVehicleOrmLow', 'dolcatiVehicleEmissiveLow']) {

@@ -176,7 +176,7 @@
     }
     for (const [id, fn] of [
       ['touchReload', startReload],
-      ['touchWeapon', cycleWeapon],
+      ['touchWeapon', () => (isApache(player.car) ? cycleApacheWeapon() : cycleWeapon())],
       ['touchPoison', poisonDrink],
       // Each tap jumps, opens, cuts away the flying main, or pulls the reserve.
       ['touchJump', () => (player.parachute ? openParachuteByHand() : bailOut())],
@@ -255,7 +255,7 @@
       show('touchRun', foot);
       show('touchAction', !chute);
       show('touchReload', foot || !!c);
-      show('touchWeapon', foot || c?.type === 'tank' || mountedGunKind(c) === 'apc');
+      show('touchWeapon', foot || isApache(c) || c?.type === 'tank' || mountedGunKind(c) === 'apc');
       show('touchPoison', foot && player.roof && !!rooftopJob());
       show('touchJump', chuteAction || (air && aircraftClearance(c) >= 60));
       getElement('touchJump').textContent = touchButtonLabel('touchJump');

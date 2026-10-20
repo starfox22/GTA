@@ -1,0 +1,235 @@
+{
+  "passed": true,
+  "checks": {
+    "frozen_html_identity": true,
+    "actual_fort_pad_boarded": true,
+    "ordinary_default_T_takeoff": true,
+    "flight_power_full": true,
+    "physical_Q_four_modes_and_hold_once": true,
+    "physical_U_remap_then_defaults": true,
+    "physical_F_cannon_consumed_round": true,
+    "cannon_real_damage": true,
+    "physical_F_live_rocket": true,
+    "rocket_target_destroyed": true,
+    "hellfire_lock_ready": true,
+    "physical_F_live_hellfire": true,
+    "hellfire_tank_damage": true,
+    "stinger_boarded_and_air_lock": true,
+    "physical_F_live_stinger": true,
+    "stinger_air_target_destroyed": true,
+    "fresh_full_stock_model_photo": true,
+    "zero_frame_faults": true,
+    "integrity_clean": true,
+    "zero_browser_errors": true,
+    "server_stopped": true
+  },
+  "assertions": 21,
+  "candidateHTMLSHA256": "e73c7022c2659d1690b3de2a884d575f2e228d78437c1930c41e9b305051f968",
+  "conditions": {
+    "viewport": [
+      960,
+      600
+    ],
+    "tier": "HIGH",
+    "flags": "dev&shadercheck&seed=1&hold",
+    "renderer": "native WebGL through SwiftShader",
+    "setup": "God mode and wanted clear permitted staging; all calls named; no source edits/build/reload/arbitrary setters."
+  },
+  "evidence": {
+    "pad": {
+      "exists": true,
+      "id": 283,
+      "name": "AH-64 APACHE",
+      "pad": {
+        "x": 10200,
+        "y": 9365
+      },
+      "x": 10200,
+      "y": 9365,
+      "heading": 90,
+      "altitude": 0,
+      "hp": 640,
+      "maxhp": 640,
+      "aboard": true,
+      "taken": true,
+      "ai": false,
+      "onBasePad": true,
+      "arms": {
+        "weapon": "cannon",
+        "rounds": 320,
+        "rockets": 38,
+        "missiles": 8,
+        "airMissiles": 4,
+        "rearming": false,
+        "salvoLeft": 0,
+        "status": "READY",
+        "lock": {
+          "target": null,
+          "ready": false,
+          "since": 0
+        }
+      },
+      "projectiles": [],
+      "turret": 0,
+      "gunPitch": 0,
+      "aim": null,
+      "clearance": {
+        "solids": 0,
+        "rotorSolids": 0,
+        "buildings": 0,
+        "vehicles": []
+      }
+    },
+    "takeoff": {
+      "exists": true,
+      "id": 283,
+      "name": "AH-64 APACHE",
+      "pad": {
+        "x": 10200,
+        "y": 9365
+      },
+      "x": 10200,
+      "y": 10028,
+      "heading": 90,
+      "altitude": 46.9,
+      "hp": 617,
+      "maxhp": 640,
+      "aboard": true,
+      "taken": true,
+      "ai": false,
+      "onBasePad": false,
+      "arms": {
+        "weapon": "cannon",
+        "rounds": 320,
+        "rockets": 38,
+        "missiles": 8,
+        "airMissiles": 4,
+        "rearming": false,
+        "salvoLeft": 0,
+        "status": "READY",
+        "lock": {
+          "target": null,
+          "ready": false,
+          "since": 0
+        }
+      },
+      "projectiles": [],
+      "turret": 0,
+      "gunPitch": -38,
+      "aim": {
+        "x": 10200,
+        "y": 10368,
+        "range": 340
+      },
+      "clearance": {
+        "solids": 0,
+        "rotorSolids": 0,
+        "buildings": 0,
+        "vehicles": []
+      }
+    },
+    "takeoffDamage": {
+      "id": 283,
+      "type": "helicopter",
+      "hp": 617,
+      "maxhp": 640,
+      "zones": {
+        "front": 0,
+        "rear": 0.01,
+        "left": 0,
+        "right": 0.03
+      },
+      "dents": [],
+      "parts": {
+        "hood": 0,
+        "bumperFront": 0,
+        "bumperRear": 0,
+        "doorLeft": 0,
+        "doorRight": 0,
+        "trunk": 0
+      },
+      "glass": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "lights": [],
+      "flatTires": [],
+      "marks": {
+        "hole": 6
+      },
+      "pull": 0,
+      "handling": {
+        "power": 1,
+        "top": 1,
+        "grip": 1,
+        "pull": 0,
+        "steer": 1,
+        "brake": 1
+      },
+      "burning": 0,
+      "fireSpent": false,
+      "burnt": false,
+      "speed": 208,
+      "spin": 0,
+      "x": 10200,
+      "y": 10028,
+      "a": 1.57
+    },
+    "QModeStates": [
+      "cannon",
+      "rockets",
+      "hellfire",
+      "stinger",
+      "cannon",
+      "rockets",
+      "rockets",
+      "hellfire",
+      "stinger",
+      "cannon"
+    ],
+    "cannonTargetHP": [
+      150,
+      125
+    ],
+    "rocketTargetHP": 0,
+    "hellfireTankHP": [
+      1600,
+      1101
+    ],
+    "stingerTargetHP": [
+      220,
+      0
+    ],
+    "acceptedPhotos": {
+      "apache-fort-takeoff-native.png": {
+        "bytes": 854691,
+        "sha256": "4ab343b7addcaf219ef4f099b91be4e05743e3f1f6a430c3221893c31567d8de"
+      },
+      "apache-rocket-launch-native.png": {
+        "bytes": 750803,
+        "sha256": "1e9ea4f018fa74bfe0f5aaf7e86a4fe9b4b9f5e62a181847560c6cc529242ca3"
+      },
+      "apache-hellfire-launch-native.png": {
+        "bytes": 749991,
+        "sha256": "4f23fcecc88f1b09b6ace1fe4db55779f1849708cd87d7e4086e1119c5a61d67"
+      },
+      "apache-stinger-expanded-native.png": {
+        "bytes": 735106,
+        "sha256": "46c711150b0c367dba5c46fc0226c01fc27cf4a8cc9cf29556c5ca553ec132d1"
+      },
+      "apache-matched-side-quarter-native.png": {
+        "bytes": 673268,
+        "sha256": "5da7d02536ddeeee4784d902197bc895cb6e5d2032dbb6828a45cb319660f6e2"
+      }
+    }
+  },
+  "retainedDraftsAndLimits": [
+    "Initial pad image is a draft: the sub-100ms boarding UI cadence retained previous APC weapon display. Refreshed takeoff/weapon images show actual Apache HUD.",
+    "08/09:40m staged utility cannot bail because real minimum is60m; look preserves an airborne carrier.10:80m bailout succeeded, but look cleared the freefall carrier while retaining staged player altitude, so immediate boarding failed. These failed fixture records are preserved. Successful12 uses a named grounded road-car exit to restore foot altitude before boarding Apache.",
+    "T takeoff uses a physical defaultT press and ordinaryT-held hitchRun updates. The second rawArrowUp hitchRun leg is recorded as ordinary movement, not independent physicalArrowUp ascent proof.",
+    "Matched model photo repeats baseline placement/camera/zoom/clock and two native frames. Fresh theft wanted5, hoveredFISTS UI and turret rest differ from the old shot; the tall authored whip reaches the top edge.",
+    "Software-rendered timings/FPS are correctness evidence, not hardware performance claims."
+  ]
+}

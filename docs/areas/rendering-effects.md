@@ -9,6 +9,8 @@ drop, track and wall splash in one instanced draw) and car blood, and debris chu
 shadowed meshes; blasts throw them too). A fresh cut (gore.js `goreEvents`) adds bone chips (`fxBit`) and a dark
 mist (`fxPuff`) to the pool (crowd3d-gore.js `goreEffects`).
 
+[Conservative billboard footprints](rendering-effects-footprint.md) omit transparent atlas borders with mip/filter support preserved, reducing smoke/fire fragment work without changing the particle pool or render resolution.
+
 ## The pool (fx3d-particles.js)
 
 - `fxs` is a struct of typed arrays (FX_CAPACITY 1024 slots): position, velocity, life, size and growth, colour

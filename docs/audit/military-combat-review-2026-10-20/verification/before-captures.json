@@ -1,0 +1,109 @@
+{
+  "primaryBazooka": "old-bazooka-quarter-chase.png",
+  "primaryApache": "old-apache-side-quarter-parked.png",
+  "preliminaryShots": [
+    "old-bazooka-chase.png",
+    "old-apache-quarter-parked.png"
+  ],
+  "nativePNG": true,
+  "normalHUD": true,
+  "sources": "source-identity.json",
+  "opLogs": [
+    "01-old-bazooka-chase.json",
+    "02-old-bazooka-quarter.json",
+    "03-old-apache-board.json",
+    "04-old-apache-quarter.json",
+    "05-old-apache-side-quarter.json"
+  ],
+  "captures": [
+    {
+      "file": "old-apache-quarter-parked.png",
+      "sha256": "41ad22bc7e4929e85583216317bf40982c0f5a52ddc158dca30afc3fc1eaea29",
+      "bytes": 623830,
+      "viewport": [
+        960,
+        600
+      ]
+    },
+    {
+      "file": "old-apache-side-quarter-parked.png",
+      "sha256": "c69986240b5457a894d917a27a16b1042d32cd7bd484f11ec0faa1c342cf5b37",
+      "bytes": 658957,
+      "viewport": [
+        960,
+        600
+      ]
+    },
+    {
+      "file": "old-bazooka-chase.png",
+      "sha256": "e9f3b0ba864f4435a8b951b84cf302fa368fa728fa0c3ecd0b958242d80c6dc6",
+      "bytes": 749114,
+      "viewport": [
+        960,
+        600
+      ]
+    },
+    {
+      "file": "old-bazooka-quarter-chase.png",
+      "sha256": "879fae3242c848434c25f9fb802f170ffd5e44a503c45c4db4108462894ebc90",
+      "bytes": 843664,
+      "viewport": [
+        960,
+        600
+      ]
+    }
+  ],
+  "failures": [],
+  "observations": [
+    "Initial bazooka rear view was less useful; second quarter chase shot clearly shows its full held silhouette.",
+    "Boarding the Fort Apache correctly raised five stars; it was moved to Oceanview runway and wanted cleared for peaceful imagery.",
+    "First Apache view used the aboard flight-camera framing and partly clipped the rotor. Final side-quarter shot disembarks, uses street inspection camera and keeps the complete parked model."
+  ],
+  "bazookaReproduction": {
+    "location": [
+      10100,
+      9450
+    ],
+    "weapon": 3,
+    "viewMode": "chase",
+    "footwork": null,
+    "walk": [
+      0,
+      0
+    ],
+    "chaseLook": [
+      0,
+      0,
+      -55,
+      10
+    ],
+    "quality": "high",
+    "weather": "clear",
+    "clock": 13
+  },
+  "apacheReproduction": {
+    "vehicle": "Fort Apache (apacheReset then board near10200,9335)",
+    "placeVehicle": [
+      5200,
+      9884,
+      0.6,
+      0
+    ],
+    "playerOnFootLook": [
+      5200,
+      9904
+    ],
+    "viewMode": "street",
+    "inspectView": [
+      -35,
+      25,
+      8
+    ],
+    "closeUp": 3.8,
+    "quality": "high",
+    "weather": "clear",
+    "clock": 13,
+    "rotorDecayStepSeconds": 6,
+    "finalUIRefreshStepSeconds": 0.2
+  }
+}

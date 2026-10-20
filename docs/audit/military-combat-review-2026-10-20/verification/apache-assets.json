@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "assertions": 149,
+  "evidence": [
+    {
+      "apacheAsset": {
+        "nearTriangles": 222647,
+        "retainedSourceTriangles": 220711,
+        "farTriangles": 14276,
+        "shadowTriangles": 4791,
+        "sourceMeshes": 7,
+        "parityRays": 48,
+        "hitRays": 48,
+        "packBytes": 18839164
+      }
+    }
+  ],
+  "inputs": {
+    "src/apache-assets3d.js": "73cd85cb24a8655b99ffdf6f208327eb434159ee1d37641ef98e0bc6fbb837af",
+    "src/apache3d.js": "0e3f27615c1982aebd0dcf9ceea6d8a915fe66c1592c673ab5a6fe934ff54411",
+    "tools/apache_model.py": "905c7e29bca2ed2b2cb4176c9df8243f0c259b818d22df41dce723855e24d9cc",
+    "tools/tests/apache-assets.mjs": "4ec293292c8000ca97cf9364a3f05c76110f3dd08388d6ba3b0ec820bbeb8440",
+    "assets/apache-model.bin": "9ea86120bc1295a807ddfcdf1d3f24a22a54d547b83e480e571ae107ef06bd55"
+  }
+}

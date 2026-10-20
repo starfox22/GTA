@@ -1,0 +1,95 @@
+{
+  "kind": "Actual production icon Canvas2D command parity and HUD cache host; no WebGL",
+  "parity": true,
+  "runs": [
+    {
+      "name": "before",
+      "pass": 27,
+      "fail": 24,
+      "failures": [
+        "120 ammo/health-only refreshes do not rasterize unchanged weapon 0",
+        "120 ammo/health-only refreshes do not rasterize unchanged weapon 1",
+        "120 ammo/health-only refreshes do not rasterize unchanged weapon 2",
+        "120 ammo/health-only refreshes do not rasterize unchanged weapon 3",
+        "120 ammo/health-only refreshes do not rasterize unchanged weapon 4",
+        "120 ammo/health-only refreshes do not rasterize unchanged weapon 5",
+        "120 ammo/health-only refreshes do not rasterize unchanged weapon 6",
+        "120 ammo/health-only refreshes do not rasterize unchanged weapon 7",
+        "120 ammo/health-only refreshes do not rasterize unchanged weapon 8",
+        "armed HUD icon identity survives refresh tank",
+        "armed refresh has no canvas work or dataset deletion tank",
+        "ordinary cache resumes after exit tank",
+        "armed HUD icon identity survives refresh helicopter",
+        "armed refresh has no canvas work or dataset deletion helicopter",
+        "ordinary cache resumes after exit helicopter",
+        "armed HUD icon identity survives refresh apc",
+        "armed refresh has no canvas work or dataset deletion apc",
+        "ordinary cache resumes after exit apc",
+        "canvas width redraws once",
+        "canvas height redraws once",
+        "atlas identity redraws once",
+        "image decoded width redraws once",
+        "image decoded height redraws once",
+        "procedural fallback is cached while media is absent"
+      ],
+      "pictures": [
+        "[[\"clearRect\",0,0,328,116],[\"imageSmoothingEnabled\",true],[\"drawImage\",\"atlas\",163,81,304,212,94.13735849056604,9.280000000000001,139.7252830188679,97.44]]",
+        "[[\"clearRect\",0,0,328,116],[\"imageSmoothingEnabled\",true],[\"drawImage\",\"atlas\",755,45,395,279,95.0236559139785,9.280000000000001,137.952688172043,97.44]]",
+        "[[\"clearRect\",0,0,328,116],[\"imageSmoothingEnabled\",true],[\"drawImage\",\"atlas\",23,425,593,153,19.680000000000007,20.76397976391231,288.64,74.47204047217538]]",
+        "[[\"clearRect\",0,0,328,116],[\"imageSmoothingEnabled\",true],[\"drawImage\",\"atlas\",645,394,588,213,29.505352112676064,9.280000000000001,268.98929577464787,97.44]]",
+        "[[\"clearRect\",0,0,328,116],[\"imageSmoothingEnabled\",true],[\"drawImage\",\"atlas\",18,702,600,205,21.40487804878049,9.280000000000001,285.190243902439,97.44]]",
+        "[[\"clearRect\",0,0,328,116],[\"imageSmoothingEnabled\",true],[\"drawImage\",\"atlas\",642,693,595,184,19.680000000000007,13.369949579831932,288.64,89.26010084033614]]",
+        "[[\"clearRect\",0,0,328,116],[\"imageSmoothingEnabled\",true],[\"drawImage\",\"atlas\",75,1030,506,123,19.680000000000007,22.918260869565216,288.64,70.16347826086957]]",
+        "[[\"clearRect\",0,0,328,116],[\"save\"],[\"translate\",164,58],[\"scale\",1.5675675675675675,1.5675675675675675],[\"lineJoin\",\"round\"],[\"beginPath\"],[\"moveTo\",-57,-16],[\"arcTo\",-40,-16,-40,18,3],[\"arcTo\",-40,18,-60,18,3],[\"arcTo\",-60,18,-60,-16,3],[\"arcTo\",-60,-16,-40,-16,3],[\"closePath\"],[\"fillStyle\",\"#3d4a57\"],[\"fill\"],[\"strokeStyle\",\"#2b1f17\"],[\"lineWidth\",2.6],[\"stroke\"],[\"beginPath\"],[\"moveTo\",-39,-13],[\"arcTo\",-30,-13,-30,15,5],[\"arcTo\",-30,15,-44,15,5],[\"arcTo\",-44,15,-44,-13,5],[\"arcTo\",-44,-13,-30,-13,5],[\"closePath\"],[\"fillStyle\",\"#c9a07a\"],[\"fill\"],[\"strokeStyle\",\"#2b1f17\"],[\"lineWidth\",2.6],[\"stroke\"],[\"beginPath\"],[\"moveTo\",-22,-24],[\"arcTo\",8,-24,8,22,12],[\"arcTo\",8,22,-34,22,12],[\"arcTo\",-34,22,-34,-24,12],[\"arcTo\",-34,-24,8,-24,12],[\"closePath\"],[\"fillStyle\",\"#d8b08a\"],[\"fill\"],[\"strokeStyle\",\"#2b1f17\"],[\"lineWidth\",2.6],[\"stroke\"],[\"beginPath\"],[\"moveTo\",7.5,-24],[\"arcTo\",33,-24,33,-12.5,5.5],[\"arcTo\",33,-12.5,2,-12.5,5.5],[\"arcTo\",2,-12.5,2,-24,5.5],[\"arcTo\",2,-24,33,-24,5.5],[\"closePath\"],[\"fillStyle\",\"#e6c29c\"],[\"fill\"],[\"strokeStyle\",\"#2b1f17\"],[\"lineWidth\",2.6],[\"stroke\"],[\"beginPath\"],[\"moveTo\",7.5,-12.5],[\"arcTo\",33,-12.5,33,-1,5.5],[\"arcTo\",33,-1,2,-1,5.5],[\"arcTo\",2,-1,2,-12.5,5.5],[\"arcTo\",2,-12.5,33,-12.5,5.5],[\"closePath\"],[\"fillStyle\",\"#e6c29c\"],[\"fill\"],[\"strokeStyle\",\"#2b1f17\"],[\"lineWidth\",2.6],[\"stroke\"],[\"beginPath\"],[\"moveTo\",7.5,-1],[\"arcTo\",33,-1,33,10.5,5.5],[\"arcTo\",33,10.5,2,10.5,5.5],[\"arcTo\",2,10.5,2,-1,5.5],[\"arcTo\",2,-1,33,-1,5.5],[\"closePath\"],[\"fillStyle\",\"#e6c29c\"],[\"fill\"],[\"strokeStyle\",\"#2b1f17\"],[\"lineWidth\",2.6],[\"stroke\"],[\"beginPath\"],[\"moveTo\",7.5,10.5],[\"arcTo\",29,10.5,29,22,5.5],[\"arcTo\",29,22,2,22,5.5],[\"arcTo\",2,22,2,10.5,5.5],[\"arcTo\",2,10.5,29,10.5,5.5],[\"closePath\"],[\"fillStyle\",\"#e6c29c\"],[\"fill\"],[\"strokeStyle\",\"#2b1f17\"],[\"lineWidth\",2.6],[\"stroke\"],[\"fillStyle\",\"#f6dcbd\"],[\"fillRect\",25,-21,5,3],[\"fillRect\",25,-9.5,5,3],[\"fillRect\",25,2,5,3],[\"fillRect\",21,13.5,5,3],[\"beginPath\"],[\"moveTo\",-15.5,8],[\"arcTo\",14,8,14,21,6.5],[\"arcTo\",14,21,-22,21,6.5],[\"arcTo\",-22,21,-22,8,6.5],[\"arcTo\",-22,8,14,8,6.5],[\"closePath\"],[\"fillStyle\",\"#cfa47d\"],[\"fill\"],[\"strokeStyle\",\"#2b1f17\"],[\"lineWidth\",2.6],[\"stroke\"],[\"fillStyle\",\"#f0d3b4\"],[\"fillRect\",6,11,5,3],[\"restore\"]]",
+        "[[\"clearRect\",0,0,328,116],[\"save\"],[\"translate\",164,58],[\"scale\",1.6571428571428573,1.6571428571428573],[\"lineCap\",\"round\"],[\"lineJoin\",\"round\"],[\"createLinearGradient\",0,-4,0,4],[\"strokeStyle\",\"#3a3f43\"],[\"lineWidth\",6.5],[\"beginPath\"],[\"moveTo\",-58,15],[\"lineTo\",34,15],[\"lineTo\",34,27],[\"stroke\"],[\"strokeStyle\",\"#9aa4aa\"],[\"lineWidth\",4.2],[\"stroke\"],[\"strokeStyle\",\"#2a2d30\"],[\"lineWidth\",5.2],[\"beginPath\"],[\"moveTo\",-6,-4],[\"lineTo\",58,-4],[\"quadraticCurveTo\",64,-4,64,-12],[\"stroke\"],[\"strokeStyle\",{}],[\"lineWidth\",3],[\"stroke\"],[\"fillStyle\",\"#17191b\"],[\"strokeStyle\",\"#050606\"],[\"lineWidth\",2],[\"beginPath\"],[\"moveTo\",-64,-11],[\"quadraticCurveTo\",-36,-15,-6,-9],[\"lineTo\",-6,1],[\"quadraticCurveTo\",-36,7,-64,3],[\"quadraticCurveTo\",-70,-4,-64,-11],[\"closePath\"],[\"fill\"],[\"stroke\"],[\"strokeStyle\",\"#34383b\"],[\"lineWidth\",1.4],[\"beginPath\"],[\"moveTo\",-52,-10.5],[\"lineTo\",-52,2.5],[\"stroke\"],[\"beginPath\"],[\"moveTo\",-45,-10.5],[\"lineTo\",-45,2.5],[\"stroke\"],[\"beginPath\"],[\"moveTo\",-38,-10.5],[\"lineTo\",-38,2.5],[\"stroke\"],[\"beginPath\"],[\"moveTo\",-31,-10.5],[\"lineTo\",-31,2.5],[\"stroke\"],[\"beginPath\"],[\"moveTo\",-24,-10.5],[\"lineTo\",-24,2.5],[\"stroke\"],[\"beginPath\"],[\"moveTo\",-17,-10.5],[\"lineTo\",-17,2.5],[\"stroke\"],[\"restore\"]]"
+      ],
+      "facts": [
+        {
+          "kind": "tank",
+          "redundantRefreshes": 120
+        },
+        {
+          "kind": "helicopter",
+          "redundantRefreshes": 120
+        },
+        {
+          "kind": "apc",
+          "redundantRefreshes": 120
+        }
+      ],
+      "drawCalls": 18637
+    },
+    {
+      "name": "after",
+      "pass": 51,
+      "fail": 0,
+      "failures": [],
+      "pictures": [
+        "[[\"clearRect\",0,0,328,116],[\"imageSmoothingEnabled\",true],[\"drawImage\",\"atlas\",163,81,304,212,94.13735849056604,9.280000000000001,139.7252830188679,97.44]]",
+        "[[\"clearRect\",0,0,328,116],[\"imageSmoothingEnabled\",true],[\"drawImage\",\"atlas\",755,45,395,279,95.0236559139785,9.280000000000001,137.952688172043,97.44]]",
+        "[[\"clearRect\",0,0,328,116],[\"imageSmoothingEnabled\",true],[\"drawImage\",\"atlas\",23,425,593,153,19.680000000000007,20.76397976391231,288.64,74.47204047217538]]",
+        "[[\"clearRect\",0,0,328,116],[\"imageSmoothingEnabled\",true],[\"drawImage\",\"atlas\",645,394,588,213,29.505352112676064,9.280000000000001,268.98929577464787,97.44]]",
+        "[[\"clearRect\",0,0,328,116],[\"imageSmoothingEnabled\",true],[\"drawImage\",\"atlas\",18,702,600,205,21.40487804878049,9.280000000000001,285.190243902439,97.44]]",
+        "[[\"clearRect\",0,0,328,116],[\"imageSmoothingEnabled\",true],[\"drawImage\",\"atlas\",642,693,595,184,19.680000000000007,13.369949579831932,288.64,89.26010084033614]]",
+        "[[\"clearRect\",0,0,328,116],[\"imageSmoothingEnabled\",true],[\"drawImage\",\"atlas\",75,1030,506,123,19.680000000000007,22.918260869565216,288.64,70.16347826086957]]",
+        "[[\"clearRect\",0,0,328,116],[\"save\"],[\"translate\",164,58],[\"scale\",1.5675675675675675,1.5675675675675675],[\"lineJoin\",\"round\"],[\"beginPath\"],[\"moveTo\",-57,-16],[\"arcTo\",-40,-16,-40,18,3],[\"arcTo\",-40,18,-60,18,3],[\"arcTo\",-60,18,-60,-16,3],[\"arcTo\",-60,-16,-40,-16,3],[\"closePath\"],[\"fillStyle\",\"#3d4a57\"],[\"fill\"],[\"strokeStyle\",\"#2b1f17\"],[\"lineWidth\",2.6],[\"stroke\"],[\"beginPath\"],[\"moveTo\",-39,-13],[\"arcTo\",-30,-13,-30,15,5],[\"arcTo\",-30,15,-44,15,5],[\"arcTo\",-44,15,-44,-13,5],[\"arcTo\",-44,-13,-30,-13,5],[\"closePath\"],[\"fillStyle\",\"#c9a07a\"],[\"fill\"],[\"strokeStyle\",\"#2b1f17\"],[\"lineWidth\",2.6],[\"stroke\"],[\"beginPath\"],[\"moveTo\",-22,-24],[\"arcTo\",8,-24,8,22,12],[\"arcTo\",8,22,-34,22,12],[\"arcTo\",-34,22,-34,-24,12],[\"arcTo\",-34,-24,8,-24,12],[\"closePath\"],[\"fillStyle\",\"#d8b08a\"],[\"fill\"],[\"strokeStyle\",\"#2b1f17\"],[\"lineWidth\",2.6],[\"stroke\"],[\"beginPath\"],[\"moveTo\",7.5,-24],[\"arcTo\",33,-24,33,-12.5,5.5],[\"arcTo\",33,-12.5,2,-12.5,5.5],[\"arcTo\",2,-12.5,2,-24,5.5],[\"arcTo\",2,-24,33,-24,5.5],[\"closePath\"],[\"fillStyle\",\"#e6c29c\"],[\"fill\"],[\"strokeStyle\",\"#2b1f17\"],[\"lineWidth\",2.6],[\"stroke\"],[\"beginPath\"],[\"moveTo\",7.5,-12.5],[\"arcTo\",33,-12.5,33,-1,5.5],[\"arcTo\",33,-1,2,-1,5.5],[\"arcTo\",2,-1,2,-12.5,5.5],[\"arcTo\",2,-12.5,33,-12.5,5.5],[\"closePath\"],[\"fillStyle\",\"#e6c29c\"],[\"fill\"],[\"strokeStyle\",\"#2b1f17\"],[\"lineWidth\",2.6],[\"stroke\"],[\"beginPath\"],[\"moveTo\",7.5,-1],[\"arcTo\",33,-1,33,10.5,5.5],[\"arcTo\",33,10.5,2,10.5,5.5],[\"arcTo\",2,10.5,2,-1,5.5],[\"arcTo\",2,-1,33,-1,5.5],[\"closePath\"],[\"fillStyle\",\"#e6c29c\"],[\"fill\"],[\"strokeStyle\",\"#2b1f17\"],[\"lineWidth\",2.6],[\"stroke\"],[\"beginPath\"],[\"moveTo\",7.5,10.5],[\"arcTo\",29,10.5,29,22,5.5],[\"arcTo\",29,22,2,22,5.5],[\"arcTo\",2,22,2,10.5,5.5],[\"arcTo\",2,10.5,29,10.5,5.5],[\"closePath\"],[\"fillStyle\",\"#e6c29c\"],[\"fill\"],[\"strokeStyle\",\"#2b1f17\"],[\"lineWidth\",2.6],[\"stroke\"],[\"fillStyle\",\"#f6dcbd\"],[\"fillRect\",25,-21,5,3],[\"fillRect\",25,-9.5,5,3],[\"fillRect\",25,2,5,3],[\"fillRect\",21,13.5,5,3],[\"beginPath\"],[\"moveTo\",-15.5,8],[\"arcTo\",14,8,14,21,6.5],[\"arcTo\",14,21,-22,21,6.5],[\"arcTo\",-22,21,-22,8,6.5],[\"arcTo\",-22,8,14,8,6.5],[\"closePath\"],[\"fillStyle\",\"#cfa47d\"],[\"fill\"],[\"strokeStyle\",\"#2b1f17\"],[\"lineWidth\",2.6],[\"stroke\"],[\"fillStyle\",\"#f0d3b4\"],[\"fillRect\",6,11,5,3],[\"restore\"]]",
+        "[[\"clearRect\",0,0,328,116],[\"save\"],[\"translate\",164,58],[\"scale\",1.6571428571428573,1.6571428571428573],[\"lineCap\",\"round\"],[\"lineJoin\",\"round\"],[\"createLinearGradient\",0,-4,0,4],[\"strokeStyle\",\"#3a3f43\"],[\"lineWidth\",6.5],[\"beginPath\"],[\"moveTo\",-58,15],[\"lineTo\",34,15],[\"lineTo\",34,27],[\"stroke\"],[\"strokeStyle\",\"#9aa4aa\"],[\"lineWidth\",4.2],[\"stroke\"],[\"strokeStyle\",\"#2a2d30\"],[\"lineWidth\",5.2],[\"beginPath\"],[\"moveTo\",-6,-4],[\"lineTo\",58,-4],[\"quadraticCurveTo\",64,-4,64,-12],[\"stroke\"],[\"strokeStyle\",{}],[\"lineWidth\",3],[\"stroke\"],[\"fillStyle\",\"#17191b\"],[\"strokeStyle\",\"#050606\"],[\"lineWidth\",2],[\"beginPath\"],[\"moveTo\",-64,-11],[\"quadraticCurveTo\",-36,-15,-6,-9],[\"lineTo\",-6,1],[\"quadraticCurveTo\",-36,7,-64,3],[\"quadraticCurveTo\",-70,-4,-64,-11],[\"closePath\"],[\"fill\"],[\"stroke\"],[\"strokeStyle\",\"#34383b\"],[\"lineWidth\",1.4],[\"beginPath\"],[\"moveTo\",-52,-10.5],[\"lineTo\",-52,2.5],[\"stroke\"],[\"beginPath\"],[\"moveTo\",-45,-10.5],[\"lineTo\",-45,2.5],[\"stroke\"],[\"beginPath\"],[\"moveTo\",-38,-10.5],[\"lineTo\",-38,2.5],[\"stroke\"],[\"beginPath\"],[\"moveTo\",-31,-10.5],[\"lineTo\",-31,2.5],[\"stroke\"],[\"beginPath\"],[\"moveTo\",-24,-10.5],[\"lineTo\",-24,2.5],[\"stroke\"],[\"beginPath\"],[\"moveTo\",-17,-10.5],[\"lineTo\",-17,2.5],[\"stroke\"],[\"restore\"]]"
+      ],
+      "facts": [
+        {
+          "kind": "tank",
+          "redundantRefreshes": 120
+        },
+        {
+          "kind": "helicopter",
+          "redundantRefreshes": 120
+        },
+        {
+          "kind": "apc",
+          "redundantRefreshes": 120
+        }
+      ],
+      "drawCalls": 573
+    }
+  ]
+}

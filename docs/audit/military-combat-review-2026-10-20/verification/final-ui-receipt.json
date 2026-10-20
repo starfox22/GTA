@@ -1,0 +1,29 @@
+{
+  "qaFinalSha256": "2705ab09175f610b76f4757bea1eae50804e518ac8eff694e41f2a8ee7f67891",
+  "entrySha256": "c06dcb00f91c27a15c2d82d904cc7e22c80139bfcd3a5e1d44393304e16b319b",
+  "requiredScopePassed": true,
+  "globalAllLayoutsPassed": false,
+  "scopeResults": {
+    "requiredDesktopApacheFits": true,
+    "optionalPortraitAllSamplesFit": false,
+    "classRemovedOnFoot": true,
+    "nativeDesktopImageReviewed": true,
+    "nativePortraitShowsCompactAmmoAndSeekTarget": true,
+    "nativePortraitExpandedNameProven": false
+  },
+  "photos": [
+    {
+      "name": "apache-wrapped-hellfire-desktop",
+      "file": "/workspace/GTA/work/military-combat-review/final-ui/apache-wrapped-hellfire-desktop.png",
+      "sha256": "c5090d3a2d9f6e7b4309eed86a09c8cf06a966ce94934b4311ada2f3fa8dd05e"
+    },
+    {
+      "name": "apache-wrapped-stinger-portrait",
+      "file": "/workspace/GTA/work/military-combat-review/final-ui/apache-wrapped-stinger-portrait.png",
+      "sha256": "a200b522ee2e1dc69bbaae2768a89e9a956a2cbbaea8d74f4e5153614ab29b87"
+    }
+  ],
+  "errors": 0,
+  "frameFaults": 0,
+  "browserClosed": true
+}

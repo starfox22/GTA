@@ -783,14 +783,17 @@
       return button;
     }
     function clashBanner() {
-      const { id, code, conflicts } = settingsClash,
+      const { id, slot, code, conflicts } = settingsClash,
+        blocked = controlSwapConflicts(id, slot, code),
         banner = settingsElement('div', 'bindings-clash');
       banner.setAttribute('role', 'alert');
       banner.append(
         settingsElement(
           'p',
           '',
-          keyLabel(code) +
+          blocked.length ? 'Cannot swap these keys: the displaced key would also conflict with ' +
+            blocked.map((c) => CONTROL_ACTION[c].label.toUpperCase()).join(', ') +
+            '. Choose another key or clear one of those bindings first.' : keyLabel(code) +
             ' is already ' +
             conflicts.map((c) => CONTROL_ACTION[c].label.toUpperCase()).join(', ') +
             '. Swap the keys so ' +
@@ -801,6 +804,7 @@
       const swap = settingsElement('button', 'settings-reset', 'SWAP · ENTER'),
         cancel = settingsElement('button', 'settings-reset ghost', 'CANCEL · ESC');
       swap.type = cancel.type = 'button';
+      swap.disabled = blocked.length > 0;
       swap.dataset.focus = 'clashSwap';
       swap.onclick = resolveClash;
       cancel.onclick = () => {
@@ -814,7 +818,10 @@
     function resolveClash() {
       if (!settingsClash) return;
       const { id, slot, code } = settingsClash;
-      bindControl(id, slot, code, true);
+      if (!bindControl(id, slot, code, true)) {
+        renderSettings('clashSwap');
+        return;
+      }
       settingsClash = null;
       renderSettings(id + ':' + slot);
     }

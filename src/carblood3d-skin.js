@@ -16,7 +16,6 @@
       let cbScratch = null,
         cbFrameStamp = -1e9,
         cbFrameLeft = 0,
-        cbFrameGap = 16,
         cbPartial = null,
         cbWarmKey = '',
         cbWarmProgram = null,
@@ -211,13 +210,11 @@
         if (victim) cbRetire(victim);
       }
       // ---- The frame's slice of work ------------------------------------------------------------
-      // The first call of a frame opens its budget (a slow frame has more room); every stained car shares it.
-      function cbFrame() {
-        const now = performance.now();
-        if (now - cbFrameStamp <= 5) return;
-        const gap = now - cbFrameStamp;
-        cbFrameGap = gap > 400 ? 16 : gap;
-        if (gap < 1000) {
+      // Called exactly once by render(), never inferred from elapsed wall time. All cars
+      // share 3 ms; a slow job cannot replenish the allowance partway through a frame.
+      function cbBeginFrame() {
+        const now = performance.now(), gap = now - cbFrameStamp;
+        if (carBloodSkins.size && gap < 1000) {
           cbProbe.gaps.push(gap);
           if (cbProbe.gaps.length > 240) cbProbe.gaps.shift();
         }
@@ -225,11 +222,10 @@
         cbProbe.workMax = Math.max(cbProbe.workMax, cbProbe.frameWork);
         cbProbe.frameWork = 0;
         cbFrameStamp = now;
-        cbFrameLeft = clamp(cbFrameGap * 0.14, CB_BUDGET_MS, 9);
+        cbFrameLeft = CB_BUDGET_MS;
       }
       // Runs `job.gen` until the slice is spent; true when it finished. `job.onYield` runs after each yield.
       function cbSlice(job) {
-        cbFrame();
         if (cbFrameLeft < 0.25) return false;
         const t0 = performance.now();
         cbDeadline = t0 + cbFrameLeft;
@@ -348,7 +344,6 @@
       function cbPump() {
         if (!cbScratch) return;
         if (cbPaintCurrent && (carBloodSkins.get(cbPaintCurrent.skin.c) !== cbPaintCurrent.skin || !cbPaintCurrent.skin.events.includes(cbPaintCurrent.event))) cbPaintCurrent = null;
-        cbFrame();
         if (!cbPaintCurrent) {
           if (cbFrameLeft < 0.5) return;
           cbPaintCurrent = cbPickPaint();

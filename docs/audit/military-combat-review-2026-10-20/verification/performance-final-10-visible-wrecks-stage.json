@@ -1,0 +1,1479 @@
+[
+  {
+    "started": "2026-10-20T21:00:11.786Z",
+    "op": {
+      "op": "call",
+      "method": "look",
+      "args": [
+        9700,
+        8975
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 9700,
+        "y": 8975,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 5,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:06",
+        "renderer": "3d",
+        "vehicles": 281,
+        "pedestrians": 595
+      },
+      "ms": 25,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:00:11.816Z",
+    "op": {
+      "op": "call",
+      "method": "driveArmed",
+      "args": [
+        "apc",
+        3.141592653589793
+      ]
+    },
+    "reply": {
+      "result": {
+        "kind": "apc",
+        "targets": {
+          "car": null,
+          "person": null
+        },
+        "title": "LAV-8",
+        "weapon": "cannon",
+        "name": "25 MM CANNON",
+        "slot": 0,
+        "x": 9794,
+        "y": 9009,
+        "hull": 180,
+        "turret": 0,
+        "aim": 0,
+        "laidError": 0,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "cannon",
+            "belt": 210,
+            "stowed": 420,
+            "loading": 0
+          },
+          {
+            "id": "coax",
+            "belt": 400,
+            "stowed": 1200,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 9645,
+          "y": 9080
+        },
+        "reticle": {
+          "shown": true,
+          "ring": "translate(63px, 157px)",
+          "pip": "translate(63px, 157px)",
+          "ready": true
+        }
+      },
+      "ms": 17,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:00:11.834Z",
+    "op": {
+      "op": "call",
+      "method": "wanted",
+      "args": [
+        5
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 9794,
+        "y": 9009,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 5,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "apc",
+        "weapon": "9MM PISTOL",
+        "clock": "13:06",
+        "renderer": "3d",
+        "vehicles": 282,
+        "pedestrians": 595
+      },
+      "ms": 6,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:00:11.841Z",
+    "op": {
+      "op": "call",
+      "method": "mountedGunAim",
+      "args": [
+        9560,
+        8950
+      ]
+    },
+    "reply": {
+      "result": {
+        "kind": "apc",
+        "targets": {
+          "car": null,
+          "person": null
+        },
+        "title": "LAV-8",
+        "weapon": "cannon",
+        "name": "25 MM CANNON",
+        "slot": 0,
+        "x": 9794,
+        "y": 9009,
+        "hull": 180,
+        "turret": 0,
+        "aim": 0,
+        "laidError": 0,
+        "doors": null,
+        "physicalBarrels": null,
+        "physicalLaidError": null,
+        "shots": 0,
+        "guns": [
+          {
+            "id": "cannon",
+            "belt": 210,
+            "stowed": 420,
+            "loading": 0
+          },
+          {
+            "id": "coax",
+            "belt": 400,
+            "stowed": 1200,
+            "loading": 0
+          }
+        ],
+        "override": {
+          "x": 9560,
+          "y": 8950
+        },
+        "reticle": {
+          "shown": true,
+          "ring": "translate(63px, 157px)",
+          "pip": "translate(63px, 157px)",
+          "ready": true
+        }
+      },
+      "ms": 2,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:00:11.845Z",
+    "op": {
+      "op": "call",
+      "method": "hitchRun",
+      "args": [
+        0.05,
+        [
+          "KeyF"
+        ],
+        5,
+        false,
+        true
+      ],
+      "cpu": true,
+      "profile": 40
+    },
+    "reply": {
+      "result": {
+        "mode": "stepped",
+        "frames": 3,
+        "wrappersLeft": 0,
+        "seconds": 0.05,
+        "avgMs": 7592.33,
+        "p50Ms": 85.2,
+        "p95Ms": 22629.9,
+        "p99Ms": 22629.9,
+        "maxMs": 22629.9,
+        "longLimitMs": 170.4,
+        "long": 1,
+        "over16": 3,
+        "over33": 3,
+        "gaps": {
+          "p50": 16.67,
+          "p95": 16.67,
+          "max": 16.67,
+          "over2x": 0,
+          "over33": 0
+        },
+        "causes": {
+          "r:submit+shadow": 1
+        },
+        "tags": {
+          "program": 1,
+          "texture-upload": 1,
+          "geometry-upload": 1,
+          "models": 1
+        },
+        "excessMs": {
+          "r:submit+shadow": 14988.87,
+          "r:lod": 13.9,
+          "r:vehicles": 11.63,
+          "r:crowd": 10.7,
+          "bullets": 3.57,
+          "f:pre": 0.77,
+          "transit": 0.4,
+          "r:scenery": 0.27
+        },
+        "sections": {
+          "r:submit+shadow": [
+            7517.23,
+            22506.1
+          ],
+          "r:vehicles": [
+            20.17,
+            31.8
+          ],
+          "cars": [
+            15.3,
+            28.7
+          ],
+          "phys:broadphase": [
+            8.23,
+            19.8
+          ],
+          "r:lod": [
+            8.1,
+            22
+          ],
+          "r:crowd": [
+            6.2,
+            16.9
+          ],
+          "phys:control": [
+            3.87,
+            6.8
+          ],
+          "r:damage": [
+            3.7,
+            8.6
+          ],
+          "bullets": [
+            2.93,
+            6.5
+          ],
+          "military": [
+            1.73,
+            4.1
+          ],
+          "phys:post": [
+            1.57,
+            2.9
+          ],
+          "r:scenery": [
+            1.43,
+            2
+          ],
+          "phys:contacts": [
+            1.13,
+            2.4
+          ],
+          "people": [
+            1.03,
+            1.9
+          ],
+          "r:people+fx": [
+            0.87,
+            1.4
+          ],
+          "f:pre": [
+            0.73,
+            1.5
+          ]
+        },
+        "totals": {
+          "texUploads": 5,
+          "texMB": 0.46,
+          "bufUploads": 233,
+          "bufMB": 1.48,
+          "links": 5,
+          "allocKB": 2938,
+          "dom": 9,
+          "programs": 5,
+          "textures": 1,
+          "geometries": 23,
+          "models": 1
+        },
+        "perSecond": {
+          "texUploads": 100,
+          "texMB": 9.2,
+          "bufUploads": 4660,
+          "bufMB": 29.6,
+          "links": 100,
+          "allocKB": 58760,
+          "dom": 180,
+          "programs": 100,
+          "textures": 20,
+          "geometries": 460,
+          "models": 20
+        },
+        "domTargets": [
+          [
+            "tankAimRing [style]",
+            3
+          ],
+          [
+            "tankBarrelPip [style]",
+            3
+          ],
+          [
+            "toast .note [class]",
+            2
+          ],
+          [
+            "toast [class]",
+            1
+          ]
+        ],
+        "worst": [
+          {
+            "frame": 0,
+            "t": 6.42,
+            "ms": 22629.9,
+            "cause": "r:submit+shadow +14988.87",
+            "tags": [
+              "program",
+              "texture-upload",
+              "geometry-upload",
+              "models"
+            ],
+            "parts": {
+              "r:submit+shadow": 22506.1,
+              "r:vehicles": 31.8,
+              "r:lod": 22,
+              "r:crowd": 16.9
+            },
+            "c": {
+              "texUploads": 3,
+              "texMB": 0.443,
+              "bufUploads": 157,
+              "bufMB": 1.103,
+              "links": 5,
+              "allocKB": 2187,
+              "dom": 2,
+              "programs": 5,
+              "textures": 1,
+              "geometries": 23,
+              "models": 1
+            }
+          }
+        ]
+      },
+      "ms": 23997,
+      "profile": [
+        [
+          13802.7,
+          13802.7,
+          "onFirstUse > getShaderInfoLog",
+          "0",
+          "242606:24051 242607:370"
+        ],
+        [
+          8592.2,
+          8592.2,
+          "onFirstUse > getProgramInfoLog",
+          "0",
+          "242605:16184"
+        ],
+        [
+          1209.9,
+          1209.9,
+          "(program)",
+          "0",
+          ""
+        ],
+        [
+          40,
+          40,
+          "(garbage collector)",
+          "0",
+          ""
+        ],
+        [
+          22,
+          46.2,
+          "physicsStep",
+          "21157",
+          "21166:3 21168:2 21181:1"
+        ],
+        [
+          21.5,
+          22.4,
+          "traverse",
+          "229997",
+          "229997:15"
+        ],
+        [
+          21.1,
+          21.1,
+          "coverLocal",
+          "54948",
+          "54948:1"
+        ],
+        [
+          19.8,
+          19.8,
+          "onFirstUse > getProgramParameter",
+          "0",
+          "242612:26"
+        ],
+        [
+          16.6,
+          21,
+          "projectObject",
+          "252008",
+          "252114:4 252116:3 252024:1 252112:1 252063:1"
+        ],
+        [
+          15.1,
+          18.8,
+          "refreshMaterialUniforms",
+          "249866",
+          "249884:1 249904:1 249888:1"
+        ],
+        [
+          15,
+          25.5,
+          "updateCarBlood",
+          "135609",
+          "135641:1"
+        ],
+        [
+          11.5,
+          22507.3,
+          "WebGLRenderer.renderBufferDirect",
+          "251502",
+          "251508:7 251510:1"
+        ],
+        [
+          10.3,
+          22692.6,
+          "render",
+          "217612",
+          "218145:3 217824:1 217737:1 217721:1 217671:1"
+        ],
+        [
+          8.4,
+          10.7,
+          "controlVehicle",
+          "20198",
+          "20718:1 20614:1 20740:1 20559:1 20742:1"
+        ],
+        [
+          7.7,
+          7.7,
+          "vehicleSpec",
+          "12823",
+          "12823:6 12831:1 12841:1"
+        ],
+        [
+          6.5,
+          7,
+          "vehicleBroadphase",
+          "20820",
+          "20875:4 20859:3 20857:2 20828:2 20829:1"
+        ],
+        [
+          6,
+          6,
+          "(idle)",
+          "0",
+          ""
+        ],
+        [
+          5.4,
+          15784.2,
+          "renderObject",
+          "244910",
+          "244918:2 244914:1 244966:1"
+        ],
+        [
+          5.3,
+          22482.7,
+          "setProgram",
+          "252460",
+          "252737:1 252488:1 252669:1 252537:1"
+        ],
+        [
+          5,
+          5.3,
+          "npcAvatarTake",
+          "184394",
+          "184408:5 184421:3"
+        ],
+        [
+          4.6,
+          4.6,
+          "setComponents",
+          "235434",
+          "235434:1"
+        ],
+        [
+          4.6,
+          4.6,
+          "intersectsObject",
+          "235682",
+          "235696:6 235688:2"
+        ],
+        [
+          4.5,
+          4.5,
+          "unrollLoops",
+          "241974",
+          "241976:3"
+        ],
+        [
+          4.4,
+          4.4,
+          "Object3D",
+          "229507",
+          "229507:1"
+        ],
+        [
+          4.1,
+          4.2,
+          "militaryMarkIntersections",
+          "159686",
+          "159757:13"
+        ],
+        [
+          3.9,
+          8.3,
+          "Mesh",
+          "233921",
+          "233921:6"
+        ],
+        [
+          3.7,
+          3.7,
+          "setFromRotationMatrix",
+          "225835",
+          ""
+        ],
+        [
+          3.7,
+          3.7,
+          "WebGLShader > shaderSource",
+          "0",
+          "241684:11"
+        ],
+        [
+          3.4,
+          4.5,
+          "updateMilitary",
+          "64857",
+          "64893:6 64894:1"
+        ],
+        [
+          3,
+          4.3,
+          "setValueV4fArray",
+          "241230",
+          "241230:3 241232:1"
+        ],
+        [
+          2.9,
+          2.9,
+          "copyArray",
+          "240648",
+          "240650:4"
+        ],
+        [
+          2.8,
+          22695.5,
+          "drawWorld",
+          "24404",
+          "24408:4"
+        ],
+        [
+          2.8,
+          2.8,
+          "setValueM3",
+          "240827",
+          "240827:4"
+        ],
+        [
+          2.7,
+          2.7,
+          "multiplyScalar",
+          "226408",
+          "226408:1"
+        ],
+        [
+          2.7,
+          2.7,
+          "hiccupVariant",
+          "216175",
+          "216182:3 216185:1"
+        ],
+        [
+          2.7,
+          3.7,
+          "compileLook",
+          "176076",
+          "176289:3"
+        ],
+        [
+          2.7,
+          2.7,
+          "enableAttributeAndDivisor > enableVertexAttribArray",
+          "0",
+          "237672:1"
+        ],
+        [
+          2.5,
+          2.5,
+          "flatten",
+          "240599",
+          "240599:4"
+        ],
+        [
+          2.5,
+          2.5,
+          "refreshUniformsStandard",
+          "250182",
+          "250182:2"
+        ],
+        [
+          2.3,
+          3,
+          "specialLook",
+          "176601",
+          "176609:3"
+        ]
+      ],
+      "cpuMs": 1069,
+      "heapMB": [
+        257,
+        258.9,
+        280.3
+      ],
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:00:35.979Z",
+    "op": {
+      "op": "call",
+      "method": "drawProfile",
+      "args": [
+        25
+      ]
+    },
+    "reply": {
+      "result": {
+        "total": 318,
+        "byLayer": {
+          "detail": 1,
+          "farDetail": 0,
+          "other": 317
+        },
+        "byName": [
+          [
+            "vehicle in vehicle",
+            189
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "Mesh PlaneGeometry MeshBasicMaterial",
+            10
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            7
+          ],
+          [
+            "static batch [MeshStandardMaterial #ffffff map] in static batch [MeshStandardMaterial #ffffff map]",
+            6
+          ],
+          [
+            "static batch [MeshStandardMaterial #ffffff map lit] in static batch [MeshStandardMaterial #ffffff map lit]",
+            4
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            3
+          ],
+          [
+            "monarch lanterns",
+            3
+          ],
+          [
+            "village lanterns",
+            3
+          ],
+          [
+            "static batch [MeshStandardMaterial #a7afad] in static batch [MeshStandardMaterial #a7afad]",
+            3
+          ],
+          [
+            "damage decals",
+            2
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            2
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #2d3a2f] in static batch [MeshStandardMaterial #2d3a2f]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #434c37] in static batch [MeshStandardMaterial #434c37]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #7c8481] in static batch [MeshStandardMaterial #7c8481]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #5d6a4b] in static batch [MeshStandardMaterial #5d6a4b]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #1f2e37] in static batch [MeshStandardMaterial #1f2e37]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #9c8c66] in static batch [MeshStandardMaterial #9c8c66]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #b1ad9f] in static batch [MeshStandardMaterial #b1ad9f]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #8e958e map] in static batch [MeshStandardMaterial #8e958e map]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #dedcd2] in static batch [MeshStandardMaterial #dedcd2]",
+            2
+          ],
+          [
+            "static batch [MeshBasicMaterial #fff3d6] in static batch [MeshBasicMaterial #fff3d6]",
+            2
+          ],
+          [
+            "vehicle halos",
+            1
+          ],
+          [
+            "Mesh DodecahedronGeometry MeshStandardMaterial",
+            1
+          ]
+        ],
+        "byCell": [
+          [
+            "9728,8704",
+            116
+          ],
+          [
+            "0,0",
+            115
+          ],
+          [
+            "9216,8704",
+            76
+          ],
+          [
+            "9728,9216",
+            10
+          ],
+          [
+            "8192,8192",
+            1
+          ]
+        ],
+        "triangles": 793186,
+        "byTriangles": [
+          [
+            "vehicle in vehicle",
+            156577
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114576
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            104832
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            96802
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            86280
+          ],
+          [
+            "monarch lanterns",
+            45704
+          ],
+          [
+            "static batch [MeshStandardMaterial #a7afad] in static batch [MeshStandardMaterial #a7afad]",
+            18156
+          ],
+          [
+            "Mesh DodecahedronGeometry MeshStandardMaterial",
+            9288
+          ],
+          [
+            "glow field",
+            8476
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            6936
+          ],
+          [
+            "village lanterns",
+            5832
+          ],
+          [
+            "npc avatar batch 0",
+            5302
+          ],
+          [
+            "Mesh BufferGeometry MeshStandardMaterial",
+            4992
+          ],
+          [
+            "static batch [MeshStandardMaterial #7c8481] in static batch [MeshStandardMaterial #7c8481]",
+            3576
+          ],
+          [
+            "crowd stump",
+            3565
+          ],
+          [
+            "rooftop pool solar in rooftop pool solar",
+            2676
+          ],
+          [
+            "static batch [MeshStandardMaterial #ddd6c2] in static batch [MeshStandardMaterial #ddd6c2]",
+            2544
+          ],
+          [
+            "static batch [MeshStandardMaterial #1d1f21] in static batch [MeshStandardMaterial #1d1f21]",
+            2468
+          ],
+          [
+            "static batch [MeshStandardMaterial #1f2e37] in static batch [MeshStandardMaterial #1f2e37]",
+            2340
+          ],
+          [
+            "Mesh BufferGeometry MeshBasicMaterial",
+            2200
+          ],
+          [
+            "tree stumps",
+            1728
+          ],
+          [
+            "static batch [MeshStandardMaterial #9c8c66] in static batch [MeshStandardMaterial #9c8c66]",
+            1272
+          ],
+          [
+            "static batch [MeshBasicMaterial #fff3d6] in static batch [MeshBasicMaterial #fff3d6]",
+            1116
+          ],
+          [
+            "static batch [MeshStandardMaterial #434c37] in static batch [MeshStandardMaterial #434c37]",
+            1104
+          ]
+        ],
+        "instanced": [
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            624,
+            168,
+            false,
+            false
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            4519,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            262,
+            168,
+            false,
+            false
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            253,
+            168,
+            false,
+            true
+          ],
+          [
+            "monarch lanterns",
+            1182,
+            24,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            528,
+            40,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            424,
+            40,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            424,
+            40,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            383,
+            40,
+            false,
+            true
+          ],
+          [
+            "monarch lanterns",
+            394,
+            32,
+            false,
+            true
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            72,
+            168,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            287,
+            40,
+            false,
+            true
+          ],
+          [
+            "Mesh DodecahedronGeometry MeshStandardMaterial",
+            258,
+            36,
+            false,
+            true
+          ],
+          [
+            "glow field",
+            4238,
+            2,
+            false,
+            false
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            452,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            452,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            451,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            451,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            451,
+            12,
+            false,
+            true
+          ],
+          [
+            "npc avatar batch 0",
+            2,
+            2651,
+            false,
+            true
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            436,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            436,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            424,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh BufferGeometry MeshStandardMaterial",
+            208,
+            24,
+            false,
+            true
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            401,
+            12,
+            false,
+            true
+          ]
+        ],
+        "programs": [
+          [
+            "physical",
+            94
+          ],
+          [
+            "depth",
+            11
+          ],
+          [
+            "basic",
+            10
+          ],
+          [
+            "22",
+            7
+          ],
+          [
+            "trees",
+            2
+          ],
+          [
+            "2",
+            1
+          ],
+          [
+            "SphericalGaussianBlur",
+            1
+          ],
+          [
+            "6",
+            1
+          ],
+          [
+            "8",
+            1
+          ],
+          [
+            "10",
+            1
+          ],
+          [
+            "12",
+            1
+          ],
+          [
+            "14",
+            1
+          ],
+          [
+            "16",
+            1
+          ],
+          [
+            "18",
+            1
+          ],
+          [
+            "20",
+            1
+          ],
+          [
+            "31",
+            1
+          ],
+          [
+            "33",
+            1
+          ],
+          [
+            "35",
+            1
+          ]
+        ]
+      },
+      "ms": 11,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:00:36.014Z",
+    "op": {
+      "op": "call",
+      "method": "stats",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "frames": 8,
+        "updateMs": 9.45,
+        "drawMs": 2879.9,
+        "frameMs": -39474,
+        "drawCalls": 559,
+        "triangles": 1322065,
+        "shadowFrame": true,
+        "viewCalls": 311,
+        "shadowCalls": 248,
+        "frameCalls": 574,
+        "renderScale": 1,
+        "sceneObjects": 18788,
+        "programs": 137,
+        "byType": {
+          "Scene": 1,
+          "HemisphereLight": 1,
+          "DirectionalLight": 2,
+          "Object3D": 3,
+          "Mesh": 10305,
+          "Group": 7764,
+          "LineSegments": 10,
+          "SpotLight": 1,
+          "PointLight": 6,
+          "Sprite": 545,
+          "Points": 146,
+          "Line": 1,
+          "LOD": 3
+        },
+        "vehicles": 282,
+        "pedestrians": 595,
+        "parts": {
+          "r:submit+shadow": 2852.65,
+          "r:vehicles": 10.94,
+          "cars": 5.74,
+          "r:lod": 3.77,
+          "r:crowd": 3.59,
+          "phys:broadphase": 3.09,
+          "r:damage": 1.61,
+          "phys:control": 1.45,
+          "r:scenery": 1.3,
+          "bullets": 1.1,
+          "military": 0.65,
+          "f:pre": 0.63,
+          "r:people+fx": 0.61,
+          "phys:post": 0.59,
+          "phys:contacts": 0.43,
+          "people": 0.39,
+          "sports": 0.29,
+          "r:camera": 0.25,
+          "civic": 0.2,
+          "r:sky": 0.17,
+          "sealife": 0.14,
+          "damage": 0.13,
+          "transit": 0.07,
+          "dealership": 0.07,
+          "police:officers": 0.07,
+          "knockdowns": 0.06,
+          "police:air": 0.05,
+          "sound": 0.05,
+          "drawbridge": 0.03,
+          "police:wanted": 0.02,
+          "wildlife": 0.02,
+          "beach": 0.01,
+          "beachclub": 0.01,
+          "offroad": 0.01,
+          "liner": 0.01,
+          "coaster": 0.01,
+          "citylife": 0.01
+        }
+      },
+      "ms": 16,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:00:36.035Z",
+    "op": {
+      "op": "call",
+      "method": "effectParticles",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "live": 977,
+        "waiting": 78,
+        "drawn": 911,
+        "game": 12,
+        "capacity": 1024,
+        "drawCapacity": 1536,
+        "peak": 1024,
+        "emitted": 1434,
+        "dropped": 742,
+        "tierShare": 1,
+        "drawCalls": 1,
+        "footprint": {
+          "ready": true,
+          "levels": 4,
+          "fullQuadPixels": 2356768,
+          "trimmedQuadPixels": 1436762,
+          "rasterShare": 0.6096
+        },
+        "atlas": {
+          "baked": true,
+          "ms": 77.2
+        },
+        "blastAge": 2.28
+      },
+      "ms": 30,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:00:36.070Z",
+    "op": {
+      "op": "call",
+      "method": "soakReport",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "gameTime": 6.4,
+        "clock": "13:06",
+        "mode": "play",
+        "lists": {
+          "vehicles": 282,
+          "pedestrians": 595,
+          "bullets": 3,
+          "particles": 95,
+          "skids": 9,
+          "enemies": 0,
+          "debris": 9,
+          "fires": 9,
+          "officers": 2,
+          "gangMembers": 62,
+          "storyActors": 3,
+          "wildlife": 25,
+          "beachgoers": 270,
+          "roadblocks": 0,
+          "sirenUnits": 0,
+          "seaEvents": 0,
+          "dolphinPods": 0,
+          "gulls": 60,
+          "bloodPools": 325,
+          "bleeders": 4,
+          "carStained": 3,
+          "severedParts": 2,
+          "goreStumps": 3,
+          "goreTracked": 7,
+          "goreEvents": 3,
+          "bloodTrackSources": 0,
+          "knockedProps": 0,
+          "streetProps": 6968,
+          "impactContacts": 2,
+          "staticBodies": 6981,
+          "specRadii": 61,
+          "crimeLog": 12,
+          "unreportedCrimes": 0,
+          "offstageCalls": 0,
+          "offstageCallTails": 0,
+          "runOvers": 0,
+          "riderThrows": 0,
+          "voiceLog": 1,
+          "speechShown": 0,
+          "crashLog": 2,
+          "crashRecent": 1,
+          "crashPairs": 2,
+          "fallLog": 0,
+          "cliffLog": 0,
+          "seaLog": 0,
+          "engineTrace": 0,
+          "aircraftCrashes": 0,
+          "shotLogRecent": 17,
+          "shotLogSources": 1,
+          "bikeShareSkipped": 0,
+          "notices": 0,
+          "hudPops": 0,
+          "mapPointers": 0,
+          "minimapPointers": 0,
+          "promptRanges": 42,
+          "worldPointers": 0,
+          "physicalKeysDown": 0,
+          "audioBuffers": 0,
+          "audioLoops": 0,
+          "drivingCharacterCache": 1,
+          "arcCache": 0,
+          "seatCache": 0,
+          "policeProfiles": 0,
+          "airframeSpecCache": 5,
+          "mountainGroundCache": 3,
+          "railLiftCache": 13,
+          "bikePointCache": null,
+          "godRoadCache": null,
+          "countyMarkingCache": 141,
+          "oceanPalmCache": 39,
+          "benchCache": 191,
+          "streetEndCache": 8,
+          "streetEndSolidCache": 22,
+          "crosswalkCache": 503,
+          "promenadeCache": 1138,
+          "ladderCache": 102,
+          "staticGrid": 1719,
+          "buildingGrid": 800,
+          "vehicleGrid": 0,
+          "vehicleDenseCells": 472,
+          "shoreGrid": null
+        },
+        "counts": {
+          "awake": 74,
+          "awake_ai": 67,
+          "awake_cop": 1,
+          "awake_burning": 0,
+          "awake_moving": 0,
+          "awake_other": 6,
+          "resting": 208,
+          "wrecks": 3,
+          "abandoned": 1,
+          "wreckRetired": 0,
+          "wreckRetiredByCap": 0,
+          "ai": 75,
+          "carStainEntries": 4,
+          "pedestrianContacts": 0,
+          "react": 0,
+          "flee": 0,
+          "pending": 15,
+          "hidden": 0
+        },
+        "bad": {
+          "count": 0,
+          "first": null
+        },
+        "dom": {
+          "total": 1096,
+          "top": {
+            "carRadio": 90,
+            "flightHud": 33,
+            "bottom": 78,
+            "touchControls": 24,
+            "menu": 39,
+            "missionSelect": 25,
+            "demoComplete": 27,
+            "arsenalOverlay": 32,
+            "serviceOverlay": 24,
+            "sportsbook": 80,
+            "settingsOverlay": 27,
+            "help": 21,
+            "mapOverlay": 46,
+            "credits": 75,
+            "godSplash": 56
+          }
+        },
+        "heapMB": 935.6,
+        "gpu": {
+          "programs": 137,
+          "textures": 93,
+          "geometries": 543,
+          "models": 26
+        }
+      },
+      "ms": 7,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:00:36.079Z",
+    "op": {
+      "op": "call",
+      "method": "status",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 9794,
+        "y": 9009,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 5,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "apc",
+        "weapon": "9MM PISTOL",
+        "clock": "13:06",
+        "renderer": "3d",
+        "vehicles": 282,
+        "pedestrians": 595
+      },
+      "ms": 4,
+      "newErrors": 0
+    }
+  }
+]

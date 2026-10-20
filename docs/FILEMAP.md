@@ -11,7 +11,7 @@ tree from src/main.js; a file that is itself an include list has its own section
 included before code that runs at load time and reads it). The CSS/HTML fragments
 src/shell.html includes (src/ui/) have their own section after the scripts.
 
-616 files in the include tree, 210,598 lines.
+619 files in the include tree, 211,291 lines.
 
 ## src/main.js ▸ Entry point: Everything the game is lives inside this one function, spliced together by tools/build.py from the @include directives in src/game.js.
 
@@ -42,18 +42,18 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/game-cops.js`   183 — resetMissionState(), spawnCop(), copRoute(): mission reset and patrol spawning.
 - `src/physics.js`    19 — ▸ Vehicle and pedestrian physics
 - `src/game-people.js`   168 — Pedestrian life: Everyday chatter lives here; how people walk, what they do and how they react to danger is in src/crowd.js, which also has the …
-- `src/game-combat.js`   349 — updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets.
+- `src/game-combat.js`   350 — updateCombat(), bullets, shot line-of-sight (shotBlocked) and bullet targets.
 - `src/game-update.js`   199 — update(dt): the per-frame simulation step (only active play advances clocks).
 - `src/world-edge.js`   521 — Open-sea countdown: 10 s flying or sailing away from all land starts RETURN TO THE CITY and 10 s more; at zero a missile comes in from the coast and …
 - `src/game-draw2d.js`   616 — 2D canvas fallback renderer: drawWorld, drawCar, drawPerson, markers.
 - `src/game-minimap.js`   298 — Minimap base layer: The minimap used to repaint the whole county (coast, every street, parks, promenades, county ground and every building footprint) …
 - `src/map-view.js`   390 — Map views: the city map's filters (MAP LAYERS) and GO TO list, sharp canvases on HiDPI screens, the minimap's speed pull-back and its edge arrows …
 - `src/minimap-rules.js`    97 — Minimap rules (MINIMAP MARKS): what the small map draws over its base layer (the job and its GPS route, the player, police while wanted, the nearest …
-- `src/game-ui.js`   525 — Weapon chip, mission card and updateUI() (HUD text refresh).
+- `src/game-ui.js`   537 — Weapon chip, mission card and updateUI() (HUD text refresh).
 - `src/game-menus.js`   197 — Resize, begin/newGame, pause, help, big map toggle.
 - `src/god-splash.js`   114 — ▸ God mode splash: the full-screen card and fanfare when a cheat code toggles god mode (game-input.js godModeCheat): ON charges up, slams a gold "GOD …
-- `src/game-input.js`   534 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
-- `src/controls.js`   331 — Key bindings
+- `src/game-input.js`   537 — Cheat code: Letters typed during play accumulate in a short ring; when the tail spells a known code it fires.
+- `src/controls.js`   363 — Key bindings
 - `src/geography.js`    12 — ▸ Coastlines and land regions
 - `src/drawbridge.js`    83 — ▸ The drawbridges: schedules, gates, leaves, jumps
 - `src/harbor.js`    11 — ▸ Ironworks cargo terminal
@@ -104,7 +104,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/airfields.js`   394 — Runways, taxiways and the reclaimed runway piers
 - `src/military.js`    30 — ▸ Fort Sentinel
 - `src/armor.js`   262 — The player's tank: turret traverse, ammunition, reticle
-- `src/apache.js`   480 — Fort Sentinel's AH-64 attack helicopter
+- `src/apache.js`   581 — ▸ Fort Sentinel's AH-64 attack helicopter
 - `src/civil-helicopters.js`    72 — Civil helicopters from downloaded models: the SKYRANGER 429 (a Bell 429 class light twin, aircraft-assets3d.js) as a helicopter airframe, parked on …
 - `src/mounted-guns.js`   495 — Mounted guns the player fires from Fort Sentinel's vehicles: the LAV-8's 25 mm cannon and coax MG, the gun jeep's ring-mounted .50 cal and the Black …
 - `src/aviation.js`    10 — ▸ Fixed-wing flight and flight missions
@@ -139,7 +139,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/deck-landing.js`   361 — Landing on a ship from the sky: canopy touchdowns and freefall impacts on the liners' and the superyacht's decks (deckSurfaceAt, deckLandingStep) …
 - `src/falls.js`    22 — ▸ Falls: bodies and vehicles off cliffs, fatal impacts
 - `src/mobile.js`   309 — Touch controls
-- `src/input-hints.js`   163 — Input-aware hints: which device the player is using (keyboard and mouse, touch, gamepad) and what an action is called on it (keyName's touch and …
+- `src/input-hints.js`   164 — Input-aware hints: which device the player is using (keyboard and mouse, touch, gamepad) and what an action is called on it (keyName's touch and …
 - `src/gamepad.js`   362 — Gamepad (standard mapping): play through the same actions as the bound keys, menus by focus, the city map by a cursor; the button names hints use …
 - `src/world-view.js`   344 — World camera gestures
 - `src/car-radio.js`   871 — Vehicle radio stations
@@ -165,7 +165,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/bullets-audio.js`   180 — Bullet sound: strikes by surface (concrete chips and ricochets, metal, glass, dirt) and the crack and whizz of an enemy round passing close to the …
 - `src/runover-audio.js`     8 — Sound of a wheel going over someone already on the ground (runover.js): a low thud and a short crack, heavier with weight and speed.
 - `src/quality.js`   240 — Graphics quality tiers
-- `src/settings.js`   954 — Settings menu
+- `src/settings.js`   961 — Settings menu
 - `src/markers.js`    22 — Objective and player markers: which ones are drawn (the floating arrow; the optional player ring) and a read-only report.
 - `src/foliage-cutaway.js`   146 — Foliage cutaway: who the see-through hole in tree crowns, palm fronds and tall shrubs keeps in view (the player on foot or their vehicle) and how big …
 - `src/god-panel.js`   805 — God mode settings
@@ -177,7 +177,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/tyre-effects.js`   287 — What the tyres leave behind: the burnout (forward and the handbrake held at a standstill), skid marks, and the one rule for tyre smoke, dust and …
 - `src/hud.js`    34 — ▸ HUD behaviour and the title menu
 - `src/gpu-context.js`    69 — GPU context loss: when the browser takes the 3D canvas's WebGL context away (GPU memory, a driver reset), the game pauses, says so, skips drawing …
-- `src/render3d.js`   255 — ▸ Three.js renderer and resource lifecycle
+- `src/render3d.js`   257 — ▸ Three.js renderer and resource lifecycle
 - `src/frame-trace.js`   324 — Frame trace: every frame's CPU split (simulation sections, renderer laps) and what happened in it (collections, DOM mutations, GL uploads and links …
 - `src/frame-guard.js`    44 — Frame guard: an exception in one part of a frame (pre-step, simulation, draw) is logged once per message and counted, and the frame loop keeps …
 - `src/game-loop.js`   235 — Profiler: Rolling averages of simulation and render CPU time per frame, plus the renderer's draw-call and triangle counts.
@@ -322,6 +322,10 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/fort-cover-watch.js`   179 — Fort Sentinel cover, the garrison's eyes: each soldier's forward cone (fortSoldierSees), the restricted spots, and the suspicion it fills while the …
 - `src/fort-cover-records.js`   119 — Fort Sentinel's HQ records office: its side door (FORT_RECORDS), the fade inside, the timed search for the weapons file on a card (#fortRecords) and …
 
+## src/apache.js ▸ Fort Sentinel's AH-64 attack helicopter
+
+- `src/apache-guided.js`   151 — Apache guided loadout: target acquisition, hardpoint release and finite missile guidance.
+
 ## src/aviation.js ▸ Fixed-wing flight and flight missions
 
 - `src/aviation-flight.js`   628 — Fixed-wing flight and two additional campaign chapters.
@@ -439,7 +443,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## src/hud.js ▸ HUD behaviour and the title menu
 
-- `src/hud-state.js`   681 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
+- `src/hud-state.js`   682 — HUD state and pop boxes, saved settings, weapon and radio watches, stars, minimap fold and zoom (hudState, hudPop).
 - `src/hud-panels.js`   645 — HUD panels: prompts, centre cards and toasts, sniper warning, panel covers, updateHud() and the flight HUD.
 - `src/hud-clearance.js`   400 — HUD clearance: the mission card never covers the player (and the dialogue line and the waypoint pill fade if they would).
 
@@ -495,6 +499,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/beachclub3d.js`    38 — ▸ Marea Beach Club meshes and show lighting
 - `src/cycles3d.js`   473 — Bike-share station meshes
 - `src/weather3d.js`   788 — ▸ Weather and sky visuals
+- `src/rocket-launcher3d.js`    53 — Polyte's downloaded CC-BY-4.0 RPG-7: exact source near faces/split normals and PBR colours.
 - `src/character-rig3d.js`   738 — ▸ Character rig: sculpted body parts, outfits and paint
 - `src/crowd3d.js`    90 — ▸ Instanced people: skeleton, gait, poses, weapons and street props
 - `src/player-body3d.js`   442 — ▸ The player's own body: one skinned mesh posed by the crowd rig's skeleton every frame: the shipped model (a restyled Rocketbox avatar: skull tee …
@@ -508,7 +513,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/helicopter3d.js`    99 — ▸ Helicopter models
 - `src/aircraft-assets3d.js`   446 — Aircraft from downloaded models (assets/aircraft-models.bin, tools/aircraft_models.py): the SKYRANGER 429 civil helicopter (a Bell 429) on the …
 - `src/jet-assets3d.js`   207 — Downloaded Citation / Boeing 737.
-- `src/apache3d.js`   435 — The AH-64 attack helicopter model
+- `src/apache-assets3d.js`   183 — Downloaded Andrew Swihart CC-BY-4.0 AH-64: isolated exact-source geometry, shared Far kit and exact BVH rays.
+- `src/apache3d.js`   438 — The AH-64 attack helicopter model
 - `src/vehicles3d.js`   631 — Vehicle meshes
 - `src/police3d.js`    62 — ▸ Police vehicle models
 - `src/cars3d.js`    94 — ▸ Civilian car models
@@ -539,7 +545,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/render3d-hiccups.js`   383 — Hiccup log: what each drawn frame created for the first time (shader programs, textures, geometries) and the slowest frames' renderer CPU split; read …
 - `src/payphone3d.js`   629 — The story payphone where mission 1 starts: a 1990s yellow pedestal payphone with its lit PHONE sign, handset, keypad, directory and grime, the …
 - `src/render3d-api.js`   502 — The object the renderer returns (city3D.*): draw API and debug/info hooks.
-- `src/render3d-frame.js`   656 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
+- `src/render3d-frame.js`   657 — Render(): the per-frame 3D draw, split CPU timings for DeadEndCity.stats().
 
 ## src/flight-view3d.js ▸ Flight camera and aerial perspective
 
@@ -604,8 +610,8 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/carblood3d-paint.js`   274 — Car blood 3D, painting: primitives of the thickness field (drops, domes, the impact mass, spray, mist), drawn in time slices.
 - `src/carblood3d-streaks.js`   373 — Car blood 3D, streaks: the strands the airflow drags back along the bonnet, the gravity runs, and the two tile compositions.
-- `src/carblood3d-fit.js`   546 — Car blood 3D, fitting: decal geometry clipped to the model's own surface, done in time slices (gather, panels, clip, cover test).
-- `src/carblood3d-skin.js`   423 — Car blood 3D, skins: the shared shader, a pool of ready skins, the per-frame work budget, the warm-up and the tile upload.
+- `src/carblood3d-fit.js`   592 — Car blood 3D, fitting: decal geometry clipped to the model's own surface, done in time slices (gather, panels, clip, cover test).
+- `src/carblood3d-skin.js`   418 — Car blood 3D, skins: the shared shader, a pool of ready skins, the per-frame work budget, the warm-up and the tile upload.
 
 ## src/signkit3d.js ▸ Sign lettering kit: stroke font, letter treatments, boards, emblems
 
@@ -764,7 +770,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 ## src/crowd3d.js ▸ Instanced people: skeleton, gait, poses, weapons and street props
 
 - `src/crowd3d-parts.js`   142 — Crowd 3D instanced parts: capacity, body material, limbs, weapon and far-figure geometries (crowdParts, rigPart).
-- `src/crowd3d-bodies.js`   372 — Crowd 3D body sets (close and street detail), prop geometry and instance recording (rigBodySet, crowdEmit).
+- `src/crowd3d-bodies.js`   373 — Crowd 3D body sets (close and street detail), prop geometry and instance recording (rigBodySet, crowdEmit).
 - `src/dog3d.js`   151 — Street dogs from a downloaded model (assets/dog-model.bin, tools/dog_model.py: a rigged Labrador, CC-BY): its baked trot, stand, sit and sniff frames …
 - `src/crowd3d-looks.js`   573 — Crowd 3D looks: compiling a look into parts and paints (compileLook, compiledLook, specialLooks).
 - `src/npc-avatar-cast.js`   137 — Casting the street avatars: which Rocketbox avatar (tools/npc_models.py CAST, its role tags) a look is drawn as near the camera, the tint its top …
@@ -786,7 +792,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/player-body3d-build.js`   396 — Player body build: meshes every part from its field, gives each vertex its bones and weights, its part, the paint zones the shader reads (tee, jeans …
 - `src/player-body3d-asset.js`   368 — Player body from the shipped model (assets/player-model.bin, tools/player_model.py: a Microsoft Rocketbox avatar, MIT): decoded and fitted to the …
 - `src/player-body3d-shader.js`   511 — Player body shader: dual quaternion skinning of the bind-space mesh, the hands' grip, and the paint (skin with a subsurface wrap, a forties' face …
-- `src/player-body3d-grips.js`    60 — Player body grips: where the player's own hands go on each weapon (weapon space): the firing hand round the grip with the trigger finger along the …
+- `src/player-body3d-grips.js`    61 — Player body grips: where the player's own hands go on each weapon (weapon space): the firing hand round the grip with the trigger finger along the …
 
 ## src/npc-avatar3d.js ▸ Street avatars: people near the camera drawn as Microsoft Rocketbox avatars (MIT; tools/npc_models.py), skinned on the rig's skeleton like the …
 
@@ -875,7 +881,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 - `src/parachute3d.js`    52 — ▸ Ram-air parachute
 - `src/fx3d-atlas.js`   272 — The effect particles' texture atlas (fx3d-particles.js): four billowed smoke puffs with their surface normals, a glow, a muzzle flash star, the …
-- `src/fx3d-particles.js`   626 — Effect particles: smoke, dust, fire, sparks, flashes, glass and drops in one instanced billboard pool, stepped from a struct-of-arrays store (fxAdd) …
+- `src/fx3d-particles.js`   725 — Effect particles: smoke, dust, fire, sparks, flashes, glass and drops in one instanced billboard pool, stepped from a struct-of-arrays store (fxAdd) …
 - `src/fx3d-recipes.js`   426 — Effect recipes on the particle pool (fx3d-particles.js): a blast's flash, fireball, smoke column, dust ring, sparks and debris; muzzle flashes …
 
 ## src/parachute3d.js ▸ Ram-air parachute
@@ -910,7 +916,7 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 - `src/ui/police-arsenal.css`   523 — POLICE FEEDBACK AND ARSENAL — readable interface additions, v23.
 - `src/ui/wanted-effects.css`   206 — Wanted level (heat.js, pursuit.js, hud.js): the next star flashes red while dispatch escalates, earned stars grey out during a search, a thin meter …
 - `src/ui/hud-top.css`   658 — INTERFACE 30 — design tokens, HUD, title menu, settings (v30 UI pass).
-- `src/ui/hud-bottom.css`   688 — Bottom row: minimap + vitals, mission card, equipment
+- `src/ui/hud-bottom.css`   705 — Bottom row: minimap + vitals, mission card, equipment
 - `src/ui/radio.css`   587 — Car radio: a station chip that opens on a change or on hover
 - `src/ui/title.css`   308 — Title screen
 - `src/ui/dialogs.css`   251 — Dialogs: one panel style for pause, calls, shops, help
@@ -940,5 +946,5 @@ src/shell.html includes (src/ui/) have their own section after the scripts.
 
 ## Outside the include tree
 
-- `src/asset-loader.js`   239 — decodes the embedded/streamed media into ASSETS before the game starts
+- `src/asset-loader.js`   241 — decodes the embedded/streamed media into ASSETS before the game starts
 - `src/shell.html`    81 — HTML page skeleton: its src/ui/*.css and *.html fragments (in include order) and build.py's `<!-- @include-* -->` slots (game, three.js, media, credits)

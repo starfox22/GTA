@@ -1,0 +1,443 @@
+{
+  "saved": {
+    "fire": [
+      "KeyQ",
+      null
+    ],
+    "cycleWeapon": [
+      "KeyF",
+      null
+    ]
+  },
+  "runs": [
+    {
+      "name": "before",
+      "actions": [
+        "fire"
+      ],
+      "bindings": {
+        "forward": [
+          "KeyW",
+          null
+        ],
+        "back": [
+          "KeyS",
+          null
+        ],
+        "left": [
+          "KeyA",
+          "ArrowLeft"
+        ],
+        "right": [
+          "KeyD",
+          "ArrowRight"
+        ],
+        "walk": [
+          "ShiftLeft",
+          "ShiftRight"
+        ],
+        "sprint": [
+          "ShiftLeft",
+          "ShiftRight"
+        ],
+        "interact": [
+          "KeyE",
+          null
+        ],
+        "fire": [
+          "KeyQ",
+          null
+        ],
+        "jump": [
+          "Space",
+          null
+        ],
+        "handbrake": [
+          "Space",
+          null
+        ],
+        "wheelieUp": [
+          "ArrowUp",
+          null
+        ],
+        "wheelieDown": [
+          "ArrowDown",
+          null
+        ],
+        "poison": [
+          "KeyP",
+          null
+        ],
+        "horn": [
+          "KeyH",
+          null
+        ],
+        "lookBehind": [
+          "KeyC",
+          null
+        ],
+        "radioPower": [
+          "KeyN",
+          null
+        ],
+        "radioNext": [
+          "KeyB",
+          null
+        ],
+        "radioQuieter": [
+          "Comma",
+          null
+        ],
+        "radioLouder": [
+          "Period",
+          null
+        ],
+        "skipRide": [
+          "KeyY",
+          null
+        ],
+        "skipStop": [
+          "KeyU",
+          null
+        ],
+        "ascend": [
+          "ArrowUp",
+          "KeyT"
+        ],
+        "descend": [
+          "ArrowDown",
+          "KeyG"
+        ],
+        "chuteGlide": [
+          "ArrowUp",
+          null
+        ],
+        "chuteFlare": [
+          "ArrowDown",
+          null
+        ],
+        "flapsDown": [
+          "KeyX",
+          null
+        ],
+        "flapsUp": [
+          "KeyZ",
+          null
+        ],
+        "gear": [
+          "KeyL",
+          null
+        ],
+        "rockets": [
+          "Space",
+          null
+        ],
+        "bail": [
+          "KeyJ",
+          null
+        ],
+        "divert": [
+          "KeyC",
+          null
+        ],
+        "reload": [
+          "KeyR",
+          null
+        ],
+        "cycleWeapon": [
+          "KeyF",
+          null
+        ],
+        "fists": [
+          "Backquote",
+          "Digit8"
+        ],
+        "knife": [
+          "KeyK",
+          "Digit7"
+        ],
+        "lockpick": [
+          "Digit9",
+          null
+        ],
+        "weapon1": [
+          "Digit1",
+          null
+        ],
+        "weapon2": [
+          "Digit2",
+          null
+        ],
+        "weapon3": [
+          "Digit3",
+          null
+        ],
+        "weapon4": [
+          "Digit4",
+          null
+        ],
+        "weapon5": [
+          "Digit5",
+          null
+        ],
+        "weapon6": [
+          "Digit6",
+          null
+        ],
+        "arsenal": [
+          "KeyI",
+          null
+        ],
+        "map": [
+          "Tab",
+          null
+        ],
+        "missionCard": [
+          "KeyO",
+          null
+        ],
+        "cameraView": [
+          "KeyV",
+          null
+        ],
+        "zoomIn": [
+          "Equal",
+          "NumpadAdd"
+        ],
+        "zoomOut": [
+          "Minus",
+          "NumpadSubtract"
+        ],
+        "zoomReset": [
+          "Digit0",
+          null
+        ],
+        "mute": [
+          "KeyM",
+          null
+        ],
+        "help": [
+          "Slash",
+          null
+        ]
+      }
+    },
+    {
+      "name": "after",
+      "actions": [
+        "fire",
+        "cycleAircraftWeapon"
+      ],
+      "bindings": {
+        "forward": [
+          "KeyW",
+          null
+        ],
+        "back": [
+          "KeyS",
+          null
+        ],
+        "left": [
+          "KeyA",
+          "ArrowLeft"
+        ],
+        "right": [
+          "KeyD",
+          "ArrowRight"
+        ],
+        "walk": [
+          "ShiftLeft",
+          "ShiftRight"
+        ],
+        "sprint": [
+          "ShiftLeft",
+          "ShiftRight"
+        ],
+        "interact": [
+          "KeyE",
+          null
+        ],
+        "fire": [
+          "KeyQ",
+          null
+        ],
+        "jump": [
+          "Space",
+          null
+        ],
+        "handbrake": [
+          "Space",
+          null
+        ],
+        "wheelieUp": [
+          "ArrowUp",
+          null
+        ],
+        "wheelieDown": [
+          "ArrowDown",
+          null
+        ],
+        "poison": [
+          "KeyP",
+          null
+        ],
+        "horn": [
+          "KeyH",
+          null
+        ],
+        "lookBehind": [
+          "KeyC",
+          null
+        ],
+        "radioPower": [
+          "KeyN",
+          null
+        ],
+        "radioNext": [
+          "KeyB",
+          null
+        ],
+        "radioQuieter": [
+          "Comma",
+          null
+        ],
+        "radioLouder": [
+          "Period",
+          null
+        ],
+        "skipRide": [
+          "KeyY",
+          null
+        ],
+        "skipStop": [
+          "KeyU",
+          null
+        ],
+        "ascend": [
+          "ArrowUp",
+          "KeyT"
+        ],
+        "descend": [
+          "ArrowDown",
+          "KeyG"
+        ],
+        "chuteGlide": [
+          "ArrowUp",
+          null
+        ],
+        "chuteFlare": [
+          "ArrowDown",
+          null
+        ],
+        "flapsDown": [
+          "KeyX",
+          null
+        ],
+        "flapsUp": [
+          "KeyZ",
+          null
+        ],
+        "gear": [
+          "KeyL",
+          null
+        ],
+        "rockets": [
+          "Space",
+          null
+        ],
+        "cycleAircraftWeapon": [
+          "KeyQ",
+          null
+        ],
+        "bail": [
+          "KeyJ",
+          null
+        ],
+        "divert": [
+          "KeyC",
+          null
+        ],
+        "reload": [
+          "KeyR",
+          null
+        ],
+        "cycleWeapon": [
+          "KeyF",
+          null
+        ],
+        "fists": [
+          "Backquote",
+          "Digit8"
+        ],
+        "knife": [
+          "KeyK",
+          "Digit7"
+        ],
+        "lockpick": [
+          "Digit9",
+          null
+        ],
+        "weapon1": [
+          "Digit1",
+          null
+        ],
+        "weapon2": [
+          "Digit2",
+          null
+        ],
+        "weapon3": [
+          "Digit3",
+          null
+        ],
+        "weapon4": [
+          "Digit4",
+          null
+        ],
+        "weapon5": [
+          "Digit5",
+          null
+        ],
+        "weapon6": [
+          "Digit6",
+          null
+        ],
+        "arsenal": [
+          "KeyI",
+          null
+        ],
+        "map": [
+          "Tab",
+          null
+        ],
+        "missionCard": [
+          "KeyO",
+          null
+        ],
+        "cameraView": [
+          "KeyV",
+          null
+        ],
+        "zoomIn": [
+          "Equal",
+          "NumpadAdd"
+        ],
+        "zoomOut": [
+          "Minus",
+          "NumpadSubtract"
+        ],
+        "zoomReset": [
+          "Digit0",
+          null
+        ],
+        "mute": [
+          "KeyM",
+          null
+        ],
+        "help": [
+          "Slash",
+          null
+        ]
+      }
+    }
+  ]
+}

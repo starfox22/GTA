@@ -1,0 +1,402 @@
+[
+  {
+    "started": "2026-10-20T21:08:19.973Z",
+    "op": {
+      "op": "call",
+      "method": "placeVehicle",
+      "args": [
+        5200,
+        9884,
+        0,
+        0
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 5200,
+        "y": 9884,
+        "district": "OCEANVIEW INTERNATIONAL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "helicopter",
+        "weapon": "9MM PISTOL",
+        "clock": "13:23",
+        "renderer": "3d",
+        "vehicles": 283,
+        "pedestrians": 595
+      },
+      "ms": 2,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:08:19.984Z",
+    "op": {
+      "op": "call",
+      "method": "look",
+      "args": [
+        5200,
+        9904
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 5200,
+        "y": 9904,
+        "district": "OCEANVIEW INTERNATIONAL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:23",
+        "renderer": "3d",
+        "vehicles": 283,
+        "pedestrians": 595
+      },
+      "ms": 4,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:08:19.991Z",
+    "op": {
+      "op": "call",
+      "method": "drive",
+      "args": [
+        "helicopter",
+        0,
+        0
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 5284,
+        "y": 9946,
+        "district": "OCEANVIEW INTERNATIONAL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "helicopter",
+        "weapon": "9MM PISTOL",
+        "clock": "13:23",
+        "renderer": "3d",
+        "vehicles": 284,
+        "pedestrians": 595
+      },
+      "ms": 7,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:08:20.001Z",
+    "op": {
+      "op": "call",
+      "method": "placeVehicle",
+      "args": [
+        5500,
+        9884,
+        0,
+        40
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 5500,
+        "y": 9884,
+        "district": "OCEANVIEW INTERNATIONAL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "helicopter",
+        "weapon": "9MM PISTOL",
+        "clock": "13:23",
+        "renderer": "3d",
+        "vehicles": 284,
+        "pedestrians": 595
+      },
+      "ms": 11,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:08:20.015Z",
+    "op": {
+      "op": "call",
+      "method": "damageReport",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "id": 286,
+        "type": "helicopter",
+        "hp": 220,
+        "maxhp": 220,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 5500,
+        "y": 9884,
+        "a": 0
+      },
+      "ms": 1,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:08:20.020Z",
+    "op": {
+      "op": "keys",
+      "codes": [
+        "KeyJ"
+      ],
+      "seconds": 0.04,
+      "real": true
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 5500,
+        "y": 9884,
+        "district": "OCEANVIEW INTERNATIONAL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "helicopter",
+        "weapon": "9MM PISTOL",
+        "clock": "13:23",
+        "renderer": "3d",
+        "vehicles": 284,
+        "pedestrians": 595
+      },
+      "ms": 48,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:08:20.070Z",
+    "op": {
+      "op": "call",
+      "method": "status",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 5500,
+        "y": 9884,
+        "district": "OCEANVIEW INTERNATIONAL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "helicopter",
+        "weapon": "9MM PISTOL",
+        "clock": "13:23",
+        "renderer": "3d",
+        "vehicles": 284,
+        "pedestrians": 595
+      },
+      "ms": 4,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:08:20.076Z",
+    "op": {
+      "op": "call",
+      "method": "look",
+      "args": [
+        5200,
+        9904
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 5200,
+        "y": 9904,
+        "district": "OCEANVIEW INTERNATIONAL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "helicopter",
+        "weapon": "9MM PISTOL",
+        "clock": "13:23",
+        "renderer": "3d",
+        "vehicles": 284,
+        "pedestrians": 595
+      },
+      "ms": 2,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:08:20.081Z",
+    "op": {
+      "op": "call",
+      "method": "interact",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "mission": null,
+        "last": null,
+        "completed": 0,
+        "depotShutter": 0,
+        "depotBackDoor": 1
+      },
+      "ms": 3,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:08:20.089Z",
+    "op": {
+      "op": "call",
+      "method": "placeVehicle",
+      "args": [
+        5200,
+        9884,
+        0,
+        20
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 5200,
+        "y": 9884,
+        "district": "OCEANVIEW INTERNATIONAL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "helicopter",
+        "weapon": "9MM PISTOL",
+        "clock": "13:23",
+        "renderer": "3d",
+        "vehicles": 284,
+        "pedestrians": 595
+      },
+      "ms": 1,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:08:20.092Z",
+    "op": {
+      "op": "call",
+      "method": "apache",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "exists": true,
+        "id": 283,
+        "name": "AH-64 APACHE",
+        "pad": {
+          "x": 10200,
+          "y": 9365
+        },
+        "x": 5200,
+        "y": 9884,
+        "heading": 0,
+        "altitude": 0,
+        "hp": 617,
+        "maxhp": 640,
+        "aboard": false,
+        "taken": true,
+        "ai": false,
+        "onBasePad": false,
+        "arms": {
+          "weapon": "hellfire",
+          "rounds": 319,
+          "rockets": 34,
+          "missiles": 7,
+          "airMissiles": 4,
+          "rearming": false,
+          "salvoLeft": 0,
+          "status": "WAIT 0.6 s",
+          "lock": {
+            "target": 285,
+            "ready": true,
+            "since": 21.049999999999663
+          }
+        },
+        "projectiles": [],
+        "turret": 11,
+        "gunPitch": -13,
+        "aim": {
+          "x": 5650,
+          "y": 9974,
+          "range": 459
+        },
+        "clearance": {
+          "solids": 0,
+          "rotorSolids": 0,
+          "buildings": 0,
+          "vehicles": [
+            "helicopter 22"
+          ]
+        }
+      },
+      "ms": 3,
+      "newErrors": 0
+    }
+  }
+]

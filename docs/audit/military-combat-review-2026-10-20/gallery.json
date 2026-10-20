@@ -1,0 +1,56 @@
+{
+  "title": "Dead End City \u2014 military combat, Apache and RPG-7",
+  "introduction": "Native before/after model screenshots, weapon launches and the military-base combat performance replay. The last view shows the final wrapped desktop weapon HUD. Each image retains its source artifact and staging receipt; normal HUD remains visible. Software profiling counters do not represent hardware FPS. Earlier airport, vehicle and mission reviews remain linked below.",
+  "comparisons": [
+    {
+      "title": "Downloaded AH-64 Apache",
+      "description": "Andrew Swihart\u2019s source aircraft replaces the procedural model. All 220,711 authored aircraft near triangles and source materials remain, with measured rotor, gun and payload pivots. Matched parked inspection camera; ordinary UI and world activity can differ.",
+      "before": "images/before-apache.png",
+      "after": "images/after-apache.png"
+    },
+    {
+      "title": "Downloaded RPG-7 held by the player",
+      "description": "Polyte\u2019s 3,500-triangle source replaces the oversized procedural launcher. Real-size tube, scope, trigger guard, wooden grips and rear venturi; the hands use measured source grip positions. Same quarter chase view and 13:00 lighting.",
+      "before": "images/before-bazooka.png",
+      "after": "images/after-bazooka.png"
+    },
+    {
+      "title": "Heavy Fort Sentinel combat",
+      "description": "Same named fight inputs and seed, three burning vehicles and active gunfire. Sampled warm vehicle rendering averaged 20.75 ms before and 11.32 ms after; final particle rectangles omit about 39% of projected area. This is a noisy software-renderer work comparison, not a hardware FPS benchmark. The on-screen FPS chip includes batched profiling waits.",
+      "before": "images/before-heavy-combat.png",
+      "after": "images/after-heavy-combat.png"
+    }
+  ],
+  "screenshots": [
+    {
+      "title": "Apache takeoff under fire",
+      "description": "The actual Fort pad has no reported hull, rotor, building or neighbor contacts. Five seconds on default Climb reached 43.8 m; garrison bullets caused the documented 23 HP loss.",
+      "file": "images/apache-takeoff-native.png"
+    },
+    {
+      "title": "Q selects rocket pods",
+      "description": "Physical Q and remapped U were checked. Physical Fire launches a four-round ripple; the selected HUD shows actual rocket stock and cooldown, and staged vehicle damage uses normal combat paths.",
+      "file": "images/apache-rockets-native.png"
+    },
+    {
+      "title": "Hellfire lock and launch",
+      "description": "A real guided launch consumes one of eight anti-armour missiles and damages the locked tank. Full weapon status expands through the normal weapon chip; Stinger air lock and target damage are separately recorded in the audit.",
+      "file": "images/apache-hellfire-native.png"
+    },
+    {
+      "title": "RPG firing",
+      "description": "Physical F consumed the loaded round. The actual hero batch contains the complete downloaded near model; projectile and blast behavior keep their existing gameplay rules.",
+      "file": "images/bazooka-fired-native.png"
+    },
+    {
+      "title": "RPG reload pose",
+      "description": "Existing shoulder, recoil and reload animation uses the downloaded model and measured grip positions. The native reload restored one round and consumed one reserve.",
+      "file": "images/bazooka-reload-native.png"
+    },
+    {
+      "title": "Readable missile readiness",
+      "description": "Final published package: long weapon names and lock/cooldown status wrap within the normal Apache chip. Its compact and expanded states are measured against the actual viewport.",
+      "file": "images/apache-wrapped-hellfire-desktop.png"
+    }
+  ]
+}

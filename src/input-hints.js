@@ -101,6 +101,7 @@
         case 'reload':
           return 'RELOAD';
         case 'cycleWeapon':
+        case 'cycleAircraftWeapon':
           return 'WEAPON';
         case 'poison':
           return 'POISON';

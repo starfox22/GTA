@@ -1,0 +1,1023 @@
+[
+  {
+    "started": "2026-10-20T21:09:15.122Z",
+    "op": {
+      "op": "call",
+      "method": "placeVehicle",
+      "args": [
+        5500,
+        9884,
+        0,
+        80
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 5500,
+        "y": 9884,
+        "district": "OCEANVIEW INTERNATIONAL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "helicopter",
+        "weapon": "9MM PISTOL",
+        "clock": "13:24",
+        "renderer": "3d",
+        "vehicles": 284,
+        "pedestrians": 595
+      },
+      "ms": 7,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:10:51.348Z",
+    "op": {
+      "op": "call",
+      "method": "flight",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "type": "helicopter",
+        "airspeed": 0,
+        "altitude": 80,
+        "agl": 80,
+        "vs": 0,
+        "heading": 90,
+        "pitch": 0,
+        "bank": 0,
+        "throttle": 1,
+        "power": 1,
+        "flaps": null,
+        "flapPos": 0,
+        "gear": null,
+        "gearPos": 1,
+        "g": 1,
+        "aoa": 0,
+        "stallSpeed": 0,
+        "stall": false,
+        "stallWarning": false,
+        "gearWarning": false,
+        "buffet": 0,
+        "hp": 1,
+        "runway": null,
+        "hud": true,
+        "instruments": true
+      },
+      "ms": 1,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:10:51.353Z",
+    "op": {
+      "op": "keys",
+      "codes": [
+        "KeyJ"
+      ],
+      "seconds": 0.04,
+      "real": true
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 5500,
+        "y": 9884,
+        "district": "OCEANVIEW INTERNATIONAL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:24",
+        "renderer": "3d",
+        "vehicles": 284,
+        "pedestrians": 595
+      },
+      "ms": 67,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:10:51.427Z",
+    "op": {
+      "op": "call",
+      "method": "status",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 5500,
+        "y": 9884,
+        "district": "OCEANVIEW INTERNATIONAL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:24",
+        "renderer": "3d",
+        "vehicles": 284,
+        "pedestrians": 595
+      },
+      "ms": 9,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:10:51.437Z",
+    "op": {
+      "op": "call",
+      "method": "look",
+      "args": [
+        5200,
+        9904
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 5200,
+        "y": 9904,
+        "district": "OCEANVIEW INTERNATIONAL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:24",
+        "renderer": "3d",
+        "vehicles": 284,
+        "pedestrians": 595
+      },
+      "ms": 20,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:10:51.459Z",
+    "op": {
+      "op": "call",
+      "method": "interact",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "mission": null,
+        "last": null,
+        "completed": 0,
+        "depotShutter": 0,
+        "depotBackDoor": 1
+      },
+      "ms": 5,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:10:51.467Z",
+    "op": {
+      "op": "call",
+      "method": "placeVehicle",
+      "args": [
+        5200,
+        9884,
+        0,
+        20
+      ]
+    },
+    "reply": {
+      "result": null,
+      "ms": 1,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:10:51.473Z",
+    "op": {
+      "op": "call",
+      "method": "apache",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "exists": true,
+        "id": 283,
+        "name": "AH-64 APACHE",
+        "pad": {
+          "x": 10200,
+          "y": 9365
+        },
+        "x": 5200,
+        "y": 9884,
+        "heading": 0,
+        "altitude": 0,
+        "hp": 617,
+        "maxhp": 640,
+        "aboard": false,
+        "taken": true,
+        "ai": false,
+        "onBasePad": false,
+        "arms": {
+          "weapon": "hellfire",
+          "rounds": 319,
+          "rockets": 34,
+          "missiles": 7,
+          "airMissiles": 4,
+          "rearming": false,
+          "salvoLeft": 0,
+          "status": "LOCK",
+          "lock": {
+            "target": 285,
+            "ready": true,
+            "since": 21.049999999999663
+          }
+        },
+        "projectiles": [],
+        "turret": 11,
+        "gunPitch": -13,
+        "aim": {
+          "x": 5650,
+          "y": 9974,
+          "range": 459
+        },
+        "clearance": {
+          "solids": 0,
+          "rotorSolids": 0,
+          "buildings": 0,
+          "vehicles": []
+        }
+      },
+      "ms": 2,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:10:51.477Z",
+    "op": {
+      "op": "keys",
+      "codes": [
+        "KeyQ"
+      ],
+      "seconds": 0.04,
+      "real": true
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 5200,
+        "y": 9904,
+        "district": "OCEANVIEW INTERNATIONAL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "KNIFE",
+        "clock": "13:24",
+        "renderer": "3d",
+        "vehicles": 284,
+        "pedestrians": 595
+      },
+      "ms": 47,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:10:51.529Z",
+    "op": {
+      "op": "call",
+      "method": "apacheAim",
+      "args": [
+        5500,
+        9884
+      ]
+    },
+    "reply": {
+      "result": {
+        "exists": true,
+        "id": 283,
+        "name": "AH-64 APACHE",
+        "pad": {
+          "x": 10200,
+          "y": 9365
+        },
+        "x": 5200,
+        "y": 9884,
+        "heading": 0,
+        "altitude": 0,
+        "hp": 617,
+        "maxhp": 640,
+        "aboard": false,
+        "taken": true,
+        "ai": false,
+        "onBasePad": false,
+        "arms": {
+          "weapon": "hellfire",
+          "rounds": 319,
+          "rockets": 34,
+          "missiles": 7,
+          "airMissiles": 4,
+          "rearming": false,
+          "salvoLeft": 0,
+          "status": "LOCK",
+          "lock": {
+            "target": 285,
+            "ready": true,
+            "since": 21.049999999999663
+          }
+        },
+        "projectiles": [],
+        "turret": 11,
+        "gunPitch": -13,
+        "aim": {
+          "x": 5650,
+          "y": 9974,
+          "range": 459
+        },
+        "clearance": {
+          "solids": 0,
+          "rotorSolids": 0,
+          "buildings": 0,
+          "vehicles": []
+        }
+      },
+      "ms": 2,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:10:51.538Z",
+    "op": {
+      "op": "call",
+      "method": "hitchRun",
+      "args": [
+        0.7,
+        [],
+        2,
+        false,
+        false
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "stepped",
+        "frames": 42,
+        "wrappersLeft": 0,
+        "seconds": 0.7,
+        "avgMs": 15.77,
+        "p50Ms": 11,
+        "p95Ms": 52.2,
+        "p99Ms": 85.7,
+        "maxMs": 85.7,
+        "longLimitMs": 22,
+        "long": 6,
+        "over16": 10,
+        "over33": 5,
+        "gaps": {
+          "p50": 16.67,
+          "p95": 16.67,
+          "max": 16.67,
+          "over2x": 0,
+          "over33": 0
+        },
+        "causes": {
+          "cars": 3,
+          "ui": 1,
+          "(untimed)": 1,
+          "civic": 1
+        },
+        "tags": {
+          "gc": 1
+        },
+        "excessMs": {
+          "cars": 108.43,
+          "ui": 51.43,
+          "civic": 35.27,
+          "f:pre": 14.33,
+          "damage": 3.79,
+          "people": 0.05,
+          "military": 0
+        },
+        "sections": {
+          "cars": [
+            8.47,
+            69.7
+          ],
+          "phys:post": [
+            3.24,
+            37.8
+          ],
+          "phys:control": [
+            1.94,
+            12.7
+          ],
+          "ui": [
+            1.69,
+            41.8
+          ],
+          "civic": [
+            1.23,
+            36.5
+          ],
+          "police:officers": [
+            1.02,
+            36.2
+          ],
+          "phys:broadphase": [
+            0.99,
+            10.9
+          ],
+          "military": [
+            0.47,
+            19
+          ],
+          "people": [
+            0.45,
+            12.3
+          ],
+          "damage": [
+            0.41,
+            8.2
+          ],
+          "f:pre": [
+            0.37,
+            14.7
+          ],
+          "phys:contacts": [
+            0.37,
+            6.8
+          ],
+          "sports": [
+            0.24,
+            6.3
+          ],
+          "coaster": [
+            0.24,
+            9.9
+          ],
+          "knockdowns": [
+            0.01,
+            0.4
+          ],
+          "police:air": [
+            0.01,
+            0.2
+          ]
+        },
+        "totals": {
+          "allocKB": 10019,
+          "dom": 32,
+          "canvasDraws": 7,
+          "canvasText": 14,
+          "gcMB": 7.9
+        },
+        "perSecond": {
+          "allocKB": 14312.86,
+          "dom": 45.71,
+          "canvasDraws": 10,
+          "canvasText": 20,
+          "gcMB": 11.29
+        },
+        "domTargets": [
+          [
+            "quickKeys (children)",
+            7
+          ],
+          [
+            "interaction [class]",
+            4
+          ],
+          [
+            "flightHud [class]",
+            1
+          ],
+          [
+            "flightHud [aria-hidden]",
+            1
+          ],
+          [
+            "weaponSlot (children)",
+            1
+          ],
+          [
+            "weaponName (children)",
+            1
+          ],
+          [
+            "ammo (children)",
+            1
+          ],
+          [
+            "reserve (children)",
+            1
+          ]
+        ],
+        "worst": [
+          {
+            "frame": 2,
+            "t": 24.92,
+            "ms": 85.7,
+            "cause": "cars +61.23",
+            "tags": [
+              "gc"
+            ],
+            "parts": {
+              "cars": 69.7,
+              "f:pre": 14.7,
+              "civic": 0.3
+            },
+            "c": {
+              "gcMB": 0.3
+            }
+          },
+          {
+            "frame": 1,
+            "t": 24.9,
+            "ms": 65.5,
+            "cause": "cars +41.83",
+            "tags": [],
+            "parts": {
+              "cars": 50.3,
+              "ui": 13,
+              "people": 0.5,
+              "civic": 0.4
+            },
+            "c": {
+              "canvasDraws": 1,
+              "canvasText": 2,
+              "allocKB": 101,
+              "dom": 29
+            }
+          }
+        ]
+      },
+      "ms": 702,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:10:52.243Z",
+    "op": {
+      "op": "call",
+      "method": "apache",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "exists": true,
+        "id": 283,
+        "name": "AH-64 APACHE",
+        "pad": {
+          "x": 10200,
+          "y": 9365
+        },
+        "x": 5200,
+        "y": 9884,
+        "heading": 0,
+        "altitude": 0,
+        "hp": 617,
+        "maxhp": 640,
+        "aboard": false,
+        "taken": true,
+        "ai": false,
+        "onBasePad": false,
+        "arms": {
+          "weapon": "hellfire",
+          "rounds": 319,
+          "rockets": 34,
+          "missiles": 7,
+          "airMissiles": 4,
+          "rearming": false,
+          "salvoLeft": 0,
+          "status": "LOCK",
+          "lock": {
+            "target": 285,
+            "ready": true,
+            "since": 21.049999999999663
+          }
+        },
+        "projectiles": [],
+        "turret": 11,
+        "gunPitch": -13,
+        "aim": {
+          "x": 5650,
+          "y": 9974,
+          "range": 459
+        },
+        "clearance": {
+          "solids": 0,
+          "rotorSolids": 0,
+          "buildings": 0,
+          "vehicles": []
+        }
+      },
+      "ms": 2,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:10:52.247Z",
+    "op": {
+      "op": "keys",
+      "codes": [
+        "KeyF"
+      ],
+      "seconds": 0.04,
+      "real": true
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 5200,
+        "y": 9904,
+        "district": "OCEANVIEW INTERNATIONAL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "KNIFE",
+        "clock": "13:25",
+        "renderer": "3d",
+        "vehicles": 284,
+        "pedestrians": 595
+      },
+      "ms": 46,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:10:52.314Z",
+    "op": {
+      "op": "call",
+      "method": "apache",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "exists": true,
+        "id": 283,
+        "name": "AH-64 APACHE",
+        "pad": {
+          "x": 10200,
+          "y": 9365
+        },
+        "x": 5200,
+        "y": 9884,
+        "heading": 0,
+        "altitude": 0,
+        "hp": 617,
+        "maxhp": 640,
+        "aboard": false,
+        "taken": true,
+        "ai": false,
+        "onBasePad": false,
+        "arms": {
+          "weapon": "hellfire",
+          "rounds": 319,
+          "rockets": 34,
+          "missiles": 7,
+          "airMissiles": 4,
+          "rearming": false,
+          "salvoLeft": 0,
+          "status": "LOCK",
+          "lock": {
+            "target": 285,
+            "ready": true,
+            "since": 21.049999999999663
+          }
+        },
+        "projectiles": [],
+        "turret": 11,
+        "gunPitch": -13,
+        "aim": {
+          "x": 5650,
+          "y": 9974,
+          "range": 459
+        },
+        "clearance": {
+          "solids": 0,
+          "rotorSolids": 0,
+          "buildings": 0,
+          "vehicles": []
+        }
+      },
+      "ms": 7,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:10:52.325Z",
+    "op": {
+      "op": "call",
+      "method": "hitchRun",
+      "args": [
+        1.3,
+        [],
+        2,
+        false,
+        false
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "stepped",
+        "frames": 78,
+        "wrappersLeft": 0,
+        "seconds": 1.3,
+        "avgMs": 6.76,
+        "p50Ms": 4.9,
+        "p95Ms": 19.1,
+        "p99Ms": 38.6,
+        "maxMs": 38.6,
+        "longLimitMs": 9.8,
+        "long": 17,
+        "over16": 6,
+        "over33": 1,
+        "gaps": {
+          "p50": 16.67,
+          "p95": 16.67,
+          "max": 16.67,
+          "over2x": 0,
+          "over33": 0
+        },
+        "causes": {
+          "cars": 11,
+          "wildlife": 1,
+          "offroad": 1,
+          "f:pre": 3,
+          "ui": 1
+        },
+        "tags": {
+          "gc": 8
+        },
+        "excessMs": {
+          "cars": 105.55,
+          "f:pre": 41.52,
+          "wildlife": 18.36,
+          "civic": 9.63,
+          "ui": 9.14,
+          "military": 7.41,
+          "offroad": 6.16,
+          "beachclub": 2.21
+        },
+        "sections": {
+          "cars": [
+            3.7,
+            20.2
+          ],
+          "phys:control": [
+            1.45,
+            15.9
+          ],
+          "f:pre": [
+            0.92,
+            21.3
+          ],
+          "phys:post": [
+            0.85,
+            16.3
+          ],
+          "phys:contacts": [
+            0.49,
+            19
+          ],
+          "phys:broadphase": [
+            0.47,
+            9.5
+          ],
+          "civic": [
+            0.38,
+            8
+          ],
+          "ui": [
+            0.25,
+            8.6
+          ],
+          "wildlife": [
+            0.24,
+            18.6
+          ],
+          "police:officers": [
+            0.19,
+            7.8
+          ],
+          "offroad": [
+            0.14,
+            6.3
+          ],
+          "military": [
+            0.14,
+            6
+          ],
+          "beachclub": [
+            0.09,
+            4.8
+          ],
+          "sealife": [
+            0.06,
+            3.6
+          ],
+          "people": [
+            0.05,
+            0.9
+          ],
+          "waypoint": [
+            0.04,
+            3.3
+          ]
+        },
+        "totals": {
+          "canvasDraws": 13,
+          "canvasText": 26,
+          "allocKB": 22818,
+          "gcMB": 21.5,
+          "dom": 1
+        },
+        "perSecond": {
+          "canvasDraws": 10,
+          "canvasText": 20,
+          "allocKB": 17552.31,
+          "gcMB": 16.54,
+          "dom": 0.77
+        },
+        "domTargets": [
+          [
+            "worldClock (children)",
+            1
+          ]
+        ],
+        "worst": [
+          {
+            "frame": 50,
+            "t": 26.42,
+            "ms": 38.6,
+            "cause": "f:pre +20.38",
+            "tags": [
+              "gc"
+            ],
+            "parts": {
+              "f:pre": 21.3,
+              "civic": 8,
+              "cars": 6.7,
+              "beachclub": 2.3
+            },
+            "c": {
+              "gcMB": 1.6
+            }
+          },
+          {
+            "frame": 32,
+            "t": 26.12,
+            "ms": 21.2,
+            "cause": "cars +16.5",
+            "tags": [],
+            "parts": {
+              "cars": 20.2,
+              "f:pre": 0.5
+            },
+            "c": {
+              "allocKB": 404
+            }
+          }
+        ]
+      },
+      "ms": 566,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:10:52.895Z",
+    "op": {
+      "op": "call",
+      "method": "damageReport",
+      "args": [
+        286
+      ]
+    },
+    "reply": {
+      "result": {
+        "id": 286,
+        "type": "helicopter",
+        "hp": 220,
+        "maxhp": 220,
+        "zones": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 0,
+          "bumperFront": 0,
+          "bumperRear": 0,
+          "doorLeft": 0,
+          "doorRight": 0,
+          "trunk": 0
+        },
+        "glass": {
+          "front": 0,
+          "rear": 0,
+          "left": 0,
+          "right": 0
+        },
+        "lights": [],
+        "flatTires": [],
+        "marks": {},
+        "pull": 0,
+        "handling": {
+          "power": 1,
+          "top": 1,
+          "grip": 1,
+          "pull": 0,
+          "steer": 1,
+          "brake": 1
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": false,
+        "speed": 0,
+        "spin": 0,
+        "x": 5500,
+        "y": 9884,
+        "a": 0
+      },
+      "ms": 5,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:10:52.924Z",
+    "op": {
+      "op": "call",
+      "method": "apache",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "exists": true,
+        "id": 283,
+        "name": "AH-64 APACHE",
+        "pad": {
+          "x": 10200,
+          "y": 9365
+        },
+        "x": 5200,
+        "y": 9884,
+        "heading": 0,
+        "altitude": 0,
+        "hp": 617,
+        "maxhp": 640,
+        "aboard": false,
+        "taken": true,
+        "ai": false,
+        "onBasePad": false,
+        "arms": {
+          "weapon": "hellfire",
+          "rounds": 319,
+          "rockets": 34,
+          "missiles": 7,
+          "airMissiles": 4,
+          "rearming": false,
+          "salvoLeft": 0,
+          "status": "LOCK",
+          "lock": {
+            "target": 285,
+            "ready": true,
+            "since": 21.049999999999663
+          }
+        },
+        "projectiles": [],
+        "turret": 11,
+        "gunPitch": -13,
+        "aim": {
+          "x": 5650,
+          "y": 9974,
+          "range": 459
+        },
+        "clearance": {
+          "solids": 0,
+          "rotorSolids": 0,
+          "buildings": 0,
+          "vehicles": []
+        }
+      },
+      "ms": 4,
+      "newErrors": 0
+    }
+  }
+]

@@ -184,6 +184,7 @@
       // @include src/beachclub3d.js
       // @include src/cycles3d.js
       // @include src/weather3d.js
+      // @include src/rocket-launcher3d.js
       // @include src/character-rig3d.js
       // @include src/crowd3d.js
       // @include src/player-body3d.js
@@ -197,6 +198,7 @@
       // @include src/helicopter3d.js
       // @include src/aircraft-assets3d.js
       // @include src/jet-assets3d.js
+      // @include src/apache-assets3d.js
       // @include src/apache3d.js
       // @include src/vehicles3d.js
       // @include src/police3d.js

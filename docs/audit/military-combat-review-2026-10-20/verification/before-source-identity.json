@@ -1,0 +1,14 @@
+{
+  "html": "work/aviation-review/candidate-5/game.html",
+  "sha256": "a0777806af596daf716c1f8eaed4a3cbc1aa2192506b2ff0f449dce1ee7969c0",
+  "bytes": 328182405,
+  "flags": "dev&seed=1&hold",
+  "renderBackend": "ANGLE Vulkan SwiftShader",
+  "quality": "HIGH",
+  "time": "13:00",
+  "weather": "clear",
+  "nativeFullPNG": true,
+  "newRocketLoaderPresent": false,
+  "newApacheLoaderPresent": false,
+  "captureContract": "Native full Playwright PNG via existing dev server screenshot. No cropping, resizing, compositing or retouching. Normal game HUD remains visible."
+}

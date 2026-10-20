@@ -1,0 +1,107 @@
+{
+  "passed": true,
+  "assertions": 808,
+  "evidence": [
+    {
+      "fxFootprint": {
+        "supportsChecked": 2132340,
+        "smokeRasterShares": [
+          {
+            "frame": 0,
+            "pixels": 32,
+            "rasterShare": 0.83551025390625
+          },
+          {
+            "frame": 0,
+            "pixels": 64,
+            "rasterShare": 0.6639404296875
+          },
+          {
+            "frame": 0,
+            "pixels": 128,
+            "rasterShare": 0.61962890625
+          },
+          {
+            "frame": 0,
+            "pixels": 256,
+            "rasterShare": 0.589599609375
+          },
+          {
+            "frame": 1,
+            "pixels": 32,
+            "rasterShare": 0.685791015625
+          },
+          {
+            "frame": 1,
+            "pixels": 64,
+            "rasterShare": 0.635009765625
+          },
+          {
+            "frame": 1,
+            "pixels": 128,
+            "rasterShare": 0.57421875
+          },
+          {
+            "frame": 1,
+            "pixels": 256,
+            "rasterShare": 0.5565185546875
+          },
+          {
+            "frame": 2,
+            "pixels": 32,
+            "rasterShare": 0.789306640625
+          },
+          {
+            "frame": 2,
+            "pixels": 64,
+            "rasterShare": 0.657958984375
+          },
+          {
+            "frame": 2,
+            "pixels": 128,
+            "rasterShare": 0.608154296875
+          },
+          {
+            "frame": 2,
+            "pixels": 256,
+            "rasterShare": 0.578369140625
+          },
+          {
+            "frame": 3,
+            "pixels": 32,
+            "rasterShare": 0.789306640625
+          },
+          {
+            "frame": 3,
+            "pixels": 64,
+            "rasterShare": 0.631103515625
+          },
+          {
+            "frame": 3,
+            "pixels": 128,
+            "rasterShare": 0.55859375
+          },
+          {
+            "frame": 3,
+            "pixels": 256,
+            "rasterShare": 0.535400390625
+          }
+        ],
+        "live": 12,
+        "report": {
+          "ready": true,
+          "levels": 4,
+          "fullQuadPixels": 172800,
+          "trimmedQuadPixels": 107072,
+          "rasterShare": 0.6196
+        },
+        "note": "Projected geometry/texture-support proof, not a hardware FPS benchmark. Glass tile adversarially opaque; glass/drop quads unchanged."
+      }
+    }
+  ],
+  "inputs": {
+    "src/fx3d-atlas.js": "89d21cf194938fdb78561533d070627a2ad1ec0426a7b088213841e403efb740",
+    "src/fx3d-particles.js": "398334efc0f5c04bce700ebf539fba22f882e5d587316e47be2d7376d052452b",
+    "tools/tests/fx-footprint.mjs": "69fb95a284d142d2aa15fcc1403c535c9812f9a81c01f0a8b2075943fc683705"
+  }
+}

@@ -1,0 +1,810 @@
+[
+  {
+    "started": "2026-10-20T21:02:32.226Z",
+    "op": {
+      "op": "call",
+      "method": "holdSimulation",
+      "args": [
+        true
+      ]
+    },
+    "reply": {
+      "result": true,
+      "ms": 3,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:02:32.239Z",
+    "op": {
+      "op": "call",
+      "method": "god",
+      "args": [
+        true
+      ]
+    },
+    "reply": {
+      "result": true,
+      "ms": 3,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:02:32.245Z",
+    "op": {
+      "op": "call",
+      "method": "wanted",
+      "args": [
+        0
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 9794,
+        "y": 9009,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "apc",
+        "weapon": "9MM PISTOL",
+        "clock": "13:06",
+        "renderer": "3d",
+        "vehicles": 282,
+        "pedestrians": 595
+      },
+      "ms": 5,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:02:32.252Z",
+    "op": {
+      "op": "call",
+      "method": "bindings",
+      "args": [
+        "reset"
+      ]
+    },
+    "reply": {
+      "result": {
+        "forward": [
+          "KeyW",
+          null
+        ],
+        "back": [
+          "KeyS",
+          null
+        ],
+        "left": [
+          "KeyA",
+          "ArrowLeft"
+        ],
+        "right": [
+          "KeyD",
+          "ArrowRight"
+        ],
+        "walk": [
+          "ShiftLeft",
+          "ShiftRight"
+        ],
+        "sprint": [
+          "ShiftLeft",
+          "ShiftRight"
+        ],
+        "interact": [
+          "KeyE",
+          null
+        ],
+        "fire": [
+          "KeyF",
+          null
+        ],
+        "jump": [
+          "Space",
+          null
+        ],
+        "handbrake": [
+          "Space",
+          null
+        ],
+        "wheelieUp": [
+          "ArrowUp",
+          null
+        ],
+        "wheelieDown": [
+          "ArrowDown",
+          null
+        ],
+        "poison": [
+          "KeyP",
+          null
+        ],
+        "horn": [
+          "KeyH",
+          null
+        ],
+        "lookBehind": [
+          "KeyC",
+          null
+        ],
+        "radioPower": [
+          "KeyN",
+          null
+        ],
+        "radioNext": [
+          "KeyB",
+          null
+        ],
+        "radioQuieter": [
+          "Comma",
+          null
+        ],
+        "radioLouder": [
+          "Period",
+          null
+        ],
+        "skipRide": [
+          "KeyY",
+          null
+        ],
+        "skipStop": [
+          "KeyU",
+          null
+        ],
+        "ascend": [
+          "ArrowUp",
+          "KeyT"
+        ],
+        "descend": [
+          "ArrowDown",
+          "KeyG"
+        ],
+        "chuteGlide": [
+          "ArrowUp",
+          null
+        ],
+        "chuteFlare": [
+          "ArrowDown",
+          null
+        ],
+        "flapsDown": [
+          "KeyX",
+          null
+        ],
+        "flapsUp": [
+          "KeyZ",
+          null
+        ],
+        "gear": [
+          "KeyL",
+          null
+        ],
+        "rockets": [
+          "Space",
+          null
+        ],
+        "cycleAircraftWeapon": [
+          "KeyQ",
+          null
+        ],
+        "bail": [
+          "KeyJ",
+          null
+        ],
+        "divert": [
+          "KeyC",
+          null
+        ],
+        "reload": [
+          "KeyR",
+          null
+        ],
+        "cycleWeapon": [
+          "KeyQ",
+          null
+        ],
+        "fists": [
+          "Backquote",
+          "Digit8"
+        ],
+        "knife": [
+          "KeyK",
+          "Digit7"
+        ],
+        "lockpick": [
+          "Digit9",
+          null
+        ],
+        "weapon1": [
+          "Digit1",
+          null
+        ],
+        "weapon2": [
+          "Digit2",
+          null
+        ],
+        "weapon3": [
+          "Digit3",
+          null
+        ],
+        "weapon4": [
+          "Digit4",
+          null
+        ],
+        "weapon5": [
+          "Digit5",
+          null
+        ],
+        "weapon6": [
+          "Digit6",
+          null
+        ],
+        "arsenal": [
+          "KeyI",
+          null
+        ],
+        "map": [
+          "Tab",
+          null
+        ],
+        "missionCard": [
+          "KeyO",
+          null
+        ],
+        "cameraView": [
+          "KeyV",
+          null
+        ],
+        "zoomIn": [
+          "Equal",
+          "NumpadAdd"
+        ],
+        "zoomOut": [
+          "Minus",
+          "NumpadSubtract"
+        ],
+        "zoomReset": [
+          "Digit0",
+          null
+        ],
+        "mute": [
+          "KeyM",
+          null
+        ],
+        "help": [
+          "Slash",
+          null
+        ]
+      },
+      "ms": 4,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:02:32.258Z",
+    "op": {
+      "op": "call",
+      "method": "look",
+      "args": [
+        10200,
+        9335
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 10200,
+        "y": 9335,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:06",
+        "renderer": "3d",
+        "vehicles": 282,
+        "pedestrians": 595
+      },
+      "ms": 4,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:02:32.265Z",
+    "op": {
+      "op": "call",
+      "method": "apacheReset",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "exists": true,
+        "id": 283,
+        "name": "AH-64 APACHE",
+        "pad": {
+          "x": 10200,
+          "y": 9365
+        },
+        "x": 10200,
+        "y": 9365,
+        "heading": 90,
+        "altitude": 0,
+        "hp": 640,
+        "maxhp": 640,
+        "aboard": false,
+        "taken": false,
+        "ai": false,
+        "onBasePad": true,
+        "arms": {
+          "weapon": "cannon",
+          "rounds": 320,
+          "rockets": 38,
+          "missiles": 8,
+          "airMissiles": 4,
+          "rearming": false,
+          "salvoLeft": 0,
+          "status": "READY",
+          "lock": {
+            "target": null,
+            "ready": false,
+            "since": 0
+          }
+        },
+        "projectiles": [],
+        "turret": 0,
+        "gunPitch": 0,
+        "aim": null,
+        "clearance": {
+          "solids": 0,
+          "rotorSolids": 0,
+          "buildings": 0,
+          "vehicles": []
+        }
+      },
+      "ms": 5,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:02:32.273Z",
+    "op": {
+      "op": "call",
+      "method": "look",
+      "args": [
+        10200,
+        9335
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 10200,
+        "y": 9335,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:06",
+        "renderer": "3d",
+        "vehicles": 282,
+        "pedestrians": 595
+      },
+      "ms": 1,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:02:32.277Z",
+    "op": {
+      "op": "call",
+      "method": "interact",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "mission": null,
+        "last": null,
+        "completed": 0,
+        "depotShutter": 0,
+        "depotBackDoor": 1
+      },
+      "ms": 8,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:02:32.287Z",
+    "op": {
+      "op": "call",
+      "method": "wanted",
+      "args": [
+        0
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 10200,
+        "y": 9365,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "helicopter",
+        "weapon": "9MM PISTOL",
+        "clock": "13:06",
+        "renderer": "3d",
+        "vehicles": 282,
+        "pedestrians": 595
+      },
+      "ms": 5,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:02:32.294Z",
+    "op": {
+      "op": "call",
+      "method": "apache",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "exists": true,
+        "id": 283,
+        "name": "AH-64 APACHE",
+        "pad": {
+          "x": 10200,
+          "y": 9365
+        },
+        "x": 10200,
+        "y": 9365,
+        "heading": 90,
+        "altitude": 0,
+        "hp": 640,
+        "maxhp": 640,
+        "aboard": true,
+        "taken": true,
+        "ai": false,
+        "onBasePad": true,
+        "arms": {
+          "weapon": "cannon",
+          "rounds": 320,
+          "rockets": 38,
+          "missiles": 8,
+          "airMissiles": 4,
+          "rearming": false,
+          "salvoLeft": 0,
+          "status": "READY",
+          "lock": {
+            "target": null,
+            "ready": false,
+            "since": 0
+          }
+        },
+        "projectiles": [],
+        "turret": 0,
+        "gunPitch": 0,
+        "aim": null,
+        "clearance": {
+          "solids": 0,
+          "rotorSolids": 0,
+          "buildings": 0,
+          "vehicles": []
+        }
+      },
+      "ms": 20,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:02:32.315Z",
+    "op": {
+      "op": "call",
+      "method": "hitchRun",
+      "args": [
+        0.034,
+        [],
+        2,
+        false,
+        true
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "stepped",
+        "frames": 2,
+        "wrappersLeft": 0,
+        "seconds": 0.03,
+        "avgMs": 10969.55,
+        "p50Ms": 21895.1,
+        "p95Ms": 21895.1,
+        "p99Ms": 21895.1,
+        "maxMs": 21895.1,
+        "longLimitMs": 43790.2,
+        "long": 0,
+        "over16": 2,
+        "over33": 2,
+        "gaps": {
+          "p50": 16.67,
+          "p95": 16.67,
+          "max": 16.67,
+          "over2x": 0,
+          "over33": 0
+        },
+        "causes": {},
+        "tags": {},
+        "excessMs": {},
+        "sections": {
+          "r:sky": [
+            6816.8,
+            13633.2
+          ],
+          "r:submit+shadow": [
+            3730,
+            7442.3
+          ],
+          "r:vehicles": [
+            368.55,
+            736.4
+          ],
+          "flighthud": [
+            4.55,
+            7.3
+          ],
+          "r:damage": [
+            4.15,
+            7.6
+          ],
+          "cars": [
+            3.8,
+            4.2
+          ],
+          "r:scenery": [
+            3.45,
+            5.6
+          ],
+          "r:crowd": [
+            2.75,
+            4.7
+          ],
+          "bullets": [
+            2.1,
+            3.8
+          ],
+          "f:pre": [
+            1.95,
+            2.5
+          ],
+          "r:people+fx": [
+            1.85,
+            2.2
+          ],
+          "phys:control": [
+            1.15,
+            1.2
+          ],
+          "phys:broadphase": [
+            0.75,
+            0.8
+          ],
+          "phys:post": [
+            0.7,
+            0.7
+          ],
+          "military": [
+            0.7,
+            1
+          ],
+          "r:lod": [
+            0.7,
+            0.9
+          ]
+        },
+        "totals": {
+          "texUploads": 9,
+          "texMB": 8.75,
+          "bufUploads": 330,
+          "bufMB": 21.28,
+          "links": 11,
+          "canvasText": 34,
+          "allocKB": 9160,
+          "dom": 21,
+          "programs": 11,
+          "textures": 5,
+          "geometries": 45,
+          "models": 2
+        },
+        "perSecond": {
+          "texUploads": 270,
+          "texMB": 262.5,
+          "bufUploads": 9900,
+          "bufMB": 638.4,
+          "links": 330,
+          "canvasText": 1020,
+          "allocKB": 274800,
+          "dom": 630,
+          "programs": 330,
+          "textures": 150,
+          "geometries": 1350,
+          "models": 60
+        },
+        "domTargets": [
+          [
+            "toast .note [class]",
+            3
+          ],
+          [
+            "flightHud [class]",
+            2
+          ],
+          [
+            "fhPower (children)",
+            2
+          ],
+          [
+            "fhPowerFill [style]",
+            2
+          ],
+          [
+            "fhThrottleMark [style]",
+            2
+          ],
+          [
+            "tankAimRing [style]",
+            2
+          ],
+          [
+            "tankBarrelPip [style]",
+            2
+          ],
+          [
+            "flightHud [aria-hidden]",
+            1
+          ]
+        ],
+        "worst": []
+      },
+      "ms": 21948,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:02:54.265Z",
+    "op": {
+      "op": "call",
+      "method": "flight",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "type": "helicopter",
+        "airspeed": 0,
+        "altitude": 0,
+        "agl": 0,
+        "vs": 0,
+        "heading": 180,
+        "pitch": 0,
+        "bank": 0,
+        "throttle": 0.03,
+        "power": 0.03,
+        "flaps": null,
+        "flapPos": 0,
+        "gear": null,
+        "gearPos": 1,
+        "g": 1,
+        "aoa": 0,
+        "stallSpeed": 0,
+        "stall": false,
+        "stallWarning": false,
+        "gearWarning": false,
+        "buffet": 0,
+        "hp": 0.99,
+        "runway": null,
+        "hud": true,
+        "instruments": true
+      },
+      "ms": 63,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:02:54.332Z",
+    "op": {
+      "op": "call",
+      "method": "helicopterModels",
+      "args": []
+    },
+    "reply": {
+      "result": [
+        {
+          "id": 281,
+          "look": "police",
+          "visible": false,
+          "rpm": 1,
+          "meshes": 15,
+          "drawCalls": 0,
+          "shadowCasters": 0,
+          "triangles": 0,
+          "crew": 2,
+          "scheme": null,
+          "liveryMs": 623
+        },
+        {
+          "id": 149,
+          "look": "military",
+          "visible": true,
+          "rpm": 0,
+          "meshes": 16,
+          "drawCalls": 12,
+          "shadowCasters": 5,
+          "triangles": 20082,
+          "crew": 0,
+          "scheme": null,
+          "liveryMs": 143
+        },
+        {
+          "id": 283,
+          "look": "apache",
+          "visible": true,
+          "rpm": null,
+          "meshes": 9,
+          "drawCalls": 8,
+          "shadowCasters": 1,
+          "triangles": 201272,
+          "crew": null,
+          "scheme": null,
+          "liveryMs": null
+        }
+      ],
+      "ms": 3,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:02:54.337Z",
+    "op": {
+      "op": "shot",
+      "name": "apache-fort-pad-native",
+      "full": true
+    },
+    "reply": {
+      "result": {
+        "path": "dist/dev/shots/apache-fort-pad-native.png",
+        "bytes": 847330
+      },
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:03:13.552Z",
+    "op": {
+      "op": "call",
+      "method": "frameFaults",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "count": 0,
+        "gameTime": 6.58,
+        "drill": null,
+        "kinds": []
+      },
+      "ms": 2,
+      "newErrors": 0
+    }
+  }
+]

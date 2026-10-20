@@ -1,37 +1,39 @@
       // Car blood 3D, fitting: decal geometry clipped to the model's own surface, done in time slices (gather, panels, clip, cover test).
       // ---- Fitting ------------------------------------------------------------------------
       /*
-       * Every step is a generator that yields when the frame's slice (cbOver) is spent, so
-       * the first stain never costs a frame more than about 3 ms. The model's surfaces in
+       * Every scan is a generator that checks the frame's deadline (cbOver), including
+       * the top probe, grid fill, cover rays and large buffer copies. The model's surfaces in
        * body space are gathered once per body type (cbGatherCache) while it is undamaged, the
        * clipping runs on typed scratch buffers (no per-triangle allocation) and the "is
        * something over this point" test looks only at the candidates in its cell of a grid.
        */
-      const cbBodyInverse = new Three.Matrix4(),
-        cbRelative = new Three.Matrix4(),
-        cbNormalMatrix = new Three.Matrix3(),
-        cbVec = new Three.Vector3(),
-        cbGatherCache = new Map(),
+      const cbGatherCache = new Map(),
         CB_GATHER_CACHE_MAX = 8;
       let cbGatherHits = 0,
         cbGatherMisses = 0;
       // The model's visible meshes in body space: positions, normals, index, box. Cached per body type
       // (geometry and placement identical) while the shape is untouched by a crumple.
       function* cbGatherJob(m, c, result) {
+        if (cbOver()) yield;
         m.group.updateMatrixWorld(true);
         m.body.updateMatrixWorld(true);
-        cbBodyInverse.copy(m.body.matrixWorld).invert();
-        const targets = rayTargets(m).filter((o) => !o.userData.carBloodSkin && o.geometry?.attributes?.position),
+        // A fit can yield beside another car's fit, or while this car moves. Keep its
+        // initial body-relative transforms and vertex scratch private to this generator.
+        const bodyInverse = new Three.Matrix4().copy(m.body.matrixWorld).invert(),
+          relative = [], normalMatrix = new Three.Matrix3(), vec = new Three.Vector3(),
+          targets = rayTargets(m).filter((o) => !o.userData.carBloodSkin && o.geometry?.attributes?.position),
           scale = m.modelScale || 1;
+        for (let i = 0; i < targets.length; i++) relative.push(new Three.Matrix4().multiplyMatrices(bodyInverse, targets[i].matrixWorld));
         let key = null;
         // Cacheable while the model's geometry is the shared one (a crumple clones it and then edits it in place).
         if (m.car && !m.ownShell && !m.ownCabin) {
           key = c.type + '|' + scale + '|' + targets.length;
-          for (const o of targets) {
-            cbRelative.multiplyMatrices(cbBodyInverse, o.matrixWorld);
+          for (let at = 0; at < targets.length; at++) {
+            if ((at & 31) === 0 && cbOver()) yield;
+            const o = targets[at], matrix = relative[at];
             key += '|' + o.geometry.uuid + ':' + o.geometry.attributes.position.count;
-            for (let i = 0; i < 16; i += 3) key += ',' + Math.round(cbRelative.elements[i] * 200);
-            key += ',' + Math.round(cbRelative.elements[12] * 100) + ',' + Math.round(cbRelative.elements[13] * 100) + ',' + Math.round(cbRelative.elements[14] * 100);
+            for (let i = 0; i < 16; i += 3) key += ',' + Math.round(matrix.elements[i] * 200);
+            key += ',' + Math.round(matrix.elements[12] * 100) + ',' + Math.round(matrix.elements[13] * 100) + ',' + Math.round(matrix.elements[14] * 100);
           }
           const hit = cbGatherCache.get(key);
           if (hit) {
@@ -45,36 +47,37 @@
         cbGatherMisses++;
         const infos = [],
           box = new Three.Box3();
-        for (const o of targets) {
-          const geometry = o.geometry,
+        for (let at = 0; at < targets.length; at++) {
+          if (cbOver()) yield;
+          const o = targets[at], geometry = o.geometry,
             position = geometry.attributes.position,
             normal = geometry.attributes.normal,
             count = position.count,
-            pos = new Float32Array(count * 3),
-            nor = new Float32Array(count * 3);
-          cbRelative.multiplyMatrices(cbBodyInverse, o.matrixWorld);
-          cbNormalMatrix.getNormalMatrix(cbRelative);
+            pos = new Float32Array(count * 3);
+          if (cbOver()) yield;
+          const nor = new Float32Array(count * 3), matrix = relative[at];
+          normalMatrix.getNormalMatrix(matrix);
           const min = [Infinity, Infinity, Infinity],
             max = [-Infinity, -Infinity, -Infinity];
           for (let i = 0; i < count; i++) {
-            cbVec.fromBufferAttribute(position, i).applyMatrix4(cbRelative);
-            pos[i * 3] = cbVec.x;
-            pos[i * 3 + 1] = cbVec.y;
-            pos[i * 3 + 2] = cbVec.z;
+            if ((i & 255) === 0 && cbOver()) yield;
+            vec.fromBufferAttribute(position, i).applyMatrix4(matrix);
+            pos[i * 3] = vec.x;
+            pos[i * 3 + 1] = vec.y;
+            pos[i * 3 + 2] = vec.z;
             for (let k = 0; k < 3; k++) {
               min[k] = Math.min(min[k], pos[i * 3 + k]);
               max[k] = Math.max(max[k], pos[i * 3 + k]);
             }
             if (normal) {
-              cbVec.fromBufferAttribute(normal, i).applyMatrix3(cbNormalMatrix).normalize();
-              nor[i * 3] = cbVec.x;
-              nor[i * 3 + 1] = cbVec.y;
-              nor[i * 3 + 2] = cbVec.z;
+              vec.fromBufferAttribute(normal, i).applyMatrix3(normalMatrix).normalize();
+              nor[i * 3] = vec.x;
+              nor[i * 3 + 1] = vec.y;
+              nor[i * 3 + 2] = vec.z;
             }
-            if ((i & 2047) === 2047 && cbOver()) yield;
           }
           if (!isFinite(min[0])) continue;
-          box.expandByPoint(cbVec.set(min[0], min[1], min[2])).expandByPoint(cbVec.set(max[0], max[1], max[2]));
+          box.expandByPoint(vec.set(min[0], min[1], min[2])).expandByPoint(vec.set(max[0], max[1], max[2]));
           infos.push({ id: infos.length, pos, nor, hasNormals: !!normal, index: geometry.index ? geometry.index.array : null, count, min, max });
         }
         const gathered = { infos, box, triangles: infos.reduce((n, i) => n + cbTriangles(i), 0) };
@@ -89,13 +92,15 @@
         return info.index ? info.index.length / 3 : Math.floor(info.count / 3);
       }
       // The highest upward-facing surface over (x, z), or null.
-      function cbTopHeight(infos, x, z) {
+      function* cbTopHeightJob(infos, x, z) {
         let best = null;
         for (const info of infos) {
+          if (cbOver()) yield;
           if (x < info.min[0] || x > info.max[0] || z < info.min[2] || z > info.max[2]) continue;
           const n = cbTriangles(info),
             p = info.pos;
           for (let t = 0; t < n; t++) {
+            if ((t & 63) === 0 && cbOver()) yield;
             const a = (info.index ? info.index[t * 3] : t * 3) * 3,
               b = (info.index ? info.index[t * 3 + 1] : t * 3 + 1) * 3,
               d = (info.index ? info.index[t * 3 + 2] : t * 3 + 2) * 3,
@@ -134,7 +139,7 @@
         };
       };
       // The boxes (panels) one stain aims at the body, in body space (design units).
-      function cbPanels(m, stain, gathered, slots) {
+      function* cbPanelsJob(m, stain, gathered, slots) {
         const k = m.modelScale || 1,
           dm = UNITS_PER_METRE / k, // design units per metre
           box = gathered.box,
@@ -152,8 +157,8 @@
         const inward = end ? new Three.Vector3(-sign, 0, 0) : new Three.Vector3(0, 0, -sign),
           outward = inward.clone().negate();
         // TOP: the bonnet, from the spot just inside the nose edge, back as far as the blood can be dragged.
-        const probe = cbVec.set(hx + inward.x * 0.3 * dm, 0, hz + inward.z * 0.3 * dm),
-          surface = cbTopHeight(gathered.infos, probe.x, probe.z);
+        const probeX = hx + inward.x * 0.3 * dm, probeZ = hz + inward.z * 0.3 * dm,
+          surface = yield* cbTopHeightJob(gathered.infos, probeX, probeZ);
         // A bonnet takes blood; a roof does not (a flank hit stains the door and sill).
         if (surface !== null && surface - box.min.y < (end ? 1.5 : 0.95) * dm) {
           const Wm = 1.3 + 1.0 * s,
@@ -162,7 +167,7 @@
             U = spray.clone(),
             N = new Three.Vector3(0, 1, 0),
             V = new Three.Vector3().crossVectors(N, U),
-            q = new Three.Vector3(probe.x, surface, probe.z),
+            q = new Three.Vector3(probeX, surface, probeZ),
             center = q.clone().addScaledVector(U, (0.5 - fu) * Lm * dm);
           panels.push({
             kind: 'top',
@@ -251,31 +256,50 @@
         }
         return out;
       }
-      const cbClipA = new Float64Array(16 * 9),
-        cbClipB = new Float64Array(16 * 9),
-        CB_GRID = 12,
+      const CB_GRID = 12,
         CB_CAND = 16; // floats a candidate triangle takes: 9 for its corners, then mesh id, u/v/d bounds, and 3 indices
-      // Candidate triangles of one panel with a coarse grid over its (u, v) so a cover test reads few of them.
-      function cbCoverGrid(cand, count, panel) {
-        const start = new Int32Array(CB_GRID * CB_GRID + 1),
-          cell = (value, half) => Math.min(CB_GRID - 1, Math.max(0, Math.floor(((value + half) / (2 * half)) * CB_GRID))),
-          span = (i) => [cell(cand[i * CB_CAND + 10], panel.hu), cell(cand[i * CB_CAND + 11], panel.hu), cell(cand[i * CB_CAND + 12], panel.hv), cell(cand[i * CB_CAND + 13], panel.hv)];
+      function cbCoverCell(value, half) {
+        return Math.min(CB_GRID - 1, Math.max(0, Math.floor(((value + half) / (2 * half)) * CB_GRID)));
+      }
+      // Candidate triangles of one panel with a coarse grid over its (u, v). A large
+      // triangle can fill all 144 cells; count work inside those loops, not per triangle.
+      function* cbCoverGridJob(cand, count, panel) {
+        if (cbOver()) yield;
+        const start = new Int32Array(CB_GRID * CB_GRID + 1);
+        let work = 0;
         for (let i = 0; i < count; i++) {
-          const [u0, u1, v0, v1] = span(i);
-          for (let v = v0; v <= v1; v++) for (let u = u0; u <= u1; u++) start[v * CB_GRID + u + 1]++;
+          const u0 = cbCoverCell(cand[i * CB_CAND + 10], panel.hu), u1 = cbCoverCell(cand[i * CB_CAND + 11], panel.hu),
+            v0 = cbCoverCell(cand[i * CB_CAND + 12], panel.hv), v1 = cbCoverCell(cand[i * CB_CAND + 13], panel.hv);
+          for (let v = v0; v <= v1; v++) for (let u = u0; u <= u1; u++) {
+            start[v * CB_GRID + u + 1]++;
+            if (++work >= 128) {
+              work = 0;
+              if (cbOver()) yield;
+            }
+          }
         }
         for (let i = 0; i < CB_GRID * CB_GRID; i++) start[i + 1] += start[i];
+        if (cbOver()) yield;
         const fill = start.slice(0, CB_GRID * CB_GRID),
           items = new Int32Array(start[CB_GRID * CB_GRID]);
+        if (cbOver()) yield;
+        work = 0;
         for (let i = 0; i < count; i++) {
-          const [u0, u1, v0, v1] = span(i);
-          for (let v = v0; v <= v1; v++) for (let u = u0; u <= u1; u++) items[fill[v * CB_GRID + u]++] = i;
+          const u0 = cbCoverCell(cand[i * CB_CAND + 10], panel.hu), u1 = cbCoverCell(cand[i * CB_CAND + 11], panel.hu),
+            v0 = cbCoverCell(cand[i * CB_CAND + 12], panel.hv), v1 = cbCoverCell(cand[i * CB_CAND + 13], panel.hv);
+          for (let v = v0; v <= v1; v++) for (let u = u0; u <= u1; u++) {
+            items[fill[v * CB_GRID + u]++] = i;
+            if (++work >= 128) {
+              work = 0;
+              if (cbOver()) yield;
+            }
+          }
         }
-        return { start, items, cell };
+        return { start, items, cell: cbCoverCell };
       }
       // Is something else over this point (along the panel's outward axis)? A bonnet panel lies
       // over the shell: the shell's part of the stain is left out.
-      function cbCovered(cand, grid, panel, px, py, pz, selfId) {
+      function* cbCoveredJob(cand, grid, panel, px, py, pz, selfId) {
         const dx = panel.N.x,
           dy = panel.N.y,
           dz = panel.N.z,
@@ -287,7 +311,9 @@
           cd = rx * dx + ry * dy + rz * dz,
           cellIndex = grid.cell(cv, panel.hv) * CB_GRID + grid.cell(cu, panel.hu),
           limit = 0.05 / (panel.k || 1) + 0.03;
-        for (let q = grid.start[cellIndex]; q < grid.start[cellIndex + 1]; q++) {
+        const first = grid.start[cellIndex];
+        for (let q = first; q < grid.start[cellIndex + 1]; q++) {
+          if (((q - first) & 63) === 0 && cbOver()) yield;
           const i = grid.items[q] * CB_CAND;
           if (cand[i + 9] === selfId || cu < cand[i + 10] || cu > cand[i + 11] || cv < cand[i + 12] || cv > cand[i + 13] || cand[i + 14] < cd + 0.03) continue;
           // Moller-Trumbore, ray from the point along +N.
@@ -325,18 +351,32 @@
       function cbOutput(capacity) {
         return { n: 0, cap: capacity, pos: new Float32Array(capacity * 3), nor: new Float32Array(capacity * 3), uv: new Float32Array(capacity * 2), blood: new Float32Array(capacity * 2), ranges: [] };
       }
-      function cbOutputGrow(out, need) {
+      // Typed-array allocation itself is atomic, but copying a large accumulated fit need not be.
+      function* cbCopyJob(dst, src, count) {
+        for (let at = 0; at < count; at += 4096) {
+          if (cbOver()) yield;
+          dst.set(src.subarray(at, Math.min(count, at + 4096)), at);
+        }
+      }
+      function* cbOutputGrowJob(out, need) {
         if (out.n + need <= out.cap) return;
-        const cap = Math.max(out.cap * 2, out.n + need),
-          grow = (old, size) => {
-            const next = new Float32Array(cap * size);
-            next.set(old.subarray(0, out.n * size));
-            return next;
-          };
-        out.pos = grow(out.pos, 3);
-        out.nor = grow(out.nor, 3);
-        out.uv = grow(out.uv, 2);
-        out.blood = grow(out.blood, 2);
+        const cap = Math.max(out.cap * 2, out.n + need);
+        if (cbOver()) yield;
+        const pos = new Float32Array(cap * 3);
+        yield* cbCopyJob(pos, out.pos, out.n * 3);
+        if (cbOver()) yield;
+        const nor = new Float32Array(cap * 3);
+        yield* cbCopyJob(nor, out.nor, out.n * 3);
+        if (cbOver()) yield;
+        const uv = new Float32Array(cap * 2);
+        yield* cbCopyJob(uv, out.uv, out.n * 2);
+        if (cbOver()) yield;
+        const blood = new Float32Array(cap * 2);
+        yield* cbCopyJob(blood, out.blood, out.n * 2);
+        out.pos = pos;
+        out.nor = nor;
+        out.uv = uv;
+        out.blood = blood;
         out.cap = cap;
       }
       // Fits one panel of one event: every visible triangle inside its box is clipped to it and appended to `out`.
@@ -346,7 +386,10 @@
           reach = Math.hypot(panel.hu, panel.hv, Math.max(panel.dIn, panel.dOut + margin)),
           limitU = panel.hu,
           limitV = panel.hv,
-          pc = new Float64Array(9);
+          pc = new Float64Array(9),
+          // A cover ray or growth copy can yield with this polygon still live.
+          // Other skins' jobs must not overwrite its clipping scratch meanwhile.
+          clipA = new Float64Array(16 * 9), clipB = new Float64Array(16 * 9);
         panel.k = k;
         // Pass 1: the triangles that reach into the box.
         let cand = new Float64Array(256 * CB_CAND),
@@ -354,6 +397,7 @@
           count = 0,
           sinceYield = 0;
         for (const info of gathered.infos) {
+          if (cbOver()) yield;
           // Skip a mesh whose box is clear of the panel's bounding sphere.
           let gap = 0;
           for (let q = 0; q < 3; q++) {
@@ -365,7 +409,7 @@
           const p = info.pos,
             n = cbTriangles(info);
           for (let t = 0; t < n; t++) {
-            if (++sinceYield >= 96) {
+            if (++sinceYield >= 64) {
               sinceYield = 0;
               if (cbOver()) yield;
             }
@@ -398,11 +442,13 @@
             }
             if (outU === 3 || outUn === 3 || outV === 3 || outVn === 3 || outHigh === 3 || outLow === 3) continue;
             if (count * CB_CAND >= cand.length) {
+              if (cbOver()) yield;
               const bigger = new Float64Array(cand.length * 2);
-              bigger.set(cand);
+              yield* cbCopyJob(bigger, cand, cand.length);
               cand = bigger;
+              if (cbOver()) yield;
               const biggerRefs = new Int32Array(refs.length * 2);
-              biggerRefs.set(refs);
+              yield* cbCopyJob(biggerRefs, refs, refs.length);
               refs = biggerRefs;
             }
             const o = count * CB_CAND;
@@ -430,12 +476,12 @@
           }
         }
         if (cbOver()) yield;
-        const grid = cbCoverGrid(cand, count, panel),
+        const grid = yield* cbCoverGridJob(cand, count, panel),
           rect = panel.rect,
           range = event.index;
         // Pass 2: clip each candidate that faces the panel, drop what another mesh covers, append the rest.
         for (let ci = 0; ci < count; ci++) {
-          if ((ci & 63) === 63 && cbOver()) yield;
+          if ((ci & 15) === 0 && cbOver()) yield;
           const o = ci * CB_CAND,
             info = gathered.infos[refs[ci * 4]],
             ia = refs[ci * 4 + 1],
@@ -457,7 +503,7 @@
           if (!cbAccept(panel, fx, fy, fz)) continue;
           for (let j = 0; j < 3; j++) {
             const i = j === 0 ? ia : j === 1 ? ib : ic,
-              r = cbClipA,
+              r = clipA,
               b = j * 9,
               rx = cand[o + j * 3] - P.x,
               ry = cand[o + j * 3 + 1] - P.y,
@@ -472,8 +518,8 @@
             r[b + 7] = info.hasNormals ? info.nor[i + 1] : fy;
             r[b + 8] = info.hasNormals ? info.nor[i + 2] : fz;
           }
-          let a = cbClipA,
-            b = cbClipB,
+          let a = clipA,
+            b = clipB,
             n = 3;
           for (let plane = 0; plane < 6 && n >= 3; plane++) {
             n = plane === 0 ? cbClip(a, n, b, 0, 1, limitU) : plane === 1 ? cbClip(a, n, b, 0, -1, limitU) : plane === 2 ? cbClip(a, n, b, 1, 1, limitV) : plane === 3 ? cbClip(a, n, b, 1, -1, limitV) : plane === 4 ? cbClip(a, n, b, 2, 1, panel.dOut) : cbClip(a, n, b, 2, -1, panel.dIn);
@@ -491,7 +537,7 @@
             cy += a[v * 9 + 4];
             cz += a[v * 9 + 5];
           }
-          if (cbCovered(cand, grid, panel, cx / n, cy / n, cz / n, info.id)) continue;
+          if (yield* cbCoveredJob(cand, grid, panel, cx / n, cy / n, cz / n, info.id)) continue;
           let any = false;
           for (let v = 0; v < n; v++) {
             const nl = Math.hypot(a[v * 9 + 6], a[v * 9 + 7], a[v * 9 + 8]) || 1;
@@ -503,7 +549,7 @@
             if (w >= 0.02) any = true;
           }
           if (!any) continue;
-          cbOutputGrow(out, (n - 2) * 3);
+          yield* cbOutputGrowJob(out, (n - 2) * 3);
           const lift = CB_LIFT / k;
           for (let v = 1; v < n - 1; v++)
             for (const q of [0, v, v + 1]) {
@@ -539,7 +585,7 @@
         for (const event of job.events) {
           const start = job.out.n;
           // The boxes are laid out once, on the body as it was; a crumple later only re-clips them.
-          if (!event.layout) event.layout = cbPanels(m, event.stain, gathered, event.slots);
+          if (!event.layout) event.layout = yield* cbPanelsJob(m, event.stain, gathered, event.slots);
           for (const panel of event.layout) yield* cbFitPanel(gathered, event, panel, k, job.out);
           job.out.ranges.push({ event, start, end: job.out.n });
         }

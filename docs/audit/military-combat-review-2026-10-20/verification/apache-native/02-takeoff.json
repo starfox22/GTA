@@ -1,0 +1,929 @@
+[
+  {
+    "started": "2026-10-20T21:03:30.661Z",
+    "op": {
+      "op": "keys",
+      "codes": [
+        "KeyT"
+      ],
+      "seconds": 0.05,
+      "real": true
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 10200,
+        "y": 9365,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "helicopter",
+        "weapon": "9MM PISTOL",
+        "clock": "13:06",
+        "renderer": "3d",
+        "vehicles": 282,
+        "pedestrians": 595
+      },
+      "ms": 58,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:03:30.742Z",
+    "op": {
+      "op": "call",
+      "method": "hitchRun",
+      "args": [
+        5,
+        [
+          "KeyT"
+        ],
+        2,
+        false,
+        false
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "stepped",
+        "frames": 300,
+        "wrappersLeft": 0,
+        "seconds": 5,
+        "avgMs": 9.79,
+        "p50Ms": 6.7,
+        "p95Ms": 27.7,
+        "p99Ms": 58.6,
+        "maxMs": 107.5,
+        "longLimitMs": 13.4,
+        "long": 64,
+        "over16": 40,
+        "over33": 8,
+        "gaps": {
+          "p50": 16.67,
+          "p95": 16.67,
+          "max": 16.67,
+          "over2x": 0,
+          "over33": 0
+        },
+        "causes": {
+          "bullets": 8,
+          "military": 4,
+          "cars": 19,
+          "sound": 2,
+          "civic": 5,
+          "sealife": 1,
+          "knockdowns": 1,
+          "people": 5,
+          "ui": 7,
+          "flighthud": 9,
+          "f:pre": 2,
+          "(untimed)": 1
+        },
+        "tags": {
+          "dom": 1,
+          "gc": 11
+        },
+        "excessMs": {
+          "cars": 357.71,
+          "bullets": 138.41,
+          "flighthud": 129.07,
+          "ui": 105.99,
+          "people": 87.61,
+          "military": 86.01,
+          "civic": 76.81,
+          "f:pre": 45.36
+        },
+        "sections": {
+          "cars": [
+            3.97,
+            34.5
+          ],
+          "phys:control": [
+            1.09,
+            19.2
+          ],
+          "phys:broadphase": [
+            1.07,
+            32.8
+          ],
+          "flighthud": [
+            1.05,
+            29.4
+          ],
+          "bullets": [
+            0.87,
+            35.5
+          ],
+          "phys:post": [
+            0.78,
+            27.5
+          ],
+          "phys:contacts": [
+            0.57,
+            24.4
+          ],
+          "ui": [
+            0.55,
+            32.9
+          ],
+          "military": [
+            0.48,
+            36.8
+          ],
+          "civic": [
+            0.48,
+            28.2
+          ],
+          "people": [
+            0.4,
+            30.5
+          ],
+          "f:pre": [
+            0.23,
+            28
+          ],
+          "sound": [
+            0.15,
+            17.4
+          ],
+          "police:officers": [
+            0.13,
+            9.7
+          ],
+          "knockdowns": [
+            0.12,
+            13.7
+          ],
+          "citylife": [
+            0.1,
+            13.3
+          ]
+        },
+        "totals": {
+          "canvasDraws": 50,
+          "canvasText": 6265,
+          "allocKB": 145901,
+          "dom": 859,
+          "gcMB": 130.6,
+          "vehicles": -1
+        },
+        "perSecond": {
+          "canvasDraws": 10,
+          "canvasText": 1253,
+          "allocKB": 29180.2,
+          "dom": 171.8,
+          "gcMB": 26.12,
+          "vehicles": -0.2
+        },
+        "domTargets": [
+          [
+            "weaponSlot (children)",
+            100
+          ],
+          [
+            "weaponName (children)",
+            100
+          ],
+          [
+            "ammo (children)",
+            100
+          ],
+          [
+            "reserve (children)",
+            100
+          ],
+          [
+            "reloadHint (children)",
+            100
+          ],
+          [
+            "fhPower (children)",
+            58
+          ],
+          [
+            "fhPowerFill [style]",
+            58
+          ],
+          [
+            "fhThrottleMark [style]",
+            58
+          ]
+        ],
+        "worst": [
+          {
+            "frame": 0,
+            "t": 6.6,
+            "ms": 107.5,
+            "cause": "bullets +34.63",
+            "tags": [
+              "dom"
+            ],
+            "parts": {
+              "bullets": 35.5,
+              "ui": 32.9,
+              "cars": 32,
+              "flighthud": 0.7
+            },
+            "c": {
+              "canvasDraws": 1,
+              "canvasText": 36,
+              "allocKB": 651,
+              "dom": 49
+            }
+          },
+          {
+            "frame": 1,
+            "t": 6.62,
+            "ms": 68.9,
+            "cause": "military +36.32",
+            "tags": [],
+            "parts": {
+              "military": 36.8,
+              "cars": 12,
+              "people": 8.4,
+              "f:pre": 7.8
+            },
+            "c": {
+              "canvasText": 17,
+              "allocKB": 116,
+              "dom": 4
+            }
+          }
+        ]
+      },
+      "ms": 3016,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:03:33.760Z",
+    "op": {
+      "op": "call",
+      "method": "apache",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "exists": true,
+        "id": 283,
+        "name": "AH-64 APACHE",
+        "pad": {
+          "x": 10200,
+          "y": 9365
+        },
+        "x": 10200,
+        "y": 9365,
+        "heading": 90,
+        "altitude": 43.8,
+        "hp": 617,
+        "maxhp": 640,
+        "aboard": true,
+        "taken": true,
+        "ai": false,
+        "onBasePad": false,
+        "arms": {
+          "weapon": "cannon",
+          "rounds": 320,
+          "rockets": 38,
+          "missiles": 8,
+          "airMissiles": 4,
+          "rearming": false,
+          "salvoLeft": 0,
+          "status": "READY",
+          "lock": {
+            "target": null,
+            "ready": false,
+            "since": 0
+          }
+        },
+        "projectiles": [],
+        "turret": 0,
+        "gunPitch": -40,
+        "aim": {
+          "x": 10200,
+          "y": 9705,
+          "range": 340
+        },
+        "clearance": {
+          "solids": 0,
+          "rotorSolids": 0,
+          "buildings": 0,
+          "vehicles": []
+        }
+      },
+      "ms": 152,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:03:33.915Z",
+    "op": {
+      "op": "call",
+      "method": "wanted",
+      "args": [
+        0
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 10200,
+        "y": 9365,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "helicopter",
+        "weapon": "9MM PISTOL",
+        "clock": "13:11",
+        "renderer": "3d",
+        "vehicles": 281,
+        "pedestrians": 595
+      },
+      "ms": 1,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:03:33.918Z",
+    "op": {
+      "op": "call",
+      "method": "hitchRun",
+      "args": [
+        6,
+        [
+          "ArrowUp"
+        ],
+        2,
+        false,
+        false
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "stepped",
+        "frames": 360,
+        "wrappersLeft": 0,
+        "seconds": 6,
+        "avgMs": 7.92,
+        "p50Ms": 5.6,
+        "p95Ms": 26.5,
+        "p99Ms": 35.4,
+        "maxMs": 46.9,
+        "longLimitMs": 11.2,
+        "long": 58,
+        "over16": 30,
+        "over33": 4,
+        "gaps": {
+          "p50": 16.67,
+          "p95": 16.67,
+          "max": 16.67,
+          "over2x": 0,
+          "over33": 0
+        },
+        "causes": {
+          "flighthud": 11,
+          "cars": 19,
+          "damage": 2,
+          "sealife": 1,
+          "sports": 2,
+          "f:pre": 6,
+          "civic": 3,
+          "military": 2,
+          "ui": 10,
+          "beachclub": 1,
+          "monarch": 1
+        },
+        "tags": {
+          "gc": 7
+        },
+        "excessMs": {
+          "cars": 276.13,
+          "ui": 143.9,
+          "flighthud": 107.68,
+          "f:pre": 82.81,
+          "civic": 72.64,
+          "sports": 31.54,
+          "military": 30.2,
+          "monarch": 26.83
+        },
+        "sections": {
+          "cars": [
+            3.56,
+            30.2
+          ],
+          "phys:control": [
+            1.14,
+            28.8
+          ],
+          "flighthud": [
+            1.09,
+            30.1
+          ],
+          "phys:post": [
+            0.88,
+            28.4
+          ],
+          "ui": [
+            0.66,
+            29.6
+          ],
+          "phys:broadphase": [
+            0.62,
+            8.7
+          ],
+          "phys:contacts": [
+            0.56,
+            18.4
+          ],
+          "civic": [
+            0.31,
+            32.5
+          ],
+          "f:pre": [
+            0.28,
+            32.1
+          ],
+          "military": [
+            0.23,
+            21.9
+          ],
+          "sports": [
+            0.18,
+            23
+          ],
+          "damage": [
+            0.08,
+            22.4
+          ],
+          "monarch": [
+            0.07,
+            26.9
+          ],
+          "beachclub": [
+            0.05,
+            16
+          ],
+          "people": [
+            0.05,
+            4.1
+          ],
+          "offroad": [
+            0.03,
+            4.1
+          ]
+        },
+        "totals": {
+          "canvasDraws": 60,
+          "canvasText": 8768,
+          "allocKB": 133930,
+          "dom": 1573,
+          "gcMB": 127
+        },
+        "perSecond": {
+          "canvasDraws": 10,
+          "canvasText": 1461.33,
+          "allocKB": 22321.67,
+          "dom": 262.17,
+          "gcMB": 21.17
+        },
+        "domTargets": [
+          [
+            "tankAimRing [style]",
+            341
+          ],
+          [
+            "tankBarrelPip [style]",
+            341
+          ],
+          [
+            "weaponSlot (children)",
+            120
+          ],
+          [
+            "weaponName (children)",
+            120
+          ],
+          [
+            "ammo (children)",
+            120
+          ],
+          [
+            "reserve (children)",
+            120
+          ],
+          [
+            "reloadHint (children)",
+            120
+          ],
+          [
+            "navArrow [style]",
+            60
+          ]
+        ],
+        "worst": [
+          {
+            "frame": 90,
+            "t": 13.1,
+            "ms": 46.9,
+            "cause": "civic +32.19",
+            "tags": [],
+            "parts": {
+              "civic": 32.5,
+              "cars": 11.4,
+              "ui": 1.6,
+              "flighthud": 0.3
+            },
+            "c": {
+              "canvasDraws": 1,
+              "canvasText": 42,
+              "allocKB": 800,
+              "dom": 17
+            }
+          },
+          {
+            "frame": 170,
+            "t": 14.43,
+            "ms": 38.4,
+            "cause": "flighthud +29.01",
+            "tags": [],
+            "parts": {
+              "flighthud": 30.1,
+              "cars": 3.1,
+              "military": 0.2
+            },
+            "c": {
+              "canvasText": 21,
+              "allocKB": 389,
+              "dom": 2
+            }
+          }
+        ]
+      },
+      "ms": 3012,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:03:36.939Z",
+    "op": {
+      "op": "call",
+      "method": "apache",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "exists": true,
+        "id": 283,
+        "name": "AH-64 APACHE",
+        "pad": {
+          "x": 10200,
+          "y": 9365
+        },
+        "x": 10200,
+        "y": 10021,
+        "heading": 90,
+        "altitude": 46.9,
+        "hp": 617,
+        "maxhp": 640,
+        "aboard": true,
+        "taken": true,
+        "ai": false,
+        "onBasePad": false,
+        "arms": {
+          "weapon": "cannon",
+          "rounds": 320,
+          "rockets": 38,
+          "missiles": 8,
+          "airMissiles": 4,
+          "rearming": false,
+          "salvoLeft": 0,
+          "status": "READY",
+          "lock": {
+            "target": null,
+            "ready": false,
+            "since": 0
+          }
+        },
+        "projectiles": [],
+        "turret": 0,
+        "gunPitch": -38,
+        "aim": {
+          "x": 10200,
+          "y": 10361,
+          "range": 340
+        },
+        "clearance": {
+          "solids": 0,
+          "rotorSolids": 0,
+          "buildings": 0,
+          "vehicles": []
+        }
+      },
+      "ms": 10539,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:03:47.480Z",
+    "op": {
+      "op": "call",
+      "method": "ride",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "type": "helicopter",
+        "speed": 209.5,
+        "vx": 0,
+        "vy": 209.5,
+        "cadence": 0,
+        "effort": 0,
+        "altitude": 375
+      },
+      "ms": 2,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:03:47.486Z",
+    "op": {
+      "op": "call",
+      "method": "flight",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "type": "helicopter",
+        "airspeed": 94.29,
+        "altitude": 46.87,
+        "agl": 46.87,
+        "vs": 0,
+        "heading": 180,
+        "pitch": 0,
+        "bank": 0,
+        "throttle": 1,
+        "power": 1,
+        "flaps": null,
+        "flapPos": 0,
+        "gear": null,
+        "gearPos": 1,
+        "g": 1,
+        "aoa": 0,
+        "stallSpeed": 0,
+        "stall": false,
+        "stallWarning": false,
+        "gearWarning": false,
+        "buffet": 0,
+        "hp": 0.96,
+        "runway": null,
+        "hud": true,
+        "instruments": true
+      },
+      "ms": 1,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:03:47.489Z",
+    "op": {
+      "op": "call",
+      "method": "hitchRun",
+      "args": [
+        0.034,
+        [],
+        2,
+        false,
+        true
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "stepped",
+        "frames": 2,
+        "wrappersLeft": 0,
+        "seconds": 0.03,
+        "avgMs": 44.55,
+        "p50Ms": 63.7,
+        "p95Ms": 63.7,
+        "p99Ms": 63.7,
+        "maxMs": 63.7,
+        "longLimitMs": 127.4,
+        "long": 0,
+        "over16": 2,
+        "over33": 1,
+        "gaps": {
+          "p50": 16.67,
+          "p95": 16.67,
+          "max": 16.67,
+          "over2x": 0,
+          "over33": 0
+        },
+        "causes": {},
+        "tags": {},
+        "excessMs": {},
+        "sections": {
+          "cars": [
+            17.45,
+            29.6
+          ],
+          "phys:broadphase": [
+            13.9,
+            27.3
+          ],
+          "r:submit+shadow": [
+            10.75,
+            12.1
+          ],
+          "ui": [
+            2.6,
+            5.2
+          ],
+          "phys:post": [
+            2.05,
+            3.5
+          ],
+          "r:scenery": [
+            2,
+            2.5
+          ],
+          "r:crowd": [
+            1.8,
+            3
+          ],
+          "r:damage": [
+            1.6,
+            2.9
+          ],
+          "r:people+fx": [
+            1.2,
+            1.2
+          ],
+          "phys:control": [
+            0.8,
+            1
+          ],
+          "flighthud": [
+            0.7,
+            1.1
+          ],
+          "r:vehicles": [
+            0.7,
+            0.9
+          ],
+          "r:lod": [
+            0.5,
+            0.6
+          ],
+          "phys:contacts": [
+            0.4,
+            0.5
+          ],
+          "military": [
+            0.4,
+            0.5
+          ],
+          "combat": [
+            0.4,
+            0.8
+          ]
+        },
+        "totals": {
+          "bufUploads": 114,
+          "bufMB": 0.41,
+          "canvasDraws": 1,
+          "canvasText": 68,
+          "allocKB": 1530,
+          "dom": 18,
+          "gcMB": 0.3
+        },
+        "perSecond": {
+          "bufUploads": 3420,
+          "bufMB": 12.3,
+          "canvasDraws": 30,
+          "canvasText": 2040,
+          "allocKB": 45900,
+          "dom": 540,
+          "gcMB": 9
+        },
+        "domTargets": [
+          [
+            "weaponSlot (children)",
+            2
+          ],
+          [
+            "weaponName (children)",
+            2
+          ],
+          [
+            "ammo (children)",
+            2
+          ],
+          [
+            "reserve (children)",
+            2
+          ],
+          [
+            "reloadHint (children)",
+            2
+          ],
+          [
+            "toast .note [class]",
+            1
+          ],
+          [
+            "toast [class]",
+            1
+          ],
+          [
+            "speed (children)",
+            1
+          ]
+        ],
+        "worst": []
+      },
+      "ms": 94,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:03:47.585Z",
+    "op": {
+      "op": "call",
+      "method": "apache",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "exists": true,
+        "id": 283,
+        "name": "AH-64 APACHE",
+        "pad": {
+          "x": 10200,
+          "y": 9365
+        },
+        "x": 10200,
+        "y": 10028,
+        "heading": 90,
+        "altitude": 46.9,
+        "hp": 617,
+        "maxhp": 640,
+        "aboard": true,
+        "taken": true,
+        "ai": false,
+        "onBasePad": false,
+        "arms": {
+          "weapon": "cannon",
+          "rounds": 320,
+          "rockets": 38,
+          "missiles": 8,
+          "airMissiles": 4,
+          "rearming": false,
+          "salvoLeft": 0,
+          "status": "READY",
+          "lock": {
+            "target": null,
+            "ready": false,
+            "since": 0
+          }
+        },
+        "projectiles": [],
+        "turret": 0,
+        "gunPitch": -38,
+        "aim": {
+          "x": 10200,
+          "y": 10368,
+          "range": 340
+        },
+        "clearance": {
+          "solids": 0,
+          "rotorSolids": 0,
+          "buildings": 0,
+          "vehicles": []
+        }
+      },
+      "ms": 28,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:03:47.616Z",
+    "op": {
+      "op": "shot",
+      "name": "apache-fort-takeoff-native",
+      "full": true
+    },
+    "reply": {
+      "result": {
+        "path": "dist/dev/shots/apache-fort-takeoff-native.png",
+        "bytes": 854691
+      },
+      "newErrors": 0
+    }
+  }
+]

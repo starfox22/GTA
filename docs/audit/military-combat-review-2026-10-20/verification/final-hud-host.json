@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "rows": [
+    {
+      "name": "weapon-art-cache",
+      "assertions": 51,
+      "passed": true
+    },
+    {
+      "name": "car-blood-budget",
+      "assertions": 14,
+      "passed": true
+    }
+  ],
+  "inputs": {
+    "src/game-ui.js": "9176b771698fa0c81bec534f63ed68131a7f3db0a215673c96ba008ccb211acd",
+    "src/ui/hud-bottom.css": "af3185cf8b78c9712a4e6598c24c7ff68ef510a1c099d49c725c1a9350d9070b",
+    "tools/tests/weapon-art-cache.mjs": "0080d82ae7a1665dd7119c1ecbb01dde3b0302a31801d39f7069bdca00503679",
+    "tools/tests/car-blood-budget.mjs": "6d5bb8e735810bae15e66681a929f27dc647d33c21aaa2aa7f963afb7a8fdc72"
+  }
+}

@@ -410,7 +410,7 @@
           // The player's own hand holds it in his fist (player-body3d-grips.js).
           if (pbHands) mGun.multiplyMatrices(mHand[1], pbGripsFor(spec.weapon).inverse);
           else crowdJoint(mGun, mHand[1], hold.at[0], hold.at[1], hold.at[2], hold.rz);
-          rigEmit(P[spec.weapon], mGun, 1, 1, 1, WEAPON_PAINTS[spec.weapon] || WEAPON_PAINTS.pistol);
+          rigEmit(rigWeaponPart(spec.weapon, spec.rim), mGun, 1, 1, 1, WEAPON_PAINTS[spec.weapon] || WEAPON_PAINTS.pistol);
         } else if (hold && holdWeight > 0.05) drawHold(p, s, spec, hold, H, elevation, hipY, holdWeight, pbHands);
         // A rider's hands on the bars (RIDERS).
         if (spec?.handTargets) {
@@ -449,7 +449,7 @@
           }
           // A drive-by (crowd3d-driveby.js): the pistol along the aim, the firing hand on its grip.
           if (spec.gunFrame) {
-            rigEmit(P[spec.weapon] || P.pistol, spec.gunFrame, 1, 1, 1, WEAPON_PAINTS[spec.weapon] || WEAPON_PAINTS.pistol);
+            rigEmit(rigWeaponPart(spec.weapon, spec.rim) || P.pistol, spec.gunFrame, 1, 1, 1, WEAPON_PAINTS[spec.weapon] || WEAPON_PAINTS.pistol);
             mHand[spec.gunHand].copy(pbHands ? handFrames[1] : spec.gunHandFrame);
           }
         }
@@ -656,7 +656,7 @@
             (hold.yaw || 0) + slash * 1.1,
           );
           const kind = spec.weapon === 'rifle' && spec.army ? 'rifleArmy' : spec.weapon;
-          rigEmit(P[spec.weapon], mGun, 1, 1, 1, WEAPON_PAINTS[kind] || WEAPON_PAINTS.pistol);
+          rigEmit(rigWeaponPart(spec.weapon, spec.rim), mGun, 1, 1, 1, WEAPON_PAINTS[kind] || WEAPON_PAINTS.pistol);
           // The firing hand: its wrist a little behind and above the grip.
           // The firing hand wraps the grip: the wrist a little behind and above it,
           // the hand down the grip, fingers round the front.

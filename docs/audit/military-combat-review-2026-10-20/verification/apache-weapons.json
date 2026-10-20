@@ -1,0 +1,51 @@
+{
+  "passed": true,
+  "assertions": 524,
+  "evidence": [
+    {
+      "savedBindings": {
+        "absentAction": "only conflicting new default slots are unbound; existing saved keys remain intact",
+        "explicitAction": "saved custom and unbound slots preserved"
+      },
+      "swaps": {
+        "unsafeSwap": "aircraft Q → fire F rejected atomically with Settings explanation",
+        "acceptedSwap": "fire F → shared contextual Q displaces both independent cycles to F; horn/radio simple swap preserved"
+      },
+      "transforms": {
+        "poses": 27,
+        "hardpointReleases": 378,
+        "maximumError": 3.4809342861069267e-14,
+        "method": "downloaded pack source origins/hardpoints, real Three matrices, production animateDownloadedApache/animateApache, pure simulation release helpers"
+      },
+      "method": "production-host",
+      "controls": "actual registered keydown/keyup and pad handlers, mobile/chip callbacks, settings and help",
+      "combat": "actual Apache emission, swept updateBullets, elevation, vehicle damage/armour, clearSight and explode damage/falloff; render/audio, detailed blast effects and damage mutation callbacks are isolated",
+      "limits": "No browser, native graphics, real GPU or hardware FPS evidence."
+    }
+  ],
+  "inputs": {
+    "assets/apache-model.bin": "9ea86120bc1295a807ddfcdf1d3f24a22a54d547b83e480e571ae107ef06bd55",
+    "src/apache-assets3d.js": "73cd85cb24a8655b99ffdf6f208327eb434159ee1d37641ef98e0bc6fbb837af",
+    "src/apache-guided.js": "35d1f2780c8ed87381c365848d5ef906392d7c945cbeca15287137f1366be71f",
+    "src/apache.js": "e11e54d34ecd86d214604d2c1a35b5ed3f73ed14e5b681d8e5aac03087f044af",
+    "src/apache3d.js": "0e3f27615c1982aebd0dcf9ceea6d8a915fe66c1592c673ab5a6fe934ff54411",
+    "src/arsenal.js": "84c916b67a609522e6a90277cc5e61635336554c211274fc3a395aeab38321af",
+    "src/citylife-police.js": "a4860dc9f66124c3db77f9c8a66f2f8945cbdf0af9406449b37ac6efd6170452",
+    "src/combat-rules.js": "2b7e65c80495793e8a1e5c8afdc7f008c4afc29eb98cecbdb00b1f925e9b7a1c",
+    "src/controls.js": "d33a36f4e41a3d12ebfb5fcef5b49cb8b94e18426b866ad8f174afc6423fb0b2",
+    "src/game-combat.js": "7c1f48cd783778ad0db939edf2cde0a165e2912cafbbad1ba8f2d059b061a04e",
+    "src/game-input.js": "9f607ea39d3564e138c6988faef51cd640f9f7669d10cb8a98c1c8e341f1969f",
+    "src/game-player-actions.js": "973f0d4046064e6068018eefb66259d399709bfc64726bbb3ad0d3bbb961609a",
+    "src/gamepad.js": "6912a19ea6f1121b09bd67914e346515e40ae4138eba79c5bd18c021a561a6e4",
+    "src/hud-state.js": "8d6b5c3de4f2f09e4f91873fba3fb80b59a9bcff70ea50fa1310fbd8f1ced00d",
+    "src/input-hints.js": "9878c9edfc2c397c4b7deca880e2ab792a8392d3a07b5e0e1016b092be5990da",
+    "src/mobile.js": "4d6e0317ace03c99fda2462a23272b9b577d22b6cd9fe8abb1674333bed57c2d",
+    "src/roofmission-layout.js": "943a1c570822b02fdad72b4c0dc6be7f284399bef91132056284e303cc59a73c",
+    "src/settings.js": "ceb7650b2098832c14264db186f0f6ee9a9ff23a05e7ccecf48904d00c9b865c",
+    "src/vehicle-gunfire.js": "7da6fa3d62faf46505e039bbcc4862d34cb9e33ed4060db1556a868df228166e",
+    "tools/apache-weapons-host-check.mjs": "1d82f0cc288f12a8c1785e00348b7c4179e8972177cc7fae9f79cdf6b189cb3a",
+    "tools/tests/apache-weapons.mjs": "96100d644e581e8c557109d71306f3b263f94da8ff09a78812f5113ddf8a755c",
+    "vendor/three.r160.js": "4be00b6c9d3158375131740b8a39c5671f8c122d7b1eab46d4bd6cabf0063651"
+  },
+  "method": "CPU-only VM, production source functions and registered input handlers; no browser/GPU performance claims"
+}

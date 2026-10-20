@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "retainedSourceTriangles": 220711,
+  "originalAircraftCorners": 662133,
+  "errorsMetresAndUnitNormalsUV": {
+    "position": 2.383995800769867e-07,
+    "normal": 3.414295568493486e-08,
+    "uv": 0.0
+  },
+  "parts": {
+    "body": 183656,
+    "beacon": 372,
+    "rotor": 26214,
+    "tail": 2204,
+    "gun": 3825,
+    "barrel": 568,
+    "payload": 3872
+  },
+  "farTriangles": 14276,
+  "shadowTriangles": 4791,
+  "sourceHasTextures": false,
+  "packBytes": 18839164,
+  "packSHA256": "9ea86120bc1295a807ddfcdf1d3f24a22a54d547b83e480e571ae107ef06bd55",
+  "sourceGltfSHA256": "52bce1297a780bfdae03ed75d4121eb971f7657499b4228a1289d46a903aadf5",
+  "sourceBufferSHA256": "a35d319f0c8178dabd67d9174b788c819151ca327d183a3bcf78255fa563580c"
+}

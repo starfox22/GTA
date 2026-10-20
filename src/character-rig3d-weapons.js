@@ -65,7 +65,7 @@
               rigBox(0.3, 0.3, 0.14, 0, 0.8, 0.52, 0),
             ]),
           ),
-          rocket: scaled(
+          rocket: rocketLauncherGeometry('near') || scaled(
             rigMerge([
               rigRod(-3.1, 4.3, 0.4, 0, 0.62, 0, 10),
               rigPlace(rigRegion(new Three.ConeGeometry(0.46, 1.3, 10, 1), 2), 4.95, 0.62, 0, 0, 0, -Math.PI / 2),
@@ -107,7 +107,7 @@
         shotgun: { support: [2.8, -0.05, -0.1], shoulder: true, length: 6.4 },
         rifle: { support: [2.5, -0.02, -0.12], shoulder: true, length: 5.6 },
         sniper: { support: [1.9, -0.18, -0.1], shoulder: true, length: 7.6 },
-        rocket: { support: [1.8, -0.35, -0.05], shoulder: true, onShoulder: true, length: 8 },
+        rocket: { support: [-1.114080574 / WEAPON_SCALE, 0.106102912, 0], shoulder: true, onShoulder: true, length: 10.237415 / WEAPON_SCALE },
         knife: { support: null, shoulder: false, length: 1.5 },
         // At work the left hand holds the tension wrench just below and left of the pick.
         lockpick: { support: [0.35, -0.3, -0.45], shoulder: false, length: 1.3 },

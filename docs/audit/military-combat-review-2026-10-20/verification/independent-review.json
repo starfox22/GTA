@@ -1,0 +1,36 @@
+{
+  "status": "passed after one corrected controls migration blocker",
+  "tests": {
+    "apacheWeapons": 524,
+    "apacheAsset": 149,
+    "rocketLauncher": 18616,
+    "weaponArtCache": 51,
+    "carBloodBudget": 14,
+    "fxFootprint": 807,
+    "wheelieBindings": 61
+  },
+  "findings": [
+    {
+      "id": "saved-aircraft-cycle-default-conflict",
+      "status": "fixed",
+      "before": "Legacy Fire=Q dispatched both fire and aircraft cycle when new action was absent from saved controls.",
+      "after": "Only a conflicting newly added default slot becomes unbound; existing saved keys and explicit new slots are preserved.",
+      "proof": "apache-weapons-migration.json",
+      "source": "src/controls.js"
+    }
+  ],
+  "limitations": [
+    "CPU host source/function checks; no browser/GL compile or hardware FPS evidence.",
+    "FX report streak-centre discrepancy sent to asset agent/root for conditional offset correction."
+  ],
+  "inputs": {
+    "src/controls.js": "d33a36f4e41a3d12ebfb5fcef5b49cb8b94e18426b866ad8f174afc6423fb0b2",
+    "tools/tests/apache-weapons.mjs": "96100d644e581e8c557109d71306f3b263f94da8ff09a78812f5113ddf8a755c",
+    "src/apache.js": "e11e54d34ecd86d214604d2c1a35b5ed3f73ed14e5b681d8e5aac03087f044af",
+    "src/apache-guided.js": "35d1f2780c8ed87381c365848d5ef906392d7c945cbeca15287137f1366be71f",
+    "src/rocket-launcher3d.js": "1ad4bfcb724c5f802f926bcb978c1879ae1f8d03ddc9d01dfe599907842e1fc7",
+    "src/apache-assets3d.js": "73cd85cb24a8655b99ffdf6f208327eb434159ee1d37641ef98e0bc6fbb837af",
+    "src/game-ui.js": "20aac69b06cc43207464269cc7d85c88d1205884008ab2db3e15c77565edf6bd",
+    "src/carblood3d-skin.js": "742ba18de3563c5767da5ae49b850b73c8a6a01c42ccf2cd3e873d09efeda13e"
+  }
+}

@@ -1,12 +1,21 @@
     // Weapon chip, mission card and updateUI() (HUD text refresh).
+    const weaponArtCache = new WeakMap();
     function drawWeapon() {
       // In a tank the chip shows the main gun or the MG (armor.js tankHud), in the
       // Apache its gun and rockets (apache.js apacheHud).
-      if (player.car?.type === 'tank' || isApache(player.car) || mountedGunKind(player.car)) {
-        delete getElement('weaponArt').dataset.tankIcon;
-        return;
-      }
-      drawWeaponIcon(getElement('weaponArt'), selectedWeaponIndex);
+      if (player.car?.type === 'tank' || isApache(player.car) || mountedGunKind(player.car)) return;
+      const art = getElement('weaponArt'),
+        armedIcon = art.dataset.tankIcon,
+        atlas = visualAssets.arsenal,
+        width = art.width, height = art.height,
+        sourceWidth = atlas?.width || 0, sourceHeight = atlas?.height || 0,
+        previous = weaponArtCache.get(art);
+      if (armedIcon) delete art.dataset.tankIcon;
+      if (!armedIcon && previous && previous.weapon === selectedWeaponIndex && previous.width === width &&
+        previous.height === height && previous.atlas === atlas && previous.sourceWidth === sourceWidth &&
+        previous.sourceHeight === sourceHeight) return;
+      drawWeaponIcon(art, selectedWeaponIndex);
+      weaponArtCache.set(art, { weapon: selectedWeaponIndex, width, height, atlas, sourceWidth, sourceHeight });
     }
     /* No weapon: a clenched fist seen from the side, knuckles forward (the way the
        gun icons point), drawn procedurally at any canvas size. */
@@ -297,6 +306,9 @@
       const d = district(),
         w = currentWeapon(),
         c = player.car;
+      const weaponButton = getElement('weaponButton'), apacheChip = isApache(c);
+      if (weaponButton.classList.contains('apache-armament') !== apacheChip)
+        weaponButton.classList.toggle('apache-armament', apacheChip);
       getElement('district').textContent = d;
       getElement('streetName').textContent = streetNameAt(player.x, player.y);
       getElement('cash').textContent = '$' + String(Math.floor(visibleCash())).padStart(6, '0');

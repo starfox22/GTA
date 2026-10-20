@@ -406,7 +406,7 @@
       }
       if (player.coaster) return player.coaster.kind === 'train' ? 'coaster' : 'ride';
       if (!c) return player.swimming ? 'swim' : roofPartyPace() ? 'party' : fortCoverPace() ? 'cover' : 'foot';
-      if (c.type === 'helicopter') return 'heli';
+      if (c.type === 'helicopter') return c.airframe === 'apache' ? 'apache' : 'heli';
       if (c.type === 'plane') return 'plane';
       if (isBoat(c)) return 'boat';
       if (vehicleSpec(c).bike) return vehicleSpec(c).bicycle ? 'bike' : 'moto';
@@ -425,6 +425,7 @@
       moto: [['move', 'RIDE'], ['wheelie', 'LIFT'], ['wheelieDown', 'LOWER'], ['interact', 'EXIT'], ['radioNext', 'STATION']],
       boat: [['move', 'STEER'], ['handbrake', 'SLOW'], ['bail', 'DIVE'], ['interact', 'EXIT']],
       heli: [['ascend', 'RISE'], ['descend', 'DESCEND'], ['move', 'FLY'], ['bail', 'BAIL OUT']],
+      apache: [['ascend', 'RISE'], ['descend', 'DESCEND'], ['fire', 'FIRE'], ['cycleAircraftWeapon', 'WEAPON'], ['bail', 'BAIL OUT']],
       plane: [['forward', 'THROTTLE'], ['ascend', 'NOSE UP'], ['descend', 'NOSE DOWN'], ['flapsDown', 'FLAPS'], ['gear', 'GEAR'], ['bail', 'BAIL OUT']],
       freefall: [['bail', 'OPEN PARACHUTE'], ['move', 'STEER'], ['forward', 'TRACK']],
       reservefall: [['bail', 'OPEN RESERVE'], ['move', 'STEER'], ['forward', 'TRACK']],
@@ -455,7 +456,7 @@
         strip.append(item);
       }
       getElement('mapKeyHint').textContent = keyName('map');
-      getElement('cycleKeyHint').textContent = keyName('cycleWeapon');
+      getElement('cycleKeyHint').textContent = keyName(context === 'apache' ? 'cycleAircraftWeapon' : 'cycleWeapon');
       getElement('pagerHint').textContent = keyName('missionCard');
       getElement('radioNext').textContent = keyPrefix('radioNext') + 'NEXT';
     }

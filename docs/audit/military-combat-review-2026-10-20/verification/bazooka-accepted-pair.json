@@ -1,0 +1,49 @@
+{
+  "passed": true,
+  "before": {
+    "file": "work/military-combat-review/before-assets/old-bazooka-quarter-chase.png",
+    "sha256": "879fae3242c848434c25f9fb802f170ffd5e44a503c45c4db4108462894ebc90",
+    "sourceSHA256": "a0777806af596daf716c1f8eaed4a3cbc1aa2192506b2ff0f449dce1ee7969c0"
+  },
+  "after": {
+    "file": "work/military-combat-review/candidate-1/bazooka-qa/05-bazooka-quarter-held-final.png",
+    "sha256": "0d4cb19847935abb81c4a7bba0e0215f3543e2787ecdddd3a047391863786b79",
+    "sourceSHA256": "e73c7022c2659d1690b3de2a884d575f2e228d78437c1930c41e9b305051f968"
+  },
+  "nativeUneditedPNG": true,
+  "viewport": [
+    960,
+    600
+  ],
+  "normalHUD": true,
+  "clock": "DAY 1 \u00b7 13:00",
+  "camera": {
+    "chaseLook": [
+      0,
+      0,
+      -55,
+      10
+    ],
+    "fov": 52,
+    "boomMetres": 3.5
+  },
+  "location": [
+    10100,
+    9450
+  ],
+  "quality": "HIGH",
+  "weather": "clear",
+  "checks": {
+    "Full downloaded 3500-triangle launcher held in hero batch": true,
+    "Bazooka loaded before real input": true,
+    "Real fire input consumes bazooka round": true,
+    "Automatic reload restores one round and consumes one reserve": true
+  },
+  "actionQA": "qa.json",
+  "finalCaptureReceipt": "held-final.json",
+  "notes": [
+    "Same foreground player position and chase camera. Before image came from the preserved baseline world after prior performance staging; after image uses a fresh seeded world and ordinary timer settling.",
+    "Normal in-game FPS label contains batched/software-render timing; no hardware FPS claim.",
+    "No source changes were made during native QA or smoke."
+  ]
+}

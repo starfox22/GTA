@@ -158,6 +158,7 @@
         rooftopTargets = storyActors.filter((p) => p.missionTag === 'rooftop-hit' && !p.hidden);
       for (let i = bullets.length - 1; i >= 0; i--) {
         const b = bullets[i];
+        if (b.apacheGuided || b.apacheRocket) updateApacheGuidance(b, deltaSeconds);
         // Who is shooting at the player (combat-rules.js SHOT LOG).
         if (b.enemy && !b.logged) logHostileShot(b);
         let impact = false,

@@ -1,0 +1,2698 @@
+{
+  "renderBackend": "ANGLE Vulkan SwiftShader software GL",
+  "baselineSHA256": "a0777806af596daf716c1f8eaed4a3cbc1aa2192506b2ff0f449dce1ee7969c0",
+  "findings": [
+    {
+      "issue": "Car-blood slice budget replenishes on wall clock gaps within one render frame",
+      "source": "src/carblood3d-skin.js cbFrame/cbSlice",
+      "evidence": "cbFrame returns only when performance.now()-cbFrameStamp <=5; after5ms it resets cbFrameLeft to clamp(gap*.14,3,9). cbSlice invokes it per job; several cars can refill the shared budget in the same renderer pass.",
+      "measured": "Visible first/warm vehicle pass averages26.07/20.75ms per frame; own module probe worstSlice27.1ms, next26.4ms,176.6ms fitting over16slices."
+    },
+    {
+      "issue": "Cold shader/material variants enter on first pursuit helicopter and first wrecks",
+      "evidence": "renderHiccups events in07-heavy-render-first.json:6programs at t4.1 (police helicopter);4programs at t6.1 (asset-char-cut/finish and MeshBasic sheets).",
+      "limit": "This dev page skipped title prewarm: prewarm.done false,compiled0. Do not generalize this to fully prewarmed production."
+    },
+    {
+      "issue": "Visible multi-wreck fight adds draw work and alpha overdraw",
+      "evidence": "Corrected visible scene has3burning wrecks;~310camera+249shadow submissions and1.32Mtriangles in first visible sample; effects one shared draw near1000live slots.",
+      "limit": "Earlier phases07\u201309 had wrecks above the viewport; they remain partial controls, not visible multi-wreck evidence."
+    }
+  ],
+  "caveats": [
+    "SwiftShader wall-clock FPS and GL blocking time are not a hardware GPU benchmark.",
+    "V8 sampling profiles include blocked native GL calls and can be dominated by uniformMatrix4fv/getProgramParameter while software GL drains. Use page thread CPU and named pass costs with this limit.",
+    "Some early profiles include first navigation graph/minimap bakes. They are retained as cold controls.",
+    "cbSlice is cooperative, so frame-serial budgeting still needs bounded job yields to prevent a single large slice; observed own worstSlice exceeds9ms.",
+    "No source optimizations were made during this profiling pass."
+  ],
+  "phases": {
+    "02-quiet-fort-render": {
+      "frames": 3,
+      "avgMs": 640.83,
+      "p50Ms": 72.8,
+      "p95Ms": 1795.5,
+      "sections": {
+        "waypoint": [
+          279.17,
+          837.5
+        ],
+        "r:submit+shadow": [
+          191.3,
+          538.5
+        ],
+        "cars": [
+          57.07,
+          141.8
+        ],
+        "phys:control": [
+          31.73,
+          82.2
+        ],
+        "sealife": [
+          22.67,
+          46.2
+        ],
+        "r:scenery": [
+          19.17,
+          54.4
+        ],
+        "civic": [
+          17,
+          48
+        ],
+        "people": [
+          12.73,
+          36.9
+        ],
+        "police:wanted": [
+          10.8,
+          29.9
+        ],
+        "phys:broadphase": [
+          10.73,
+          27.6
+        ],
+        "phys:post": [
+          8.7,
+          19.5
+        ],
+        "phys:contacts": [
+          4.93,
+          10.4
+        ],
+        "military": [
+          4.8,
+          13
+        ],
+        "r:damage": [
+          3.93,
+          6.8
+        ],
+        "r:lod": [
+          2.83,
+          6.3
+        ],
+        "sports": [
+          2.47,
+          4.3
+        ]
+      },
+      "totals": {
+        "bufUploads": 119,
+        "bufMB": 0.53,
+        "links": 1,
+        "canvasText": 2,
+        "allocKB": 11559,
+        "dom": 20,
+        "vehicles": 15,
+        "programs": 1,
+        "geometries": 23,
+        "models": 7
+      },
+      "pageThreadCpuMs": 2035,
+      "wallMs": 9029,
+      "cameraObjectProfile": {
+        "total": 215,
+        "triangles": 750067,
+        "byName": [
+          [
+            "vehicle in vehicle",
+            104
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            7
+          ],
+          [
+            "static batch [MeshStandardMaterial #ffffff map] in static batch [MeshStandardMaterial #ffffff map]",
+            7
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            3
+          ],
+          [
+            "monarch lanterns",
+            3
+          ],
+          [
+            "village lanterns",
+            3
+          ],
+          [
+            "static batch [MeshStandardMaterial #2d3a2f] in static batch [MeshStandardMaterial #2d3a2f]",
+            3
+          ],
+          [
+            "static batch [MeshStandardMaterial #a7afad] in static batch [MeshStandardMaterial #a7afad]",
+            3
+          ],
+          [
+            "static batch [MeshStandardMaterial #ffffff map lit] in static batch [MeshStandardMaterial #ffffff map lit]",
+            3
+          ],
+          [
+            "damage decals",
+            2
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            2
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #434c37] in static batch [MeshStandardMaterial #434c37]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #7c8481] in static batch [MeshStandardMaterial #7c8481]",
+            2
+          ]
+        ],
+        "byTriangles": [
+          [
+            "vehicle in vehicle",
+            128543
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114576
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            104832
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            96802
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            86280
+          ],
+          [
+            "monarch lanterns",
+            45704
+          ],
+          [
+            "static batch [MeshStandardMaterial #a7afad] in static batch [MeshStandardMaterial #a7afad]",
+            18156
+          ],
+          [
+            "glow field",
+            8476
+          ],
+          [
+            "player body",
+            7064
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            6936
+          ],
+          [
+            "village lanterns",
+            5832
+          ],
+          [
+            "Mesh BufferGeometry MeshStandardMaterial",
+            4992
+          ],
+          [
+            "static batch [MeshStandardMaterial #7c8481] in static batch [MeshStandardMaterial #7c8481]",
+            3576
+          ],
+          [
+            "rooftop pool solar in rooftop pool solar",
+            2676
+          ]
+        ]
+      },
+      "effects": {
+        "live": 0,
+        "waiting": 0,
+        "drawn": 0,
+        "game": 0,
+        "capacity": 1024,
+        "drawCapacity": 1536,
+        "peak": 0,
+        "emitted": 0,
+        "dropped": 0,
+        "tierShare": 1,
+        "drawCalls": 0,
+        "atlas": {
+          "baked": true,
+          "ms": 44.2
+        },
+        "blastAge": null
+      },
+      "draw": {
+        "viewCalls": 203,
+        "shadowCalls": 195,
+        "frameCalls": 412,
+        "triangles": 1267625,
+        "programs": 101,
+        "sceneObjects": 18661
+      }
+    },
+    "03-quiet-fort-warm": {
+      "frames": 3,
+      "avgMs": 173.43,
+      "p50Ms": 56.8,
+      "p95Ms": 415.5,
+      "sections": {
+        "ui": [
+          125.57,
+          376.7
+        ],
+        "sealife": [
+          10.4,
+          13
+        ],
+        "r:submit+shadow": [
+          10.03,
+          12.3
+        ],
+        "cars": [
+          9.9,
+          12.2
+        ],
+        "damage": [
+          6.03,
+          17.9
+        ],
+        "phys:control": [
+          5.77,
+          7.2
+        ],
+        "phys:post": [
+          1.73,
+          2.1
+        ],
+        "r:scenery": [
+          1.47,
+          1.6
+        ],
+        "phys:contacts": [
+          1.07,
+          1.7
+        ],
+        "civic": [
+          1.07,
+          2.5
+        ],
+        "r:damage": [
+          1,
+          1.9
+        ],
+        "phys:broadphase": [
+          0.9,
+          1
+        ],
+        "r:lod": [
+          0.83,
+          1.1
+        ],
+        "r:vehicles": [
+          0.73,
+          0.9
+        ],
+        "military": [
+          0.6,
+          0.8
+        ],
+        "people": [
+          0.57,
+          0.7
+        ]
+      },
+      "totals": {
+        "bufUploads": 27,
+        "bufMB": 0.25,
+        "allocKB": 6032,
+        "dom": 33,
+        "canvasDraws": 6,
+        "canvasText": 25,
+        "gcMB": 2.3
+      },
+      "pageThreadCpuMs": 846,
+      "wallMs": 1008,
+      "cameraObjectProfile": {
+        "total": 215,
+        "triangles": 750067,
+        "byName": [
+          [
+            "vehicle in vehicle",
+            104
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            7
+          ],
+          [
+            "static batch [MeshStandardMaterial #ffffff map] in static batch [MeshStandardMaterial #ffffff map]",
+            7
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            3
+          ],
+          [
+            "monarch lanterns",
+            3
+          ],
+          [
+            "village lanterns",
+            3
+          ],
+          [
+            "static batch [MeshStandardMaterial #2d3a2f] in static batch [MeshStandardMaterial #2d3a2f]",
+            3
+          ],
+          [
+            "static batch [MeshStandardMaterial #a7afad] in static batch [MeshStandardMaterial #a7afad]",
+            3
+          ],
+          [
+            "static batch [MeshStandardMaterial #ffffff map lit] in static batch [MeshStandardMaterial #ffffff map lit]",
+            3
+          ],
+          [
+            "damage decals",
+            2
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            2
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #434c37] in static batch [MeshStandardMaterial #434c37]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #7c8481] in static batch [MeshStandardMaterial #7c8481]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #5d6a4b] in static batch [MeshStandardMaterial #5d6a4b]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #1f2e37] in static batch [MeshStandardMaterial #1f2e37]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #9c8c66] in static batch [MeshStandardMaterial #9c8c66]",
+            2
+          ]
+        ],
+        "byTriangles": [
+          [
+            "vehicle in vehicle",
+            128543
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114576
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            104832
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            96802
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            86280
+          ],
+          [
+            "monarch lanterns",
+            45704
+          ],
+          [
+            "static batch [MeshStandardMaterial #a7afad] in static batch [MeshStandardMaterial #a7afad]",
+            18156
+          ],
+          [
+            "glow field",
+            8476
+          ],
+          [
+            "player body",
+            7064
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            6936
+          ],
+          [
+            "village lanterns",
+            5832
+          ],
+          [
+            "Mesh BufferGeometry MeshStandardMaterial",
+            4992
+          ],
+          [
+            "static batch [MeshStandardMaterial #7c8481] in static batch [MeshStandardMaterial #7c8481]",
+            3576
+          ],
+          [
+            "rooftop pool solar in rooftop pool solar",
+            2676
+          ],
+          [
+            "static batch [MeshStandardMaterial #ddd6c2] in static batch [MeshStandardMaterial #ddd6c2]",
+            2544
+          ],
+          [
+            "static batch [MeshStandardMaterial #1d1f21] in static batch [MeshStandardMaterial #1d1f21]",
+            2468
+          ],
+          [
+            "static batch [MeshStandardMaterial #1f2e37] in static batch [MeshStandardMaterial #1f2e37]",
+            2340
+          ]
+        ]
+      },
+      "draw": {
+        "viewCalls": 203,
+        "shadowCalls": 195,
+        "frameCalls": 412,
+        "triangles": 1267625,
+        "programs": 101,
+        "sceneObjects": 18661
+      }
+    },
+    "07-heavy-render-first": {
+      "frames": 3,
+      "avgMs": 50.83,
+      "p50Ms": 40.7,
+      "p95Ms": 71.9,
+      "sections": {
+        "r:submit+shadow": [
+          23.5,
+          36.4
+        ],
+        "r:vehicles": [
+          8.57,
+          10.3
+        ],
+        "r:people+fx": [
+          5.47,
+          6.3
+        ],
+        "cars": [
+          4.77,
+          9.1
+        ],
+        "phys:control": [
+          3.07,
+          7.3
+        ],
+        "r:damage": [
+          2.07,
+          3.5
+        ],
+        "r:scenery": [
+          1.8,
+          4.2
+        ],
+        "phys:post": [
+          0.63,
+          0.8
+        ],
+        "ui": [
+          0.57,
+          1.7
+        ],
+        "military": [
+          0.53,
+          1
+        ],
+        "r:lod": [
+          0.53,
+          0.6
+        ],
+        "civic": [
+          0.5,
+          0.6
+        ],
+        "phys:broadphase": [
+          0.47,
+          0.6
+        ],
+        "r:camera": [
+          0.33,
+          0.6
+        ],
+        "police:officers": [
+          0.27,
+          0.5
+        ],
+        "phys:contacts": [
+          0.23,
+          0.4
+        ]
+      },
+      "totals": {
+        "bufUploads": 73,
+        "bufMB": 0.79,
+        "allocKB": 1814,
+        "geometries": 1,
+        "canvasDraws": 19,
+        "texUploads": 1,
+        "texMB": 1,
+        "canvasText": 5,
+        "dom": 13
+      },
+      "pageThreadCpuMs": 623,
+      "wallMs": 697,
+      "cameraObjectProfile": {
+        "total": 230,
+        "triangles": 728165,
+        "byName": [
+          [
+            "vehicle in vehicle",
+            111
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "Mesh PlaneGeometry MeshBasicMaterial",
+            10
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            7
+          ],
+          [
+            "static batch [MeshStandardMaterial #ffffff map] in static batch [MeshStandardMaterial #ffffff map]",
+            7
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            3
+          ],
+          [
+            "monarch lanterns",
+            3
+          ],
+          [
+            "village lanterns",
+            3
+          ],
+          [
+            "static batch [MeshStandardMaterial #2d3a2f] in static batch [MeshStandardMaterial #2d3a2f]",
+            3
+          ],
+          [
+            "static batch [MeshStandardMaterial #a7afad] in static batch [MeshStandardMaterial #a7afad]",
+            3
+          ],
+          [
+            "damage decals",
+            2
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            2
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #ffffff map lit] in static batch [MeshStandardMaterial #ffffff map lit]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #434c37] in static batch [MeshStandardMaterial #434c37]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #7c8481] in static batch [MeshStandardMaterial #7c8481]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #5d6a4b] in static batch [MeshStandardMaterial #5d6a4b]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #1f2e37] in static batch [MeshStandardMaterial #1f2e37]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #9c8c66] in static batch [MeshStandardMaterial #9c8c66]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #b1ad9f] in static batch [MeshStandardMaterial #b1ad9f]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #8e958e map] in static batch [MeshStandardMaterial #8e958e map]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #6c7658 map] in static batch [MeshStandardMaterial #6c7658 map]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #d6ae34] in static batch [MeshStandardMaterial #d6ae34]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #dedcd2] in static batch [MeshStandardMaterial #dedcd2]",
+            2
+          ],
+          [
+            "static batch [MeshBasicMaterial #fff3d6] in static batch [MeshBasicMaterial #fff3d6]",
+            2
+          ]
+        ],
+        "byTriangles": [
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114576
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            104832
+          ],
+          [
+            "vehicle in vehicle",
+            101493
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            96802
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            86280
+          ],
+          [
+            "monarch lanterns",
+            45704
+          ],
+          [
+            "static batch [MeshStandardMaterial #a7afad] in static batch [MeshStandardMaterial #a7afad]",
+            18156
+          ],
+          [
+            "Mesh DodecahedronGeometry MeshStandardMaterial",
+            9288
+          ],
+          [
+            "glow field",
+            8476
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            6936
+          ],
+          [
+            "village lanterns",
+            5832
+          ],
+          [
+            "Mesh BufferGeometry MeshStandardMaterial",
+            4992
+          ],
+          [
+            "static batch [MeshStandardMaterial #7c8481] in static batch [MeshStandardMaterial #7c8481]",
+            3576
+          ],
+          [
+            "rooftop pool solar in rooftop pool solar",
+            2676
+          ],
+          [
+            "static batch [MeshStandardMaterial #ddd6c2] in static batch [MeshStandardMaterial #ddd6c2]",
+            2544
+          ],
+          [
+            "static batch [MeshStandardMaterial #1d1f21] in static batch [MeshStandardMaterial #1d1f21]",
+            2468
+          ],
+          [
+            "static batch [MeshStandardMaterial #1f2e37] in static batch [MeshStandardMaterial #1f2e37]",
+            2340
+          ],
+          [
+            "Mesh BufferGeometry MeshBasicMaterial",
+            2200
+          ],
+          [
+            "tree stumps",
+            1728
+          ],
+          [
+            "static batch [MeshStandardMaterial #9c8c66] in static batch [MeshStandardMaterial #9c8c66]",
+            1272
+          ],
+          [
+            "static batch [MeshBasicMaterial #fff3d6] in static batch [MeshBasicMaterial #fff3d6]",
+            1116
+          ],
+          [
+            "static batch [MeshStandardMaterial #434c37] in static batch [MeshStandardMaterial #434c37]",
+            1104
+          ],
+          [
+            "static batch [MeshStandardMaterial #4f4037] in static batch [MeshStandardMaterial #4f4037]",
+            860
+          ],
+          [
+            "static batch [MeshStandardMaterial #5d6a4b] in static batch [MeshStandardMaterial #5d6a4b]",
+            684
+          ]
+        ]
+      },
+      "effects": {
+        "live": 1002,
+        "waiting": 114,
+        "drawn": 932,
+        "game": 44,
+        "capacity": 1024,
+        "drawCapacity": 1536,
+        "peak": 1024,
+        "emitted": 1185,
+        "dropped": 726,
+        "tierShare": 1,
+        "drawCalls": 1,
+        "atlas": {
+          "baked": true,
+          "ms": 44.2
+        },
+        "blastAge": 2.03
+      },
+      "draw": {
+        "viewCalls": 222,
+        "shadowCalls": 218,
+        "frameCalls": 455,
+        "triangles": 1220287,
+        "programs": 111,
+        "sceneObjects": 18746
+      }
+    },
+    "08-heavy-render-warm": {
+      "frames": 6,
+      "avgMs": 569.37,
+      "p50Ms": 20.6,
+      "p95Ms": 3315,
+      "sections": {
+        "r:submit+shadow": [
+          559.32,
+          3304.1
+        ],
+        "cars": [
+          2.57,
+          3.3
+        ],
+        "r:damage": [
+          1.6,
+          6.1
+        ],
+        "phys:control": [
+          0.98,
+          1.5
+        ],
+        "r:people+fx": [
+          0.82,
+          1.2
+        ],
+        "r:scenery": [
+          0.77,
+          1.6
+        ],
+        "r:vehicles": [
+          0.67,
+          0.8
+        ],
+        "phys:broadphase": [
+          0.6,
+          0.9
+        ],
+        "phys:post": [
+          0.48,
+          0.5
+        ],
+        "r:lod": [
+          0.47,
+          0.6
+        ],
+        "civic": [
+          0.37,
+          0.9
+        ],
+        "phys:contacts": [
+          0.33,
+          0.4
+        ],
+        "ui": [
+          0.32,
+          1.9
+        ],
+        "military": [
+          0.13,
+          0.3
+        ],
+        "bullets": [
+          0.13,
+          0.3
+        ],
+        "people": [
+          0.12,
+          0.4
+        ]
+      },
+      "totals": {
+        "bufUploads": 144,
+        "bufMB": 1.11,
+        "gcMB": 1.6,
+        "geometries": 1,
+        "allocKB": 3358,
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "dom": 14
+      },
+      "pageThreadCpuMs": 749,
+      "wallMs": 4220,
+      "cameraObjectProfile": {
+        "total": 231,
+        "triangles": 728213,
+        "byName": [
+          [
+            "vehicle in vehicle",
+            112
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "Mesh PlaneGeometry MeshBasicMaterial",
+            10
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            7
+          ],
+          [
+            "static batch [MeshStandardMaterial #ffffff map] in static batch [MeshStandardMaterial #ffffff map]",
+            7
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            3
+          ],
+          [
+            "monarch lanterns",
+            3
+          ],
+          [
+            "village lanterns",
+            3
+          ],
+          [
+            "static batch [MeshStandardMaterial #2d3a2f] in static batch [MeshStandardMaterial #2d3a2f]",
+            3
+          ],
+          [
+            "static batch [MeshStandardMaterial #a7afad] in static batch [MeshStandardMaterial #a7afad]",
+            3
+          ],
+          [
+            "damage decals",
+            2
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            2
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #ffffff map lit] in static batch [MeshStandardMaterial #ffffff map lit]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #434c37] in static batch [MeshStandardMaterial #434c37]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #7c8481] in static batch [MeshStandardMaterial #7c8481]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #5d6a4b] in static batch [MeshStandardMaterial #5d6a4b]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #1f2e37] in static batch [MeshStandardMaterial #1f2e37]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #9c8c66] in static batch [MeshStandardMaterial #9c8c66]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #b1ad9f] in static batch [MeshStandardMaterial #b1ad9f]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #8e958e map] in static batch [MeshStandardMaterial #8e958e map]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #6c7658 map] in static batch [MeshStandardMaterial #6c7658 map]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #d6ae34] in static batch [MeshStandardMaterial #d6ae34]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #dedcd2] in static batch [MeshStandardMaterial #dedcd2]",
+            2
+          ],
+          [
+            "static batch [MeshBasicMaterial #fff3d6] in static batch [MeshBasicMaterial #fff3d6]",
+            2
+          ]
+        ],
+        "byTriangles": [
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114576
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            104832
+          ],
+          [
+            "vehicle in vehicle",
+            101505
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            96802
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            86280
+          ],
+          [
+            "monarch lanterns",
+            45704
+          ],
+          [
+            "static batch [MeshStandardMaterial #a7afad] in static batch [MeshStandardMaterial #a7afad]",
+            18156
+          ],
+          [
+            "Mesh DodecahedronGeometry MeshStandardMaterial",
+            9288
+          ],
+          [
+            "glow field",
+            8476
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            6936
+          ],
+          [
+            "village lanterns",
+            5832
+          ],
+          [
+            "Mesh BufferGeometry MeshStandardMaterial",
+            4992
+          ],
+          [
+            "static batch [MeshStandardMaterial #7c8481] in static batch [MeshStandardMaterial #7c8481]",
+            3576
+          ],
+          [
+            "rooftop pool solar in rooftop pool solar",
+            2676
+          ],
+          [
+            "static batch [MeshStandardMaterial #ddd6c2] in static batch [MeshStandardMaterial #ddd6c2]",
+            2544
+          ],
+          [
+            "static batch [MeshStandardMaterial #1d1f21] in static batch [MeshStandardMaterial #1d1f21]",
+            2468
+          ],
+          [
+            "static batch [MeshStandardMaterial #1f2e37] in static batch [MeshStandardMaterial #1f2e37]",
+            2340
+          ],
+          [
+            "Mesh BufferGeometry MeshBasicMaterial",
+            2200
+          ],
+          [
+            "tree stumps",
+            1728
+          ],
+          [
+            "static batch [MeshStandardMaterial #9c8c66] in static batch [MeshStandardMaterial #9c8c66]",
+            1272
+          ],
+          [
+            "static batch [MeshBasicMaterial #fff3d6] in static batch [MeshBasicMaterial #fff3d6]",
+            1116
+          ],
+          [
+            "static batch [MeshStandardMaterial #434c37] in static batch [MeshStandardMaterial #434c37]",
+            1104
+          ],
+          [
+            "static batch [MeshStandardMaterial #4f4037] in static batch [MeshStandardMaterial #4f4037]",
+            860
+          ],
+          [
+            "static batch [MeshStandardMaterial #5d6a4b] in static batch [MeshStandardMaterial #5d6a4b]",
+            684
+          ]
+        ]
+      },
+      "effects": {
+        "live": 952,
+        "waiting": 96,
+        "drawn": 883,
+        "game": 27,
+        "capacity": 1024,
+        "drawCapacity": 1536,
+        "peak": 1024,
+        "emitted": 1259,
+        "dropped": 726,
+        "tierShare": 1,
+        "drawCalls": 1,
+        "atlas": {
+          "baked": true,
+          "ms": 44.2
+        },
+        "blastAge": 2.13
+      },
+      "draw": {
+        "viewCalls": 223,
+        "shadowCalls": 218,
+        "frameCalls": 456,
+        "triangles": 1220335,
+        "programs": 111,
+        "sceneObjects": 18746
+      }
+    },
+    "09-heavy-render-steady": {
+      "frames": 6,
+      "avgMs": 1262.47,
+      "p50Ms": 34.8,
+      "p95Ms": 7377.8,
+      "sections": {
+        "r:submit+shadow": [
+          1245.88,
+          7368
+        ],
+        "cars": [
+          4.07,
+          8.2
+        ],
+        "r:scenery": [
+          3.18,
+          6.5
+        ],
+        "phys:control": [
+          1.92,
+          6.4
+        ],
+        "bullets": [
+          1.72,
+          8.6
+        ],
+        "r:damage": [
+          1.35,
+          4.6
+        ],
+        "phys:post": [
+          1.1,
+          4.5
+        ],
+        "r:vehicles": [
+          1.07,
+          3.2
+        ],
+        "people": [
+          0.92,
+          4.3
+        ],
+        "r:lod": [
+          0.87,
+          2.7
+        ],
+        "r:people+fx": [
+          0.75,
+          1.1
+        ],
+        "phys:broadphase": [
+          0.48,
+          0.7
+        ],
+        "ui": [
+          0.32,
+          1.9
+        ],
+        "phys:contacts": [
+          0.28,
+          0.4
+        ],
+        "civic": [
+          0.25,
+          0.5
+        ],
+        "military": [
+          0.25,
+          0.5
+        ]
+      },
+      "totals": {
+        "bufUploads": 138,
+        "bufMB": 1.1,
+        "allocKB": 2547,
+        "gcMB": 1.3,
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "dom": 15
+      },
+      "pageThreadCpuMs": 870,
+      "wallMs": 8838,
+      "cameraObjectProfile": {
+        "total": 231,
+        "triangles": 728223,
+        "byName": [
+          [
+            "vehicle in vehicle",
+            112
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "Mesh PlaneGeometry MeshBasicMaterial",
+            10
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            7
+          ],
+          [
+            "static batch [MeshStandardMaterial #ffffff map] in static batch [MeshStandardMaterial #ffffff map]",
+            7
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            3
+          ],
+          [
+            "monarch lanterns",
+            3
+          ],
+          [
+            "village lanterns",
+            3
+          ],
+          [
+            "static batch [MeshStandardMaterial #2d3a2f] in static batch [MeshStandardMaterial #2d3a2f]",
+            3
+          ],
+          [
+            "static batch [MeshStandardMaterial #a7afad] in static batch [MeshStandardMaterial #a7afad]",
+            3
+          ],
+          [
+            "damage decals",
+            2
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            2
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #ffffff map lit] in static batch [MeshStandardMaterial #ffffff map lit]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #434c37] in static batch [MeshStandardMaterial #434c37]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #7c8481] in static batch [MeshStandardMaterial #7c8481]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #5d6a4b] in static batch [MeshStandardMaterial #5d6a4b]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #1f2e37] in static batch [MeshStandardMaterial #1f2e37]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #9c8c66] in static batch [MeshStandardMaterial #9c8c66]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #b1ad9f] in static batch [MeshStandardMaterial #b1ad9f]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #8e958e map] in static batch [MeshStandardMaterial #8e958e map]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #6c7658 map] in static batch [MeshStandardMaterial #6c7658 map]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #d6ae34] in static batch [MeshStandardMaterial #d6ae34]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #dedcd2] in static batch [MeshStandardMaterial #dedcd2]",
+            2
+          ],
+          [
+            "static batch [MeshBasicMaterial #fff3d6] in static batch [MeshBasicMaterial #fff3d6]",
+            2
+          ]
+        ],
+        "byTriangles": [
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114576
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            104832
+          ],
+          [
+            "vehicle in vehicle",
+            101505
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            96802
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            86280
+          ],
+          [
+            "monarch lanterns",
+            45704
+          ],
+          [
+            "static batch [MeshStandardMaterial #a7afad] in static batch [MeshStandardMaterial #a7afad]",
+            18156
+          ],
+          [
+            "Mesh DodecahedronGeometry MeshStandardMaterial",
+            9288
+          ],
+          [
+            "glow field",
+            8476
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            6936
+          ],
+          [
+            "village lanterns",
+            5832
+          ],
+          [
+            "Mesh BufferGeometry MeshStandardMaterial",
+            4992
+          ],
+          [
+            "static batch [MeshStandardMaterial #7c8481] in static batch [MeshStandardMaterial #7c8481]",
+            3576
+          ],
+          [
+            "rooftop pool solar in rooftop pool solar",
+            2676
+          ],
+          [
+            "static batch [MeshStandardMaterial #ddd6c2] in static batch [MeshStandardMaterial #ddd6c2]",
+            2544
+          ],
+          [
+            "static batch [MeshStandardMaterial #1d1f21] in static batch [MeshStandardMaterial #1d1f21]",
+            2468
+          ],
+          [
+            "static batch [MeshStandardMaterial #1f2e37] in static batch [MeshStandardMaterial #1f2e37]",
+            2340
+          ],
+          [
+            "Mesh BufferGeometry MeshBasicMaterial",
+            2200
+          ],
+          [
+            "tree stumps",
+            1728
+          ],
+          [
+            "static batch [MeshStandardMaterial #9c8c66] in static batch [MeshStandardMaterial #9c8c66]",
+            1272
+          ],
+          [
+            "static batch [MeshBasicMaterial #fff3d6] in static batch [MeshBasicMaterial #fff3d6]",
+            1116
+          ],
+          [
+            "static batch [MeshStandardMaterial #434c37] in static batch [MeshStandardMaterial #434c37]",
+            1104
+          ],
+          [
+            "static batch [MeshStandardMaterial #4f4037] in static batch [MeshStandardMaterial #4f4037]",
+            860
+          ],
+          [
+            "static batch [MeshStandardMaterial #5d6a4b] in static batch [MeshStandardMaterial #5d6a4b]",
+            684
+          ]
+        ]
+      },
+      "effects": {
+        "live": 923,
+        "waiting": 84,
+        "drawn": 857,
+        "game": 18,
+        "capacity": 1024,
+        "drawCapacity": 1536,
+        "peak": 1024,
+        "emitted": 1354,
+        "dropped": 726,
+        "tierShare": 1,
+        "drawCalls": 1,
+        "atlas": {
+          "baked": true,
+          "ms": 44.2
+        },
+        "blastAge": 2.23
+      },
+      "draw": {
+        "viewCalls": 223,
+        "shadowCalls": 218,
+        "frameCalls": 456,
+        "triangles": 1220345,
+        "programs": 111,
+        "sceneObjects": 18746
+      }
+    },
+    "10-visible-wrecks-stage": {
+      "frames": 3,
+      "avgMs": 123.93,
+      "p50Ms": 121.1,
+      "p95Ms": 163.3,
+      "sections": {
+        "r:submit+shadow": [
+          35.03,
+          44.5
+        ],
+        "r:vehicles": [
+          26.07,
+          33.4
+        ],
+        "cars": [
+          18.43,
+          23.3
+        ],
+        "military": [
+          9.73,
+          28.4
+        ],
+        "phys:control": [
+          8.7,
+          16.4
+        ],
+        "phys:broadphase": [
+          7.4,
+          9.3
+        ],
+        "people": [
+          6.4,
+          9.5
+        ],
+        "r:crowd": [
+          3.77,
+          9.6
+        ],
+        "r:scenery": [
+          2.33,
+          4.3
+        ],
+        "civic": [
+          2.27,
+          5.7
+        ],
+        "waypoint": [
+          1.23,
+          3.7
+        ],
+        "r:damage": [
+          1.13,
+          1.5
+        ],
+        "bullets": [
+          1.03,
+          1.4
+        ],
+        "phys:contacts": [
+          1,
+          2.6
+        ],
+        "r:lod": [
+          1,
+          1.8
+        ],
+        "phys:post": [
+          0.97,
+          1.1
+        ]
+      },
+      "totals": {
+        "texUploads": 3,
+        "texMB": 0.02,
+        "bufUploads": 130,
+        "bufMB": 0.55,
+        "allocKB": 3683,
+        "dom": 11,
+        "gcMB": 1
+      },
+      "pageThreadCpuMs": 838,
+      "wallMs": 8561,
+      "cameraObjectProfile": {
+        "total": 317,
+        "triangles": 792107,
+        "byName": [
+          [
+            "vehicle in vehicle",
+            187
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "Mesh PlaneGeometry MeshBasicMaterial",
+            10
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            7
+          ],
+          [
+            "static batch [MeshStandardMaterial #ffffff map] in static batch [MeshStandardMaterial #ffffff map]",
+            6
+          ],
+          [
+            "static batch [MeshStandardMaterial #ffffff map lit] in static batch [MeshStandardMaterial #ffffff map lit]",
+            4
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            3
+          ],
+          [
+            "monarch lanterns",
+            3
+          ],
+          [
+            "village lanterns",
+            3
+          ],
+          [
+            "static batch [MeshStandardMaterial #a7afad] in static batch [MeshStandardMaterial #a7afad]",
+            3
+          ],
+          [
+            "damage decals",
+            2
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            2
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #2d3a2f] in static batch [MeshStandardMaterial #2d3a2f]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #434c37] in static batch [MeshStandardMaterial #434c37]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #7c8481] in static batch [MeshStandardMaterial #7c8481]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #5d6a4b] in static batch [MeshStandardMaterial #5d6a4b]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #1f2e37] in static batch [MeshStandardMaterial #1f2e37]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #9c8c66] in static batch [MeshStandardMaterial #9c8c66]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #b1ad9f] in static batch [MeshStandardMaterial #b1ad9f]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #8e958e map] in static batch [MeshStandardMaterial #8e958e map]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #dedcd2] in static batch [MeshStandardMaterial #dedcd2]",
+            2
+          ],
+          [
+            "static batch [MeshBasicMaterial #fff3d6] in static batch [MeshBasicMaterial #fff3d6]",
+            2
+          ],
+          [
+            "vehicle halos",
+            1
+          ],
+          [
+            "Mesh DodecahedronGeometry MeshStandardMaterial",
+            1
+          ]
+        ],
+        "byTriangles": [
+          [
+            "vehicle in vehicle",
+            155965
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114576
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            104832
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            96802
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            86280
+          ],
+          [
+            "monarch lanterns",
+            45704
+          ],
+          [
+            "static batch [MeshStandardMaterial #a7afad] in static batch [MeshStandardMaterial #a7afad]",
+            18156
+          ],
+          [
+            "Mesh DodecahedronGeometry MeshStandardMaterial",
+            9288
+          ],
+          [
+            "glow field",
+            8476
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            6936
+          ],
+          [
+            "village lanterns",
+            5832
+          ],
+          [
+            "Mesh BufferGeometry MeshStandardMaterial",
+            4992
+          ],
+          [
+            "static batch [MeshStandardMaterial #7c8481] in static batch [MeshStandardMaterial #7c8481]",
+            3576
+          ],
+          [
+            "crowd stump",
+            3565
+          ],
+          [
+            "rooftop pool solar in rooftop pool solar",
+            2676
+          ],
+          [
+            "npc avatar batch 0",
+            2637
+          ],
+          [
+            "static batch [MeshStandardMaterial #ddd6c2] in static batch [MeshStandardMaterial #ddd6c2]",
+            2544
+          ],
+          [
+            "static batch [MeshStandardMaterial #1d1f21] in static batch [MeshStandardMaterial #1d1f21]",
+            2468
+          ],
+          [
+            "static batch [MeshStandardMaterial #1f2e37] in static batch [MeshStandardMaterial #1f2e37]",
+            2340
+          ],
+          [
+            "npc avatar batch 1",
+            2202
+          ],
+          [
+            "Mesh BufferGeometry MeshBasicMaterial",
+            2200
+          ],
+          [
+            "tree stumps",
+            1728
+          ],
+          [
+            "static batch [MeshStandardMaterial #9c8c66] in static batch [MeshStandardMaterial #9c8c66]",
+            1272
+          ],
+          [
+            "static batch [MeshBasicMaterial #fff3d6] in static batch [MeshBasicMaterial #fff3d6]",
+            1116
+          ]
+        ]
+      },
+      "draw": {
+        "viewCalls": 310,
+        "shadowCalls": 249,
+        "frameCalls": 574,
+        "triangles": 1320523,
+        "programs": 116,
+        "sceneObjects": 18787
+      },
+      "effects": {
+        "live": 960,
+        "waiting": 78,
+        "drawn": 894,
+        "game": 12,
+        "capacity": 1024,
+        "drawCapacity": 1536,
+        "peak": 1024,
+        "emitted": 1444,
+        "dropped": 726,
+        "tierShare": 1,
+        "drawCalls": 1,
+        "atlas": {
+          "baked": true,
+          "ms": 44.2
+        },
+        "blastAge": 2.28
+      }
+    },
+    "11-visible-heavy-warm": {
+      "frames": 6,
+      "avgMs": 3175.75,
+      "p50Ms": 347.9,
+      "p95Ms": 13148.2,
+      "sections": {
+        "r:submit+shadow": [
+          3045.53,
+          13051
+        ],
+        "r:vehicles": [
+          20.75,
+          34.6
+        ],
+        "r:crowd": [
+          17.22,
+          98
+        ],
+        "cars": [
+          14.82,
+          51.2
+        ],
+        "r:scenery": [
+          13.85,
+          46.1
+        ],
+        "ui": [
+          12.05,
+          72.3
+        ],
+        "r:damage": [
+          10.08,
+          35.8
+        ],
+        "phys:control": [
+          7.57,
+          32
+        ],
+        "civic": [
+          7.53,
+          24.4
+        ],
+        "r:lod": [
+          4.35,
+          12.2
+        ],
+        "military": [
+          3.75,
+          6.9
+        ],
+        "damage": [
+          3.28,
+          16.9
+        ],
+        "r:people+fx": [
+          3.02,
+          11.1
+        ],
+        "phys:post": [
+          2.82,
+          11.5
+        ],
+        "r:camera": [
+          2.6,
+          7
+        ],
+        "bullets": [
+          2.4,
+          11
+        ]
+      },
+      "totals": {
+        "texUploads": 6,
+        "texMB": 0.04,
+        "bufUploads": 233,
+        "bufMB": 1.18,
+        "allocKB": 2399,
+        "dom": 29,
+        "canvasDraws": 1,
+        "canvasText": 5,
+        "gcMB": 0.8,
+        "gcBetweenMB": 0.3,
+        "geometries": 1
+      },
+      "pageThreadCpuMs": 3611,
+      "wallMs": 22079,
+      "cameraObjectProfile": {
+        "total": 321,
+        "triangles": 777784,
+        "byName": [
+          [
+            "vehicle in vehicle",
+            191
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "Mesh PlaneGeometry MeshBasicMaterial",
+            10
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            7
+          ],
+          [
+            "static batch [MeshStandardMaterial #ffffff map] in static batch [MeshStandardMaterial #ffffff map]",
+            6
+          ],
+          [
+            "static batch [MeshStandardMaterial #ffffff map lit] in static batch [MeshStandardMaterial #ffffff map lit]",
+            4
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            3
+          ],
+          [
+            "monarch lanterns",
+            3
+          ],
+          [
+            "village lanterns",
+            3
+          ],
+          [
+            "static batch [MeshStandardMaterial #a7afad] in static batch [MeshStandardMaterial #a7afad]",
+            3
+          ],
+          [
+            "damage decals",
+            2
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            2
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #2d3a2f] in static batch [MeshStandardMaterial #2d3a2f]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #434c37] in static batch [MeshStandardMaterial #434c37]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #7c8481] in static batch [MeshStandardMaterial #7c8481]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #5d6a4b] in static batch [MeshStandardMaterial #5d6a4b]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #1f2e37] in static batch [MeshStandardMaterial #1f2e37]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #9c8c66] in static batch [MeshStandardMaterial #9c8c66]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #b1ad9f] in static batch [MeshStandardMaterial #b1ad9f]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #8e958e map] in static batch [MeshStandardMaterial #8e958e map]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #dedcd2] in static batch [MeshStandardMaterial #dedcd2]",
+            2
+          ],
+          [
+            "static batch [MeshBasicMaterial #fff3d6] in static batch [MeshBasicMaterial #fff3d6]",
+            2
+          ],
+          [
+            "vehicle halos",
+            1
+          ],
+          [
+            "Mesh DodecahedronGeometry MeshStandardMaterial",
+            1
+          ]
+        ],
+        "byTriangles": [
+          [
+            "vehicle in vehicle",
+            141606
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114576
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            104832
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            96802
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            86280
+          ],
+          [
+            "monarch lanterns",
+            45704
+          ],
+          [
+            "static batch [MeshStandardMaterial #a7afad] in static batch [MeshStandardMaterial #a7afad]",
+            18156
+          ],
+          [
+            "Mesh DodecahedronGeometry MeshStandardMaterial",
+            9288
+          ],
+          [
+            "glow field",
+            8476
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            6936
+          ],
+          [
+            "village lanterns",
+            5832
+          ],
+          [
+            "Mesh BufferGeometry MeshStandardMaterial",
+            4992
+          ],
+          [
+            "static batch [MeshStandardMaterial #7c8481] in static batch [MeshStandardMaterial #7c8481]",
+            3576
+          ],
+          [
+            "crowd stump",
+            3565
+          ],
+          [
+            "rooftop pool solar in rooftop pool solar",
+            2676
+          ],
+          [
+            "npc avatar batch 0",
+            2637
+          ],
+          [
+            "static batch [MeshStandardMaterial #ddd6c2] in static batch [MeshStandardMaterial #ddd6c2]",
+            2544
+          ],
+          [
+            "static batch [MeshStandardMaterial #1d1f21] in static batch [MeshStandardMaterial #1d1f21]",
+            2468
+          ],
+          [
+            "static batch [MeshStandardMaterial #1f2e37] in static batch [MeshStandardMaterial #1f2e37]",
+            2340
+          ],
+          [
+            "npc avatar batch 1",
+            2202
+          ],
+          [
+            "Mesh BufferGeometry MeshBasicMaterial",
+            2200
+          ],
+          [
+            "tree stumps",
+            1728
+          ],
+          [
+            "static batch [MeshStandardMaterial #9c8c66] in static batch [MeshStandardMaterial #9c8c66]",
+            1272
+          ],
+          [
+            "static batch [MeshBasicMaterial #fff3d6] in static batch [MeshBasicMaterial #fff3d6]",
+            1116
+          ]
+        ]
+      },
+      "draw": {
+        "viewCalls": 314,
+        "shadowCalls": 248,
+        "frameCalls": 577,
+        "triangles": 1291242,
+        "programs": 116,
+        "sceneObjects": 18787
+      },
+      "effects": {
+        "live": 1020,
+        "waiting": 66,
+        "drawn": 955,
+        "game": 1,
+        "capacity": 1024,
+        "drawCapacity": 1536,
+        "peak": 1024,
+        "emitted": 1512,
+        "dropped": 738,
+        "tierShare": 1,
+        "drawCalls": 1,
+        "atlas": {
+          "baked": true,
+          "ms": 44.2
+        },
+        "blastAge": 2.38
+      }
+    }
+  },
+  "finalState": {
+    "carBloodReport": {
+      "car": "apc",
+      "hits": 0,
+      "load": 0,
+      "stains": [],
+      "skin": {
+        "skins": 2,
+        "maxSkins": 5,
+        "spare": 1,
+        "builds": 2,
+        "paintMs": 24.3,
+        "paintSlices": 4,
+        "buildMs": 176.6,
+        "buildSlices": 16,
+        "triangles": 0,
+        "sourceTriangles": 0,
+        "gatherCache": {
+          "hits": 0,
+          "misses": 2,
+          "types": 0
+        },
+        "events": 0,
+        "fitted": 0,
+        "painted": 0,
+        "piled": 0,
+        "piledPainted": 0,
+        "visible": false,
+        "panels": [],
+        "warm": {
+          "compiles": 2,
+          "linked": true,
+          "key": "hdr:shadow",
+          "ms": 2.5
+        },
+        "work": {
+          "worstFrameMs": 27.1,
+          "worstSliceMs": 27.1,
+          "frames": 28,
+          "slices": 31,
+          "tileUploadMs": 36.5,
+          "tileUploads": 8,
+          "slow": [
+            [
+              "fit",
+              27.1,
+              2,
+              0
+            ],
+            [
+              "fit",
+              26.4,
+              7,
+              420
+            ]
+          ]
+        },
+        "frameGaps": {
+          "n": 40,
+          "median": 27.3,
+          "p95": 341.3,
+          "worst": 354.9
+        },
+        "textures": 93,
+        "geometries": 491,
+        "programs": 116
+      }
+    },
+    "damageReport": {
+      "id": 282,
+      "type": "apc",
+      "hp": 950,
+      "maxhp": 950,
+      "zones": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "dents": [],
+      "parts": {
+        "hood": 0,
+        "bumperFront": 0,
+        "bumperRear": 0,
+        "doorLeft": 0,
+        "doorRight": 0,
+        "trunk": 0
+      },
+      "glass": {
+        "front": 0,
+        "rear": 0,
+        "left": 0,
+        "right": 0
+      },
+      "lights": [],
+      "flatTires": [],
+      "marks": {},
+      "pull": 0,
+      "handling": {
+        "power": 1,
+        "top": 1,
+        "grip": 1,
+        "pull": 0,
+        "steer": 1,
+        "brake": 1
+      },
+      "burning": 0,
+      "fireSpent": false,
+      "burnt": false,
+      "speed": 0,
+      "spin": 0,
+      "x": 9794,
+      "y": 9009,
+      "a": 3.14
+    },
+    "military": {
+      "alert": true,
+      "lockdown": true,
+      "challenge": 3,
+      "gate": [
+        {
+          "arm": 0,
+          "bollards": 1,
+          "slide": 1,
+          "broken": []
+        },
+        {
+          "arm": 0,
+          "bollards": 1,
+          "slide": 1,
+          "broken": []
+        }
+      ],
+      "soldiers": {
+        "gate": 3,
+        "post": 9,
+        "tower": 8,
+        "range": 4,
+        "patrol": 9,
+        "drill": 12,
+        "sergeant": 1
+      },
+      "aiming": 9,
+      "vehicles": [
+        {
+          "type": "jeep",
+          "x": 9470,
+          "y": 8950,
+          "hp": 380,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "jeep",
+          "x": 9511,
+          "y": 8950,
+          "hp": 268,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "jeep",
+          "x": 9532,
+          "y": 8950,
+          "hp": 34,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "jeep",
+          "x": 9594,
+          "y": 8950,
+          "hp": 0,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "armytruck",
+          "x": 9665,
+          "y": 8950,
+          "hp": 0,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "armytruck",
+          "x": 9719,
+          "y": 8950,
+          "hp": 0,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "apc",
+          "x": 9780,
+          "y": 8950,
+          "hp": 758,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "apc",
+          "x": 9830,
+          "y": 8950,
+          "hp": 950,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "tank",
+          "x": 9490,
+          "y": 9080,
+          "hp": 1600,
+          "ai": false,
+          "role": "crewed"
+        },
+        {
+          "type": "tank",
+          "x": 9565,
+          "y": 9080,
+          "hp": 1600,
+          "ai": false,
+          "role": "crewed"
+        },
+        {
+          "type": "apc",
+          "x": 9645,
+          "y": 9080,
+          "hp": 734,
+          "ai": false,
+          "role": "crewed"
+        },
+        {
+          "type": "armytruck",
+          "x": 9715,
+          "y": 9080,
+          "hp": 312,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "armytruck",
+          "x": 9765,
+          "y": 9080,
+          "hp": 480,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "jeep",
+          "x": 9835,
+          "y": 9080,
+          "hp": 380,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "jeep",
+          "x": 9880,
+          "y": 9080,
+          "hp": 380,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "jeep",
+          "x": 9925,
+          "y": 9080,
+          "hp": 380,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "armytruck",
+          "x": 10160,
+          "y": 9042,
+          "hp": 480,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "jeep",
+          "x": 9510,
+          "y": 8160,
+          "hp": 380,
+          "ai": true,
+          "role": "qrf"
+        },
+        {
+          "type": "jeep",
+          "x": 9565,
+          "y": 8221,
+          "hp": 353,
+          "ai": true,
+          "role": "qrf"
+        },
+        {
+          "type": "helicopter",
+          "x": 9492,
+          "y": 7936,
+          "hp": 220,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "armytruck",
+          "x": 9466,
+          "y": 8234,
+          "hp": 480,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "apc",
+          "x": 9514,
+          "y": 8234,
+          "hp": 950,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "jeep",
+          "x": 10332,
+          "y": 7850,
+          "hp": 380,
+          "ai": true,
+          "role": "patrol"
+        },
+        {
+          "type": "jeep",
+          "x": 9568,
+          "y": 9850,
+          "hp": 380,
+          "ai": true,
+          "role": "patrol"
+        },
+        {
+          "type": "helicopter",
+          "x": 9550,
+          "y": 9522,
+          "hp": 220,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "helicopter",
+          "x": 9810,
+          "y": 9522,
+          "hp": 220,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "helicopter",
+          "x": 10340,
+          "y": 9365,
+          "hp": 220,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "helicopter",
+          "x": 10200,
+          "y": 9365,
+          "hp": 640,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "apc",
+          "x": 9794,
+          "y": 9134,
+          "hp": 810,
+          "ai": false,
+          "role": "parked"
+        },
+        {
+          "type": "apc",
+          "x": 9794,
+          "y": 9009,
+          "hp": 950,
+          "ai": false,
+          "role": "parked"
+        }
+      ],
+      "supply": null,
+      "drill": {
+        "x": 9650,
+        "y": 8330,
+        "active": false
+      }
+    },
+    "shotLog": {
+      "bySource": {
+        "fort-sentinel-apc": {
+          "shots": 18,
+          "hits": 0,
+          "damage": 0,
+          "offscreen": 0,
+          "nearest": 158,
+          "farthest": 165
+        }
+      },
+      "recent": [
+        {
+          "t": 1.4,
+          "source": "fort-sentinel-apc",
+          "distance": 158,
+          "onScreen": true,
+          "stars": 5,
+          "rocket": false
+        },
+        {
+          "t": 1.6,
+          "source": "fort-sentinel-apc",
+          "distance": 158,
+          "onScreen": true,
+          "stars": 5,
+          "rocket": false
+        },
+        {
+          "t": 1.7,
+          "source": "fort-sentinel-apc",
+          "distance": 158,
+          "onScreen": true,
+          "stars": 5,
+          "rocket": false
+        },
+        {
+          "t": 1.8,
+          "source": "fort-sentinel-apc",
+          "distance": 158,
+          "onScreen": true,
+          "stars": 5,
+          "rocket": false
+        },
+        {
+          "t": 1.9,
+          "source": "fort-sentinel-apc",
+          "distance": 158,
+          "onScreen": true,
+          "stars": 5,
+          "rocket": false
+        },
+        {
+          "t": 3,
+          "source": "fort-sentinel-apc",
+          "distance": 158,
+          "onScreen": true,
+          "stars": 5,
+          "rocket": false
+        },
+        {
+          "t": 3.1,
+          "source": "fort-sentinel-apc",
+          "distance": 158,
+          "onScreen": true,
+          "stars": 5,
+          "rocket": false
+        },
+        {
+          "t": 3.3,
+          "source": "fort-sentinel-apc",
+          "distance": 158,
+          "onScreen": true,
+          "stars": 5,
+          "rocket": false
+        },
+        {
+          "t": 3.4,
+          "source": "fort-sentinel-apc",
+          "distance": 158,
+          "onScreen": true,
+          "stars": 5,
+          "rocket": false
+        },
+        {
+          "t": 3.5,
+          "source": "fort-sentinel-apc",
+          "distance": 158,
+          "onScreen": true,
+          "stars": 5,
+          "rocket": false
+        },
+        {
+          "t": 4.6,
+          "source": "fort-sentinel-apc",
+          "distance": 158,
+          "onScreen": true,
+          "stars": 5,
+          "rocket": false
+        },
+        {
+          "t": 4.7,
+          "source": "fort-sentinel-apc",
+          "distance": 158,
+          "onScreen": true,
+          "stars": 5,
+          "rocket": false
+        },
+        {
+          "t": 4.8,
+          "source": "fort-sentinel-apc",
+          "distance": 158,
+          "onScreen": true,
+          "stars": 5,
+          "rocket": false
+        },
+        {
+          "t": 4.9,
+          "source": "fort-sentinel-apc",
+          "distance": 158,
+          "onScreen": true,
+          "stars": 5,
+          "rocket": false
+        },
+        {
+          "t": 5.1,
+          "source": "fort-sentinel-apc",
+          "distance": 158,
+          "onScreen": true,
+          "stars": 5,
+          "rocket": false
+        },
+        {
+          "t": 6.2,
+          "source": "fort-sentinel-apc",
+          "distance": 158,
+          "onScreen": true,
+          "stars": 5,
+          "rocket": false
+        },
+        {
+          "t": 6.3,
+          "source": "fort-sentinel-apc",
+          "distance": 158,
+          "onScreen": true,
+          "stars": 5,
+          "rocket": false
+        },
+        {
+          "t": 6.5,
+          "source": "fort-sentinel-apc",
+          "distance": 165,
+          "onScreen": true,
+          "stars": 5,
+          "rocket": false
+        }
+      ],
+      "total": 18,
+      "offscreen": 0
+    },
+    "holdSimulation": true,
+    "status": {
+      "mode": "play",
+      "x": 9794,
+      "y": 9009,
+      "district": "FORT SENTINEL",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 5,
+      "mission": null,
+      "completed": 0,
+      "vehicle": "apc",
+      "weapon": "9MM PISTOL",
+      "clock": "13:06",
+      "renderer": "3d",
+      "vehicles": 282,
+      "pedestrians": 595
+    },
+    "stateHash": "7f602c65683b2ad5"
+  },
+  "sourceIdentityFile": "baseline-file-identities.json",
+  "rawCallLogFiles": [
+    "01-setup.json",
+    "02-quiet-fort-render.json",
+    "03-quiet-fort-warm.json",
+    "04-arm-fight.json",
+    "05-fight-render-cold.json",
+    "06-damage-stage.json",
+    "07-heavy-render-first.json",
+    "08-heavy-render-warm.json",
+    "09-heavy-render-steady.json",
+    "10-visible-wrecks-stage.json",
+    "11-visible-heavy-warm.json",
+    "12-final-state.json"
+  ],
+  "exactReplay": "replay-ops.json",
+  "nativeScreenshots": [
+    "fort-heavy-baseline.png",
+    "fort-heavy-visible-baseline.png"
+  ]
+}

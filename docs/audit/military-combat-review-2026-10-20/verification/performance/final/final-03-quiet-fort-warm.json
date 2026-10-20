@@ -1,0 +1,1067 @@
+[
+  {
+    "started": "2026-10-20T20:56:19.787Z",
+    "op": {
+      "op": "call",
+      "method": "hitchRun",
+      "args": [
+        0.05,
+        [],
+        5,
+        false,
+        true
+      ],
+      "cpu": true,
+      "profile": 35
+    },
+    "reply": {
+      "result": {
+        "mode": "stepped",
+        "frames": 3,
+        "wrappersLeft": 0,
+        "seconds": 0.05,
+        "avgMs": 265.97,
+        "p50Ms": 92.8,
+        "p95Ms": 656.7,
+        "p99Ms": 656.7,
+        "maxMs": 656.7,
+        "longLimitMs": 185.6,
+        "long": 1,
+        "over16": 3,
+        "over33": 3,
+        "gaps": {
+          "p50": 16.67,
+          "p95": 16.67,
+          "max": 16.67,
+          "over2x": 0,
+          "over33": 0
+        },
+        "causes": {
+          "ui": 1
+        },
+        "tags": {},
+        "excessMs": {
+          "ui": 345.27,
+          "offroad": 9.8,
+          "sealife": 9.73,
+          "r:damage": 2.37,
+          "r:scenery": 2.17,
+          "r:submit+shadow": 0.6,
+          "r:vehicles": 0.57,
+          "r:lod": 0.4
+        },
+        "sections": {
+          "ui": [
+            172.63,
+            517.9
+          ],
+          "r:submit+shadow": [
+            30.5,
+            36.9
+          ],
+          "cars": [
+            12.9,
+            20
+          ],
+          "sealife": [
+            12.37,
+            22.1
+          ],
+          "phys:control": [
+            8.67,
+            17.4
+          ],
+          "r:vehicles": [
+            4.93,
+            8.6
+          ],
+          "offroad": [
+            4.9,
+            14.7
+          ],
+          "r:scenery": [
+            3.53,
+            5.7
+          ],
+          "phys:contacts": [
+            2.13,
+            4.9
+          ],
+          "r:damage": [
+            1.83,
+            4.2
+          ],
+          "people": [
+            1.7,
+            3.5
+          ],
+          "civic": [
+            1.3,
+            2.8
+          ],
+          "phys:post": [
+            1.13,
+            1.3
+          ],
+          "police:wanted": [
+            0.9,
+            2.5
+          ],
+          "r:lod": [
+            0.9,
+            1.3
+          ],
+          "f:pre": [
+            0.67,
+            2
+          ]
+        },
+        "totals": {
+          "bufUploads": 59,
+          "bufMB": 0.37,
+          "gcMB": 1.2,
+          "geometries": 8,
+          "models": 5,
+          "allocKB": 3181,
+          "canvasDraws": 5,
+          "canvasText": 25,
+          "dom": 30
+        },
+        "perSecond": {
+          "bufUploads": 1180,
+          "bufMB": 7.4,
+          "gcMB": 24,
+          "geometries": 160,
+          "models": 100,
+          "allocKB": 63620,
+          "canvasDraws": 100,
+          "canvasText": 500,
+          "dom": 600
+        },
+        "domTargets": [
+          [
+            "stars (children)",
+            6
+          ],
+          [
+            "interaction [class]",
+            4
+          ],
+          [
+            "district (children)",
+            1
+          ],
+          [
+            "streetName (children)",
+            1
+          ],
+          [
+            "stars [class]",
+            1
+          ],
+          [
+            "stars [aria-label]",
+            1
+          ],
+          [
+            "heatFill [style]",
+            1
+          ],
+          [
+            "heatMeter [class]",
+            1
+          ]
+        ],
+        "worst": [
+          {
+            "frame": 2,
+            "t": 0.1,
+            "ms": 656.7,
+            "cause": "ui +345.27",
+            "tags": [],
+            "parts": {
+              "ui": 517.9,
+              "r:submit+shadow": 31.1,
+              "sealife": 22.1,
+              "offroad": 14.7
+            },
+            "c": {
+              "bufUploads": 9,
+              "bufMB": 0.084,
+              "canvasDraws": 5,
+              "canvasText": 25,
+              "allocKB": 776,
+              "dom": 30
+            }
+          }
+        ]
+      },
+      "ms": 1878,
+      "profile": [
+        [
+          1010.4,
+          1010.4,
+          "(program)",
+          "0",
+          ""
+        ],
+        [
+          400.7,
+          400.7,
+          "proto.<computed> > drawImage",
+          "0",
+          "218353:492"
+        ],
+        [
+          39.8,
+          39.8,
+          "(idle)",
+          "0",
+          ""
+        ],
+        [
+          36.7,
+          36.7,
+          "releaseBakedCanvases",
+          "215660",
+          "215665:5"
+        ],
+        [
+          35.9,
+          35.9,
+          "drawCivicMinimap",
+          "36368",
+          "36376:21"
+        ],
+        [
+          20.8,
+          21,
+          "refreshObjectMatrices",
+          "127297",
+          "127332:7 127304:5 127306:4 127297:4 127340:1"
+        ],
+        [
+          16.9,
+          31.9,
+          "landAt",
+          "27972",
+          "27972:10"
+        ],
+        [
+          15.9,
+          15.9,
+          "(anon)",
+          "23389",
+          "23389:5"
+        ],
+        [
+          14,
+          19.7,
+          "controlVehicle",
+          "20198",
+          "20718:2 20723:2 20720:1 20682:1 20776:1"
+        ],
+        [
+          13,
+          13,
+          "proto.<computed> > fillText",
+          "0",
+          "218353:17"
+        ],
+        [
+          12.5,
+          426.2,
+          "proto.<computed>",
+          "218351",
+          "218352:1 218351:1"
+        ],
+        [
+          11.6,
+          173.7,
+          "render",
+          "217612",
+          "218145:3 218116:1 217953:1 217734:1 217661:1"
+        ],
+        [
+          10.8,
+          10.8,
+          "render > drawElements",
+          "0",
+          "239948:2"
+        ],
+        [
+          10.4,
+          41.3,
+          "updateSeaLife",
+          "90956",
+          "90957:5"
+        ],
+        [
+          9.4,
+          9.4,
+          "minimapBaseLayer > scale",
+          "0",
+          "24634:28"
+        ],
+        [
+          7.9,
+          14.7,
+          "landAtExact",
+          "27828",
+          "27828:9"
+        ],
+        [
+          7.4,
+          25.9,
+          "renderObject",
+          "244910",
+          "244966:1 244950:1 244922:1"
+        ],
+        [
+          7.3,
+          7.3,
+          "flatten",
+          "240599",
+          "240599:1"
+        ],
+        [
+          6.6,
+          6.6,
+          "pruneModels",
+          "215620",
+          "215620:3"
+        ],
+        [
+          6.4,
+          6.4,
+          "minimapSpeedZoom",
+          "25147",
+          "25154:7"
+        ],
+        [
+          6.1,
+          6.1,
+          "paintPromenades > stroke",
+          "0",
+          "71697:5 71687:1"
+        ],
+        [
+          5.8,
+          5.8,
+          "speechBubbles",
+          "98345",
+          "98359:1 98360:1"
+        ],
+        [
+          5.3,
+          5.9,
+          "push",
+          "243685",
+          "243685:2"
+        ],
+        [
+          5.3,
+          5.3,
+          "(garbage collector)",
+          "0",
+          ""
+        ],
+        [
+          4.9,
+          4.9,
+          "vertexAttribPointer > vertexAttribPointer",
+          "0",
+          "237714:2"
+        ],
+        [
+          4.6,
+          4.6,
+          "bindVertexArrayObject > bindVertexArray",
+          "0",
+          "237471:1"
+        ],
+        [
+          4.5,
+          4.5,
+          "getParameters",
+          "242927",
+          "243131:1"
+        ],
+        [
+          4.4,
+          4.4,
+          "paintPromenades > moveTo",
+          "0",
+          "71693:1 71694:1"
+        ],
+        [
+          4.4,
+          4.4,
+          "boxContact",
+          "18670",
+          "18672:1 18670:1"
+        ],
+        [
+          4.4,
+          4.4,
+          "flushCrowdParts",
+          "180334",
+          "180335:1 180337:1"
+        ],
+        [
+          4.3,
+          4.3,
+          "vehicleSpec",
+          "12823",
+          "12841:8 12827:1 12829:1 12831:1"
+        ],
+        [
+          4.1,
+          4.1,
+          "pointInPolygon",
+          "27798",
+          "27798:12"
+        ],
+        [
+          4,
+          4,
+          "wheelCapsule",
+          "44176",
+          "44179:1"
+        ],
+        [
+          3.9,
+          4.3,
+          "setMatrixAt",
+          "255152",
+          "255152:1"
+        ],
+        [
+          3.7,
+          3.7,
+          "refreshVehicleGrid",
+          "15882",
+          "15889:2 15891:1"
+        ]
+      ],
+      "cpuMs": 952,
+      "heapMB": [
+        259.6,
+        261.6,
+        337.6
+      ],
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:56:21.779Z",
+    "op": {
+      "op": "call",
+      "method": "drawProfile",
+      "args": [
+        18
+      ]
+    },
+    "reply": {
+      "result": {
+        "total": 215,
+        "byLayer": {
+          "detail": 1,
+          "farDetail": 0,
+          "other": 214
+        },
+        "byName": [
+          [
+            "vehicle in vehicle",
+            104
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            22
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            7
+          ],
+          [
+            "static batch [MeshStandardMaterial #ffffff map] in static batch [MeshStandardMaterial #ffffff map]",
+            7
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            3
+          ],
+          [
+            "monarch lanterns",
+            3
+          ],
+          [
+            "village lanterns",
+            3
+          ],
+          [
+            "static batch [MeshStandardMaterial #2d3a2f] in static batch [MeshStandardMaterial #2d3a2f]",
+            3
+          ],
+          [
+            "static batch [MeshStandardMaterial #a7afad] in static batch [MeshStandardMaterial #a7afad]",
+            3
+          ],
+          [
+            "static batch [MeshStandardMaterial #ffffff map lit] in static batch [MeshStandardMaterial #ffffff map lit]",
+            3
+          ],
+          [
+            "damage decals",
+            2
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            2
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #434c37] in static batch [MeshStandardMaterial #434c37]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #7c8481] in static batch [MeshStandardMaterial #7c8481]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #5d6a4b] in static batch [MeshStandardMaterial #5d6a4b]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #1f2e37] in static batch [MeshStandardMaterial #1f2e37]",
+            2
+          ],
+          [
+            "static batch [MeshStandardMaterial #9c8c66] in static batch [MeshStandardMaterial #9c8c66]",
+            2
+          ]
+        ],
+        "byCell": [
+          [
+            "0,0",
+            106
+          ],
+          [
+            "9216,8704",
+            68
+          ],
+          [
+            "9728,8704",
+            40
+          ],
+          [
+            "8192,8192",
+            1
+          ]
+        ],
+        "triangles": 750067,
+        "byTriangles": [
+          [
+            "vehicle in vehicle",
+            128543
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            114576
+          ],
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            104832
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            98616
+          ],
+          [
+            "Mesh PlaneGeometry ShaderMaterial",
+            96802
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            86280
+          ],
+          [
+            "monarch lanterns",
+            45704
+          ],
+          [
+            "static batch [MeshStandardMaterial #a7afad] in static batch [MeshStandardMaterial #a7afad]",
+            18156
+          ],
+          [
+            "glow field",
+            8476
+          ],
+          [
+            "player body",
+            7064
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            6936
+          ],
+          [
+            "village lanterns",
+            5832
+          ],
+          [
+            "Mesh BufferGeometry MeshStandardMaterial",
+            4992
+          ],
+          [
+            "static batch [MeshStandardMaterial #7c8481] in static batch [MeshStandardMaterial #7c8481]",
+            3576
+          ],
+          [
+            "rooftop pool solar in rooftop pool solar",
+            2676
+          ],
+          [
+            "static batch [MeshStandardMaterial #ddd6c2] in static batch [MeshStandardMaterial #ddd6c2]",
+            2544
+          ],
+          [
+            "static batch [MeshStandardMaterial #1d1f21] in static batch [MeshStandardMaterial #1d1f21]",
+            2468
+          ],
+          [
+            "static batch [MeshStandardMaterial #1f2e37] in static batch [MeshStandardMaterial #1f2e37]",
+            2340
+          ]
+        ],
+        "instanced": [
+          [
+            "Mesh SphereGeometry MeshBasicMaterial",
+            624,
+            168,
+            false,
+            false
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            4519,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            262,
+            168,
+            false,
+            false
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            253,
+            168,
+            false,
+            true
+          ],
+          [
+            "monarch lanterns",
+            1182,
+            24,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            528,
+            40,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            424,
+            40,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            424,
+            40,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            383,
+            40,
+            false,
+            true
+          ],
+          [
+            "monarch lanterns",
+            394,
+            32,
+            false,
+            true
+          ],
+          [
+            "Mesh SphereGeometry MeshStandardMaterial",
+            72,
+            168,
+            false,
+            true
+          ],
+          [
+            "Mesh CylinderGeometry MeshStandardMaterial",
+            287,
+            40,
+            false,
+            true
+          ],
+          [
+            "glow field",
+            4238,
+            2,
+            false,
+            false
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            452,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            452,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            451,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh BoxGeometry MeshStandardMaterial",
+            451,
+            12,
+            false,
+            true
+          ],
+          [
+            "Mesh BoxGeometry MeshBasicMaterial",
+            451,
+            12,
+            false,
+            true
+          ]
+        ],
+        "programs": [
+          [
+            "physical",
+            86
+          ],
+          [
+            "depth",
+            10
+          ],
+          [
+            "basic",
+            8
+          ],
+          [
+            "22",
+            7
+          ],
+          [
+            "trees",
+            2
+          ],
+          [
+            "2",
+            1
+          ],
+          [
+            "SphericalGaussianBlur",
+            1
+          ],
+          [
+            "6",
+            1
+          ],
+          [
+            "8",
+            1
+          ],
+          [
+            "10",
+            1
+          ],
+          [
+            "12",
+            1
+          ],
+          [
+            "14",
+            1
+          ],
+          [
+            "16",
+            1
+          ],
+          [
+            "18",
+            1
+          ],
+          [
+            "20",
+            1
+          ]
+        ]
+      },
+      "ms": 28,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:56:21.819Z",
+    "op": {
+      "op": "call",
+      "method": "stats",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "frames": 3,
+        "updateMs": 207.87,
+        "drawMs": 57.37,
+        "frameMs": -48682.9,
+        "drawCalls": 398,
+        "triangles": 1267625,
+        "shadowFrame": true,
+        "viewCalls": 203,
+        "shadowCalls": 195,
+        "frameCalls": 412,
+        "renderScale": 1,
+        "sceneObjects": 18662,
+        "programs": 123,
+        "byType": {
+          "Scene": 1,
+          "HemisphereLight": 1,
+          "DirectionalLight": 2,
+          "Object3D": 2,
+          "Mesh": 10232,
+          "Group": 7733,
+          "LineSegments": 10,
+          "SpotLight": 1,
+          "PointLight": 6,
+          "Sprite": 524,
+          "Points": 146,
+          "Line": 1,
+          "LOD": 3
+        },
+        "vehicles": 279,
+        "pedestrians": 595,
+        "parts": {
+          "ui": 172.63,
+          "r:submit+shadow": 30.5,
+          "cars": 12.9,
+          "sealife": 12.37,
+          "phys:control": 8.67,
+          "r:vehicles": 4.93,
+          "offroad": 4.93,
+          "r:scenery": 3.53,
+          "phys:contacts": 2.13,
+          "r:damage": 1.83,
+          "people": 1.7,
+          "civic": 1.3,
+          "phys:post": 1.13,
+          "police:wanted": 0.93,
+          "r:lod": 0.9,
+          "f:pre": 0.73,
+          "phys:broadphase": 0.63,
+          "damage": 0.6,
+          "r:crowd": 0.4,
+          "military": 0.33,
+          "sports": 0.27,
+          "drawbridge": 0.2,
+          "citylife": 0.17,
+          "r:sky": 0.13,
+          "beach": 0.1,
+          "r:camera": 0.1,
+          "transit": 0.07,
+          "police:officers": 0.07,
+          "r:people+fx": 0.07,
+          "monarch": 0.03,
+          "sound": 0.03,
+          "knockdowns": 0.03,
+          "wildlife": 0.03,
+          "beachclub": 0.03,
+          "police:air": 0.03
+        }
+      },
+      "ms": 22,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:56:21.843Z",
+    "op": {
+      "op": "call",
+      "method": "soakReport",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "gameTime": 0.1,
+        "clock": "13:00",
+        "mode": "play",
+        "lists": {
+          "vehicles": 279,
+          "pedestrians": 595,
+          "bullets": 0,
+          "particles": 0,
+          "skids": 0,
+          "enemies": 0,
+          "debris": 0,
+          "fires": 0,
+          "officers": 0,
+          "gangMembers": 62,
+          "storyActors": 3,
+          "wildlife": 25,
+          "beachgoers": 270,
+          "roadblocks": 0,
+          "sirenUnits": 0,
+          "seaEvents": 0,
+          "dolphinPods": 0,
+          "gulls": 60,
+          "bloodPools": 0,
+          "bleeders": 0,
+          "carStained": 0,
+          "severedParts": 0,
+          "goreStumps": 0,
+          "goreTracked": 0,
+          "goreEvents": 0,
+          "bloodTrackSources": 0,
+          "knockedProps": 0,
+          "streetProps": 6968,
+          "impactContacts": 0,
+          "staticBodies": 6981,
+          "specRadii": 61,
+          "crimeLog": 1,
+          "unreportedCrimes": 0,
+          "offstageCalls": 0,
+          "offstageCallTails": 0,
+          "runOvers": 0,
+          "riderThrows": 0,
+          "voiceLog": 0,
+          "speechShown": 0,
+          "crashLog": 0,
+          "crashRecent": 0,
+          "crashPairs": 0,
+          "fallLog": 0,
+          "cliffLog": 0,
+          "seaLog": 0,
+          "engineTrace": 0,
+          "aircraftCrashes": 0,
+          "shotLogRecent": 0,
+          "shotLogSources": 0,
+          "bikeShareSkipped": 0,
+          "notices": 0,
+          "hudPops": 0,
+          "mapPointers": 0,
+          "minimapPointers": 0,
+          "promptRanges": 42,
+          "worldPointers": 0,
+          "physicalKeysDown": 0,
+          "audioBuffers": 0,
+          "audioLoops": 0,
+          "drivingCharacterCache": 0,
+          "arcCache": 0,
+          "seatCache": 0,
+          "policeProfiles": 0,
+          "airframeSpecCache": 5,
+          "mountainGroundCache": 3,
+          "railLiftCache": 13,
+          "bikePointCache": null,
+          "godRoadCache": null,
+          "countyMarkingCache": 141,
+          "oceanPalmCache": 39,
+          "benchCache": 191,
+          "streetEndCache": 8,
+          "streetEndSolidCache": 22,
+          "crosswalkCache": 503,
+          "promenadeCache": 1138,
+          "ladderCache": 102,
+          "staticGrid": 1719,
+          "buildingGrid": 800,
+          "vehicleGrid": 0,
+          "vehicleDenseCells": 234,
+          "shoreGrid": null
+        },
+        "counts": {
+          "awake": 279,
+          "awake_ai": 76,
+          "awake_cop": 0,
+          "awake_burning": 0,
+          "awake_moving": 0,
+          "awake_other": 203,
+          "resting": 0,
+          "wrecks": 0,
+          "abandoned": 0,
+          "wreckRetired": 0,
+          "wreckRetiredByCap": 0,
+          "ai": 76,
+          "carStainEntries": 0,
+          "pedestrianContacts": 0,
+          "react": 0,
+          "flee": 0,
+          "pending": 0,
+          "hidden": 0
+        },
+        "bad": {
+          "count": 0,
+          "first": null
+        },
+        "dom": {
+          "total": 1098,
+          "top": {
+            "carRadio": 90,
+            "flightHud": 33,
+            "bottom": 80,
+            "touchControls": 24,
+            "menu": 39,
+            "missionSelect": 25,
+            "demoComplete": 27,
+            "arsenalOverlay": 32,
+            "serviceOverlay": 24,
+            "sportsbook": 80,
+            "settingsOverlay": 27,
+            "help": 21,
+            "mapOverlay": 46,
+            "credits": 75,
+            "godSplash": 56
+          }
+        },
+        "heapMB": 945.4,
+        "gpu": {
+          "programs": 123,
+          "textures": 88,
+          "geometries": 482,
+          "models": 23
+        }
+      },
+      "ms": 17,
+      "newErrors": 0
+    }
+  }
+]

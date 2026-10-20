@@ -1,0 +1,1947 @@
+[
+  {
+    "started": "2026-10-20T21:06:10.870Z",
+    "op": {
+      "op": "keys",
+      "codes": [
+        "KeyQ"
+      ],
+      "seconds": 0.04,
+      "real": true
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 5200,
+        "y": 9884,
+        "district": "OCEANVIEW INTERNATIONAL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "helicopter",
+        "weapon": "9MM PISTOL",
+        "clock": "13:19",
+        "renderer": "3d",
+        "vehicles": 282,
+        "pedestrians": 595
+      },
+      "ms": 476,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:06:11.642Z",
+    "op": {
+      "op": "call",
+      "method": "viewMode",
+      "args": [
+        "chase"
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "chase",
+        "live": true,
+        "ready": false,
+        "locked": false,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "pivot": [
+          0,
+          0,
+          0
+        ],
+        "yawDeg": -90,
+        "pitchDeg": 9,
+        "lookYawDeg": 0,
+        "fov": 52,
+        "boomMetres": 3.5,
+        "wantMetres": 3.5,
+        "heightMetres": 0,
+        "aiming": 0,
+        "behind": false,
+        "craneMetres": 0,
+        "lockOn": null,
+        "aimAssist": true,
+        "speedBlend": 0,
+        "zoom": 1,
+        "aim": null,
+        "sensitivity": 100,
+        "invert": false,
+        "motionBlur": false,
+        "view": {
+          "active": false,
+          "drawMetres": 600,
+          "aerialBlend": 0,
+          "near": 4,
+          "far": 9000,
+          "viewReach": 920,
+          "viewZoom": 1.276,
+          "fogNear": 947,
+          "fogDensity": 0.000162,
+          "motionBlur": {
+            "active": false,
+            "strength": 0,
+            "setting": false,
+            "comfort": false
+          },
+          "farMetres": 225,
+          "farCells": 0,
+          "farMeshes": 0,
+          "shadowCells": {
+            "tested": 0,
+            "hidden": 0,
+            "proxies": 0
+          },
+          "props": {
+            "detail": 2401,
+            "detailHidden": 0,
+            "detailNoShadow": 0,
+            "parts": 829,
+            "partsHidden": 0,
+            "pools": 0,
+            "poolsHidden": 0,
+            "poolsNoShadow": 0,
+            "loose": 0,
+            "looseHidden": 0,
+            "signs": 0,
+            "signsHidden": 0
+          },
+          "draws": {
+            "view": {
+              "calls": 104,
+              "triangles": 797324,
+              "kinds": {
+                "batch": {
+                  "calls": 24,
+                  "triangles": 6536,
+                  "names": [
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #c5a443",
+                      3,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #777f79",
+                      3,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map",
+                      2,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #353a3d",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #6b7379",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #6f7c83",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #c8b68e",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8a884",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #c4cfcc",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #e1e3d9",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #6b7e82",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #c5a443",
+                      3,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #777f79",
+                      3,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #353a3d",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #e1e3d9",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #6b7e82",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map",
+                      2,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #6b7379",
+                      1,
+                      0
+                    ]
+                  ],
+                  "<200m": 13,
+                  "px<Infinity": 24,
+                  "<50m": 4,
+                  "<150m": 3,
+                  "<100m": 4
+                },
+                "instanced": {
+                  "calls": 53,
+                  "triangles": 483228,
+                  "names": [
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #353a3d @0,0",
+                      3,
+                      16
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "village lanterns",
+                      3,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshBasicMaterial #ffde9b @0,0",
+                      2,
+                      7
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8b948f @0,0",
+                      2,
+                      10
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5f7079 @0,0",
+                      2,
+                      6
+                    ],
+                    [
+                      "damage decals",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #353a3d @0,0",
+                      1,
+                      5
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      10
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "tree stumps",
+                      1,
+                      2
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshBasicMaterial #ffffff @0,0",
+                      1,
+                      105
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5c5346 @0,0",
+                      1,
+                      54
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #f6e7c4 @0,0",
+                      1,
+                      44
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #4e5558 @0,0",
+                      1,
+                      21
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #3d4447 @0,0",
+                      1,
+                      17
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #8a8f92 @0,0",
+                      1,
+                      17
+                    ]
+                  ],
+                  "whole": 53,
+                  "px<Infinity": 43,
+                  "px?": 9,
+                  "px<2": 1
+                },
+                "other": {
+                  "calls": 15,
+                  "triangles": 106276,
+                  "names": [
+                    [
+                      "Mesh PlaneGeometry ShaderMaterial @5120,9728",
+                      2,
+                      97
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #ffffff map @0,768",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshBasicMaterial #0f3a52 @5120,9984",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #e2e4de map @2816,8448",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #e2e4de map @8448,8448",
+                      1,
+                      0
+                    ],
+                    [
+                      "OCEANVIEW runway",
+                      1,
+                      0
+                    ],
+                    [
+                      "OCEANVIEW taxiway",
+                      1,
+                      0
+                    ],
+                    [
+                      "sky dome",
+                      1,
+                      1
+                    ],
+                    [
+                      "LineSegments BufferGeometry LineBasicMaterial #ffe1a1 @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "mud splats",
+                      1,
+                      0
+                    ],
+                    [
+                      "tyre tracks",
+                      1,
+                      0
+                    ],
+                    [
+                      "glow field",
+                      1,
+                      8
+                    ],
+                    [
+                      "Mesh PlaneGeometry ShaderMaterial @5120,9728",
+                      2,
+                      97
+                    ],
+                    [
+                      "glow field",
+                      1,
+                      8
+                    ],
+                    [
+                      "sky dome",
+                      1,
+                      1
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #ffffff map @0,768",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshBasicMaterial #0f3a52 @5120,9984",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #e2e4de map @2816,8448",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #e2e4de map @8448,8448",
+                      1,
+                      0
+                    ],
+                    [
+                      "OCEANVIEW runway",
+                      1,
+                      0
+                    ]
+                  ],
+                  "whole": 14,
+                  "px<Infinity": 10,
+                  "<150m": 1,
+                  "px<2": 5
+                },
+                "static": {
+                  "calls": 1,
+                  "triangles": 12,
+                  "names": [
+                    [
+                      "airfields",
+                      1,
+                      0
+                    ],
+                    [
+                      "airfields",
+                      1,
+                      0
+                    ]
+                  ],
+                  "<150m": 1,
+                  "px<32": 1
+                },
+                "vehicle": {
+                  "calls": 8,
+                  "triangles": 201272,
+                  "names": [
+                    [
+                      "Apache bounded source-derived shadow",
+                      1,
+                      5
+                    ],
+                    [
+                      "downloaded Apache tail",
+                      1,
+                      2
+                    ],
+                    [
+                      "downloaded Apache body",
+                      1,
+                      184
+                    ],
+                    [
+                      "downloaded Apache payload",
+                      1,
+                      6
+                    ],
+                    [
+                      "downloaded Apache gun",
+                      1,
+                      4
+                    ],
+                    [
+                      "downloaded Apache barrel",
+                      1,
+                      1
+                    ],
+                    [
+                      "downloaded Apache beacon",
+                      1,
+                      0
+                    ],
+                    [
+                      "Apache rotor blur",
+                      1,
+                      0
+                    ],
+                    [
+                      "downloaded Apache body",
+                      1,
+                      184
+                    ],
+                    [
+                      "downloaded Apache payload",
+                      1,
+                      6
+                    ],
+                    [
+                      "Apache bounded source-derived shadow",
+                      1,
+                      5
+                    ],
+                    [
+                      "downloaded Apache gun",
+                      1,
+                      4
+                    ],
+                    [
+                      "downloaded Apache tail",
+                      1,
+                      2
+                    ],
+                    [
+                      "downloaded Apache barrel",
+                      1,
+                      1
+                    ],
+                    [
+                      "downloaded Apache beacon",
+                      1,
+                      0
+                    ],
+                    [
+                      "Apache rotor blur",
+                      1,
+                      0
+                    ]
+                  ],
+                  "<100m": 2,
+                  "px<Infinity": 7,
+                  "<150m": 6,
+                  "px<32": 1
+                },
+                "sprite": {
+                  "calls": 3,
+                  "triangles": 0,
+                  "names": [
+                    [
+                      "AH-64 Helicopter / Andrew Swihart / CC BY 4.0",
+                      3,
+                      0
+                    ],
+                    [
+                      "AH-64 Helicopter / Andrew Swihart / CC BY 4.0",
+                      3,
+                      0
+                    ]
+                  ],
+                  "<150m": 3,
+                  "px<16": 3
+                }
+              }
+            },
+            "shadow": {
+              "calls": 103,
+              "triangles": 368909,
+              "kinds": {
+                "instanced": {
+                  "calls": 45,
+                  "triangles": 333380,
+                  "names": [
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #353a3d @0,0",
+                      3,
+                      16
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "village lanterns",
+                      3,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshBasicMaterial #ffde9b @0,0",
+                      2,
+                      7
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5f7079 @0,0",
+                      2,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8b948f @0,0",
+                      2,
+                      10
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      10
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "tree stumps",
+                      1,
+                      2
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #9aa3a6 @0,0",
+                      1,
+                      5
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #3d4447 @0,0",
+                      1,
+                      17
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #4e5558 @0,0",
+                      1,
+                      21
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5c5346 @0,0",
+                      1,
+                      54
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #4e5558 @0,0",
+                      1,
+                      21
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #3d4447 @0,0",
+                      1,
+                      17
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #8a8f92 @0,0",
+                      1,
+                      17
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #353a3d @0,0",
+                      3,
+                      16
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #3a3f44 @0,0",
+                      1,
+                      15
+                    ]
+                  ],
+                  "whole": 45,
+                  "px?": 3,
+                  "px<2": 1,
+                  "px<Infinity": 41
+                },
+                "other": {
+                  "calls": 5,
+                  "triangles": 100,
+                  "names": [
+                    [
+                      "airfield moving parts",
+                      5,
+                      0
+                    ],
+                    [
+                      "airfield moving parts",
+                      5,
+                      0
+                    ]
+                  ],
+                  "<150m": 5,
+                  "px<8": 5
+                },
+                "batch": {
+                  "calls": 31,
+                  "triangles": 7644,
+                  "names": [
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map",
+                      4,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #c5a443",
+                      3,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #777f79",
+                      3,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #c8b68e",
+                      2,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8a884",
+                      2,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #d7b43c",
+                      2,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshBasicMaterial #fff4dc",
+                      2,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshBasicMaterial #4f7dff",
+                      2,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #6b7379",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #353a3d",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #6f7c83",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #c5a443",
+                      3,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #777f79",
+                      3,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #c8b68e",
+                      2,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8a884",
+                      2,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #353a3d",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #6b7e82",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #e1e3d9",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map",
+                      4,
+                      0
+                    ]
+                  ],
+                  "<200m": 15,
+                  "px<Infinity": 31,
+                  "<50m": 4,
+                  "<150m": 8,
+                  "<100m": 4
+                },
+                "vehicle": {
+                  "calls": 22,
+                  "triangles": 27785,
+                  "names": [
+                    [
+                      "airframe",
+                      7,
+                      1
+                    ],
+                    [
+                      "courier airframe",
+                      3,
+                      8
+                    ],
+                    [
+                      "flap",
+                      2,
+                      0
+                    ],
+                    [
+                      "aileron",
+                      2,
+                      0
+                    ],
+                    [
+                      "elevator",
+                      2,
+                      1
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #b7babe map @5376,9984",
+                      2,
+                      2
+                    ],
+                    [
+                      "Apache bounded source-derived shadow",
+                      1,
+                      5
+                    ],
+                    [
+                      "fuselage",
+                      1,
+                      6
+                    ],
+                    [
+                      "rudder",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @5376,9984",
+                      1,
+                      5
+                    ],
+                    [
+                      "courier airframe",
+                      3,
+                      8
+                    ],
+                    [
+                      "fuselage",
+                      1,
+                      6
+                    ],
+                    [
+                      "Apache bounded source-derived shadow",
+                      1,
+                      5
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @5376,9984",
+                      1,
+                      5
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #b7babe map @5376,9984",
+                      2,
+                      2
+                    ],
+                    [
+                      "airframe",
+                      7,
+                      1
+                    ],
+                    [
+                      "elevator",
+                      2,
+                      1
+                    ],
+                    [
+                      "flap",
+                      2,
+                      0
+                    ]
+                  ],
+                  "<100m": 1,
+                  "px<Infinity": 10,
+                  "<200m": 18,
+                  "px<32": 5,
+                  "px<16": 7,
+                  "<150m": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "ms": 74,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:06:11.721Z",
+    "op": {
+      "op": "call",
+      "method": "hitchRun",
+      "args": [
+        0.25,
+        [],
+        2,
+        false,
+        false
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "stepped",
+        "frames": 15,
+        "wrappersLeft": 0,
+        "seconds": 0.25,
+        "avgMs": 14.01,
+        "p50Ms": 10.7,
+        "p95Ms": 28.5,
+        "p99Ms": 28.5,
+        "maxMs": 28.5,
+        "longLimitMs": 21.4,
+        "long": 3,
+        "over16": 4,
+        "over33": 0,
+        "gaps": {
+          "p50": 16.67,
+          "p95": 16.67,
+          "max": 16.67,
+          "over2x": 0,
+          "over33": 0
+        },
+        "causes": {
+          "f:pre": 1,
+          "cars": 2
+        },
+        "tags": {
+          "gc": 2
+        },
+        "excessMs": {
+          "cars": 36.72,
+          "f:pre": 7.09,
+          "flighthud": 4.47,
+          "beachclub": 0.36,
+          "people": 0.19,
+          "sports": 0,
+          "civic": 0
+        },
+        "sections": {
+          "cars": [
+            8.39,
+            26.8
+          ],
+          "phys:broadphase": [
+            2.83,
+            21.4
+          ],
+          "phys:post": [
+            2.03,
+            20.7
+          ],
+          "phys:control": [
+            1.56,
+            4.6
+          ],
+          "flighthud": [
+            1.01,
+            5
+          ],
+          "civic": [
+            0.83,
+            5.4
+          ],
+          "phys:contacts": [
+            0.79,
+            3
+          ],
+          "ui": [
+            0.59,
+            6.7
+          ],
+          "f:pre": [
+            0.51,
+            7.6
+          ],
+          "sports": [
+            0.35,
+            5
+          ],
+          "knockdowns": [
+            0.34,
+            5.1
+          ],
+          "drawbridge": [
+            0.27,
+            4.1
+          ],
+          "citylife": [
+            0.26,
+            3.7
+          ],
+          "beachclub": [
+            0.04,
+            0.4
+          ],
+          "police:wanted": [
+            0.03,
+            0.5
+          ],
+          "liner": [
+            0.03,
+            0.4
+          ]
+        },
+        "totals": {
+          "canvasText": 310,
+          "allocKB": 6987,
+          "dom": 24,
+          "gcMB": 4.6,
+          "canvasDraws": 2
+        },
+        "perSecond": {
+          "canvasText": 1240,
+          "allocKB": 27948,
+          "dom": 96,
+          "gcMB": 18.4,
+          "canvasDraws": 8
+        },
+        "domTargets": [
+          [
+            "weaponSlot (children)",
+            4
+          ],
+          [
+            "weaponName (children)",
+            4
+          ],
+          [
+            "ammo (children)",
+            4
+          ],
+          [
+            "reserve (children)",
+            4
+          ],
+          [
+            "reloadHint (children)",
+            4
+          ],
+          [
+            "tankBarrelPip [class]",
+            1
+          ],
+          [
+            "(no id) .chase-view [class]",
+            1
+          ],
+          [
+            "(no id) .chase-view [style]",
+            1
+          ]
+        ],
+        "worst": [
+          {
+            "frame": 1,
+            "t": 19.67,
+            "ms": 28.5,
+            "cause": "f:pre +7.09",
+            "tags": [
+              "gc"
+            ],
+            "parts": {
+              "cars": 11.6,
+              "f:pre": 7.6,
+              "flighthud": 5,
+              "beachclub": 0.4
+            },
+            "c": {
+              "canvasText": 18,
+              "gcMB": 0.5,
+              "dom": 1
+            }
+          },
+          {
+            "frame": 12,
+            "t": 19.85,
+            "ms": 28,
+            "cause": "cars +18.41",
+            "tags": [],
+            "parts": {
+              "cars": 26.8,
+              "flighthud": 0.3,
+              "people": 0.2
+            },
+            "c": {
+              "canvasText": 18,
+              "allocKB": 459
+            }
+          }
+        ]
+      },
+      "ms": 215,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:06:11.938Z",
+    "op": {
+      "op": "call",
+      "method": "apache",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "exists": true,
+        "id": 283,
+        "name": "AH-64 APACHE",
+        "pad": {
+          "x": 10200,
+          "y": 9365
+        },
+        "x": 5200,
+        "y": 9884,
+        "heading": 0,
+        "altitude": 20,
+        "hp": 617,
+        "maxhp": 640,
+        "aboard": true,
+        "taken": true,
+        "ai": false,
+        "onBasePad": false,
+        "arms": {
+          "weapon": "rockets",
+          "rounds": 319,
+          "rockets": 38,
+          "missiles": 8,
+          "airMissiles": 4,
+          "rearming": false,
+          "salvoLeft": 0,
+          "status": "READY",
+          "lock": {
+            "target": null,
+            "ready": false,
+            "since": 0
+          }
+        },
+        "projectiles": [],
+        "turret": 0,
+        "gunPitch": -22,
+        "aim": {
+          "x": 5500,
+          "y": 9884,
+          "range": 300
+        },
+        "clearance": {
+          "solids": 0,
+          "rotorSolids": 0,
+          "buildings": 0,
+          "vehicles": []
+        }
+      },
+      "ms": 9,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:06:11.952Z",
+    "op": {
+      "op": "keys",
+      "codes": [
+        "KeyF"
+      ],
+      "seconds": 0.04,
+      "real": true
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 5200,
+        "y": 9884,
+        "district": "OCEANVIEW INTERNATIONAL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "helicopter",
+        "weapon": "9MM PISTOL",
+        "clock": "13:19",
+        "renderer": "3d",
+        "vehicles": 282,
+        "pedestrians": 595
+      },
+      "ms": 63,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:06:12.018Z",
+    "op": {
+      "op": "call",
+      "method": "hitchRun",
+      "args": [
+        0.017,
+        [],
+        2,
+        false,
+        false
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "stepped",
+        "frames": 1,
+        "wrappersLeft": 0,
+        "seconds": 0.02,
+        "avgMs": 7.1,
+        "p50Ms": 7.1,
+        "p95Ms": 7.1,
+        "p99Ms": 7.1,
+        "maxMs": 7.1,
+        "longLimitMs": 14.2,
+        "long": 0,
+        "over16": 0,
+        "over33": 0,
+        "gaps": null,
+        "causes": {},
+        "tags": {},
+        "excessMs": {},
+        "sections": {
+          "cars": [
+            2.6,
+            2.6
+          ],
+          "ui": [
+            1.6,
+            1.6
+          ],
+          "phys:broadphase": [
+            1.2,
+            1.2
+          ],
+          "phys:post": [
+            0.6,
+            0.6
+          ],
+          "phys:control": [
+            0.4,
+            0.4
+          ],
+          "phys:contacts": [
+            0.3,
+            0.3
+          ],
+          "flighthud": [
+            0.2,
+            0.2
+          ]
+        },
+        "totals": {
+          "canvasDraws": 1,
+          "canvasText": 38,
+          "gcMB": 1.3,
+          "dom": 10
+        },
+        "perSecond": {
+          "canvasDraws": 60,
+          "canvasText": 2280,
+          "gcMB": 78,
+          "dom": 600
+        },
+        "domTargets": [
+          [
+            "weaponSlot (children)",
+            2
+          ],
+          [
+            "weaponName (children)",
+            2
+          ],
+          [
+            "ammo (children)",
+            2
+          ],
+          [
+            "reserve (children)",
+            2
+          ],
+          [
+            "reloadHint (children)",
+            2
+          ]
+        ],
+        "worst": []
+      },
+      "ms": 9,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:06:12.030Z",
+    "op": {
+      "op": "call",
+      "method": "apache",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "exists": true,
+        "id": 283,
+        "name": "AH-64 APACHE",
+        "pad": {
+          "x": 10200,
+          "y": 9365
+        },
+        "x": 5200,
+        "y": 9884,
+        "heading": 0,
+        "altitude": 20,
+        "hp": 617,
+        "maxhp": 640,
+        "aboard": true,
+        "taken": true,
+        "ai": false,
+        "onBasePad": false,
+        "arms": {
+          "weapon": "rockets",
+          "rounds": 319,
+          "rockets": 37,
+          "missiles": 8,
+          "airMissiles": 4,
+          "rearming": false,
+          "salvoLeft": 3,
+          "status": "WAIT 1.8 s",
+          "lock": {
+            "target": null,
+            "ready": false,
+            "since": 0
+          }
+        },
+        "projectiles": [
+          {
+            "kind": "rockets",
+            "life": 0.43,
+            "target": null
+          }
+        ],
+        "turret": 0,
+        "gunPitch": -22,
+        "aim": {
+          "x": 5500,
+          "y": 9884,
+          "range": 300
+        },
+        "clearance": {
+          "solids": 0,
+          "rotorSolids": 0,
+          "buildings": 0,
+          "vehicles": []
+        }
+      },
+      "ms": 3,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:06:12.035Z",
+    "op": {
+      "op": "call",
+      "method": "hitchRun",
+      "args": [
+        0.034,
+        [],
+        2,
+        false,
+        true
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "stepped",
+        "frames": 2,
+        "wrappersLeft": 0,
+        "seconds": 0.03,
+        "avgMs": 8416.8,
+        "p50Ms": 16804.4,
+        "p95Ms": 16804.4,
+        "p99Ms": 16804.4,
+        "maxMs": 16804.4,
+        "longLimitMs": 33608.8,
+        "long": 0,
+        "over16": 2,
+        "over33": 1,
+        "gaps": {
+          "p50": 16.67,
+          "p95": 16.67,
+          "max": 16.67,
+          "over2x": 0,
+          "over33": 0
+        },
+        "causes": {},
+        "tags": {},
+        "excessMs": {},
+        "sections": {
+          "r:sky": [
+            5309.3,
+            10618.3
+          ],
+          "r:submit+shadow": [
+            2776.85,
+            5535.5
+          ],
+          "r:vehicles": [
+            244.85,
+            489
+          ],
+          "r:lod": [
+            54.8,
+            108.2
+          ],
+          "r:damage": [
+            15,
+            29.5
+          ],
+          "cars": [
+            2,
+            2.2
+          ],
+          "r:scenery": [
+            1.15,
+            1.2
+          ],
+          "flighthud": [
+            0.85,
+            1
+          ],
+          "f:pre": [
+            0.85,
+            1.7
+          ],
+          "phys:control": [
+            0.75,
+            0.8
+          ],
+          "r:crowd": [
+            0.65,
+            1.1
+          ],
+          "r:people+fx": [
+            0.65,
+            0.8
+          ],
+          "phys:broadphase": [
+            0.45,
+            0.5
+          ],
+          "bullets": [
+            0.4,
+            0.8
+          ],
+          "r:camera": [
+            0.4,
+            0.5
+          ],
+          "phys:post": [
+            0.3,
+            0.3
+          ]
+        },
+        "totals": {
+          "texUploads": 124,
+          "texMB": 111.55,
+          "bufUploads": 1088,
+          "bufMB": 6.38,
+          "links": 17,
+          "syncReads": 1,
+          "canvasDraws": 2,
+          "canvasText": 40,
+          "allocKB": 18348,
+          "dom": 4,
+          "programs": 17,
+          "textures": 64,
+          "geometries": 217,
+          "models": 3
+        },
+        "perSecond": {
+          "texUploads": 3720,
+          "texMB": 3346.5,
+          "bufUploads": 32640,
+          "bufMB": 191.4,
+          "links": 510,
+          "syncReads": 30,
+          "canvasDraws": 60,
+          "canvasText": 1200,
+          "allocKB": 550440,
+          "dom": 120,
+          "programs": 510,
+          "textures": 1920,
+          "geometries": 6510,
+          "models": 90
+        },
+        "domTargets": [
+          [
+            "tankAimRing [style]",
+            1
+          ],
+          [
+            "tankBarrelPip [style]",
+            1
+          ],
+          [
+            "toast .note [class]",
+            1
+          ],
+          [
+            "toast [class]",
+            1
+          ]
+        ],
+        "worst": []
+      },
+      "ms": 16838,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:06:28.879Z",
+    "op": {
+      "op": "shot",
+      "name": "apache-rocket-launch-native",
+      "full": true
+    },
+    "reply": {
+      "result": {
+        "path": "dist/dev/shots/apache-rocket-launch-native.png",
+        "bytes": 750803
+      },
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:07:01.186Z",
+    "op": {
+      "op": "call",
+      "method": "apache",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "exists": true,
+        "id": 283,
+        "name": "AH-64 APACHE",
+        "pad": {
+          "x": 10200,
+          "y": 9365
+        },
+        "x": 5200,
+        "y": 9884,
+        "heading": 0,
+        "altitude": 20,
+        "hp": 617,
+        "maxhp": 640,
+        "aboard": true,
+        "taken": true,
+        "ai": false,
+        "onBasePad": false,
+        "arms": {
+          "weapon": "rockets",
+          "rounds": 319,
+          "rockets": 37,
+          "missiles": 8,
+          "airMissiles": 4,
+          "rearming": false,
+          "salvoLeft": 3,
+          "status": "WAIT 1.8 s",
+          "lock": {
+            "target": null,
+            "ready": false,
+            "since": 0
+          }
+        },
+        "projectiles": [
+          {
+            "kind": "rockets",
+            "life": 0.4,
+            "target": null
+          }
+        ],
+        "turret": 0,
+        "gunPitch": -22,
+        "aim": {
+          "x": 5500,
+          "y": 9884,
+          "range": 300
+        },
+        "clearance": {
+          "solids": 0,
+          "rotorSolids": 0,
+          "buildings": 0,
+          "vehicles": []
+        }
+      },
+      "ms": 2,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:07:01.190Z",
+    "op": {
+      "op": "call",
+      "method": "hitchRun",
+      "args": [
+        1.1,
+        [],
+        2,
+        false,
+        false
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "stepped",
+        "frames": 66,
+        "wrappersLeft": 0,
+        "seconds": 1.1,
+        "avgMs": 7.68,
+        "p50Ms": 5.1,
+        "p95Ms": 24.6,
+        "p99Ms": 27.4,
+        "maxMs": 27.4,
+        "longLimitMs": 10.2,
+        "long": 17,
+        "over16": 7,
+        "over33": 0,
+        "gaps": {
+          "p50": 16.67,
+          "p95": 16.67,
+          "max": 16.67,
+          "over2x": 0,
+          "over33": 0
+        },
+        "causes": {
+          "ui": 2,
+          "bullets": 5,
+          "cars": 6,
+          "flighthud": 2,
+          "civic": 1,
+          "f:pre": 1
+        },
+        "tags": {
+          "gc": 8,
+          "gc-between": 1
+        },
+        "excessMs": {
+          "cars": 71.23,
+          "bullets": 45.94,
+          "f:pre": 21.96,
+          "flighthud": 19.84,
+          "ui": 18.87,
+          "civic": 8.11,
+          "wildlife": 5.32,
+          "sports": 1.6
+        },
+        "sections": {
+          "cars": [
+            3.54,
+            23.7
+          ],
+          "bullets": [
+            1.04,
+            16.7
+          ],
+          "phys:control": [
+            0.94,
+            6.7
+          ],
+          "phys:contacts": [
+            0.78,
+            22.1
+          ],
+          "flighthud": [
+            0.63,
+            8.2
+          ],
+          "phys:post": [
+            0.54,
+            5.3
+          ],
+          "phys:broadphase": [
+            0.45,
+            4.8
+          ],
+          "ui": [
+            0.41,
+            7.7
+          ],
+          "f:pre": [
+            0.37,
+            22.3
+          ],
+          "civic": [
+            0.3,
+            4.7
+          ],
+          "police:officers": [
+            0.11,
+            4.4
+          ],
+          "sports": [
+            0.1,
+            4.1
+          ],
+          "wildlife": [
+            0.08,
+            5.4
+          ],
+          "police:wanted": [
+            0.07,
+            2
+          ],
+          "people": [
+            0.06,
+            2.2
+          ],
+          "damage": [
+            0.05,
+            2.6
+          ]
+        },
+        "totals": {
+          "canvasText": 1408,
+          "allocKB": 22704,
+          "canvasDraws": 11,
+          "gcMB": 25.1,
+          "dom": 112,
+          "gcBetweenMB": 0.3
+        },
+        "perSecond": {
+          "canvasText": 1280,
+          "allocKB": 20640,
+          "canvasDraws": 10,
+          "gcMB": 22.82,
+          "dom": 101.82,
+          "gcBetweenMB": 0.27
+        },
+        "domTargets": [
+          [
+            "weaponSlot (children)",
+            22
+          ],
+          [
+            "weaponName (children)",
+            22
+          ],
+          [
+            "ammo (children)",
+            22
+          ],
+          [
+            "reserve (children)",
+            22
+          ],
+          [
+            "reloadHint (children)",
+            22
+          ],
+          [
+            "worldClock (children)",
+            1
+          ],
+          [
+            "hudLocation [class]",
+            1
+          ]
+        ],
+        "worst": [
+          {
+            "frame": 29,
+            "t": 20.43,
+            "ms": 27.4,
+            "cause": "bullets +15.66",
+            "tags": [
+              "gc"
+            ],
+            "parts": {
+              "bullets": 16.7,
+              "cars": 6.3,
+              "civic": 1.8,
+              "flighthud": 1.4
+            },
+            "c": {
+              "canvasText": 18,
+              "gcMB": 1
+            }
+          },
+          {
+            "frame": 24,
+            "t": 20.35,
+            "ms": 25.7,
+            "cause": "bullets +8.06",
+            "tags": [
+              "gc"
+            ],
+            "parts": {
+              "bullets": 9.1,
+              "cars": 6.7,
+              "f:pre": 0.4,
+              "damage": 0.3
+            },
+            "c": {
+              "canvasText": 18,
+              "gcMB": 0.5
+            }
+          }
+        ]
+      },
+      "ms": 563,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:07:01.756Z",
+    "op": {
+      "op": "call",
+      "method": "damageReport",
+      "args": [
+        284
+      ]
+    },
+    "reply": {
+      "result": {
+        "id": 284,
+        "type": "sedan",
+        "hp": 0,
+        "maxhp": 150,
+        "zones": {
+          "front": 0,
+          "rear": 0.32,
+          "left": 0,
+          "right": 0
+        },
+        "dents": [],
+        "parts": {
+          "hood": 2,
+          "bumperFront": 0,
+          "bumperRear": 1,
+          "doorLeft": 1,
+          "doorRight": 2,
+          "trunk": 1
+        },
+        "glass": {
+          "front": 2,
+          "rear": 2,
+          "left": 2,
+          "right": 2
+        },
+        "lights": [
+          "headLeft",
+          "headRight",
+          "tailLeft",
+          "tailRight"
+        ],
+        "flatTires": [
+          "frontLeft",
+          "frontRight",
+          "rearLeft",
+          "rearRight"
+        ],
+        "marks": {
+          "hole": 3
+        },
+        "pull": 0,
+        "handling": {
+          "power": 0.5,
+          "top": 0.56,
+          "grip": 0.52,
+          "pull": 0,
+          "steer": 0.84,
+          "brake": 0.52
+        },
+        "burning": 0,
+        "fireSpent": false,
+        "burnt": true,
+        "speed": 262,
+        "spin": 0,
+        "x": 5669,
+        "y": 9884,
+        "a": 0
+      },
+      "ms": 28,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T21:07:01.791Z",
+    "op": {
+      "op": "call",
+      "method": "park",
+      "args": [
+        "tank",
+        450,
+        90,
+        0
+      ]
+    },
+    "reply": {
+      "result": 285,
+      "ms": 3,
+      "newErrors": 0
+    }
+  }
+]

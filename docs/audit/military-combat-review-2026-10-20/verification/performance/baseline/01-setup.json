@@ -1,0 +1,1278 @@
+[
+  {
+    "started": "2026-10-20T20:37:23.434Z",
+    "op": {
+      "op": "call",
+      "method": "holdSimulation",
+      "args": [
+        true
+      ]
+    },
+    "reply": {
+      "result": true,
+      "ms": 7,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:37:23.465Z",
+    "op": {
+      "op": "call",
+      "method": "god",
+      "args": [
+        true
+      ]
+    },
+    "reply": {
+      "result": true,
+      "ms": 2,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:37:23.475Z",
+    "op": {
+      "op": "call",
+      "method": "graphics",
+      "args": [
+        "high"
+      ]
+    },
+    "reply": {
+      "result": {
+        "setting": "high",
+        "tier": "HIGH",
+        "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "hdr": true,
+        "shadowMap": 3072,
+        "pixelRatio": 1,
+        "renderScale": 1,
+        "shadows": "high",
+        "shadowSetting": "auto",
+        "adaptive": {
+          "averageFrameMs": 0,
+          "tierDrops": 0,
+          "ceiling": 1,
+          "holdSeconds": 0
+        }
+      },
+      "ms": 3,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:37:23.484Z",
+    "op": {
+      "op": "call",
+      "method": "setClock",
+      "args": [
+        13
+      ]
+    },
+    "reply": {
+      "result": "13:00",
+      "ms": 2,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:37:23.488Z",
+    "op": {
+      "op": "call",
+      "method": "sky",
+      "args": [
+        "clear"
+      ]
+    },
+    "reply": {
+      "result": "CLEAR",
+      "ms": 27,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:37:23.517Z",
+    "op": {
+      "op": "call",
+      "method": "viewMode",
+      "args": [
+        "street"
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "street",
+        "live": false,
+        "ready": false,
+        "locked": false,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "pivot": [
+          0,
+          0,
+          0
+        ],
+        "yawDeg": -90,
+        "pitchDeg": 9,
+        "lookYawDeg": 0,
+        "fov": 52,
+        "boomMetres": 3.5,
+        "wantMetres": 3.5,
+        "heightMetres": 0,
+        "aiming": 0,
+        "behind": false,
+        "craneMetres": 0,
+        "lockOn": null,
+        "aimAssist": true,
+        "speedBlend": 0,
+        "zoom": 1,
+        "aim": null,
+        "sensitivity": 100,
+        "invert": false,
+        "motionBlur": false,
+        "view": {
+          "active": false,
+          "drawMetres": 600,
+          "aerialBlend": 0,
+          "near": 4,
+          "far": 9000,
+          "viewReach": 920,
+          "viewZoom": 2,
+          "fogNear": 3485,
+          "fogDensity": 0.00015,
+          "motionBlur": {
+            "active": false,
+            "strength": 0,
+            "setting": false,
+            "comfort": false
+          },
+          "farMetres": 225,
+          "farCells": 0,
+          "farMeshes": 0,
+          "shadowCells": {
+            "tested": 0,
+            "hidden": 0,
+            "proxies": 0
+          },
+          "props": {
+            "detail": 2401,
+            "detailHidden": 0,
+            "detailNoShadow": 0,
+            "parts": 829,
+            "partsHidden": 0,
+            "pools": 0,
+            "poolsHidden": 0,
+            "poolsNoShadow": 0,
+            "loose": 0,
+            "looseHidden": 0,
+            "signs": 0,
+            "signsHidden": 0
+          },
+          "draws": {
+            "view": {
+              "calls": 208,
+              "triangles": 1018228,
+              "kinds": {
+                "batch": {
+                  "calls": 24,
+                  "triangles": 35696,
+                  "names": [
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #8a887e",
+                      4,
+                      2
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #353a3d",
+                      4,
+                      13
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map lit",
+                      3,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff",
+                      3,
+                      16
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #7c6d63",
+                      2,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #9a958d",
+                      2,
+                      2
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8c0c3",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #4f4037",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshBasicMaterial #ffe29e",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #3a4247",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #aa8560",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff",
+                      3,
+                      16
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #353a3d",
+                      4,
+                      13
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #8a887e",
+                      4,
+                      2
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #9a958d",
+                      2,
+                      2
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #7c6d63",
+                      2,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b8c0c3",
+                      1,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map lit",
+                      3,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #4f4037",
+                      1,
+                      0
+                    ]
+                  ],
+                  "<300m": 8,
+                  "px<undefined": 24,
+                  "<400m": 14,
+                  "<600m": 2
+                },
+                "instanced": {
+                  "calls": 82,
+                  "triangles": 702596,
+                  "names": [
+                    [
+                      "breakable scenery",
+                      16,
+                      95
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #353a3d @0,0",
+                      3,
+                      16
+                    ],
+                    [
+                      "trees locust",
+                      3,
+                      55
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "village lanterns",
+                      3,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshBasicMaterial #ffe29e @0,0",
+                      2,
+                      7
+                    ],
+                    [
+                      "trees pear",
+                      2,
+                      26
+                    ],
+                    [
+                      "trees maple",
+                      2,
+                      11
+                    ],
+                    [
+                      "trees plane",
+                      2,
+                      26
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8b948f @0,0",
+                      2,
+                      10
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5f7079 @0,0",
+                      2,
+                      6
+                    ],
+                    [
+                      "damage decals",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshBasicMaterial #ffffff @0,0",
+                      1,
+                      105
+                    ],
+                    [
+                      "breakable scenery",
+                      16,
+                      95
+                    ],
+                    [
+                      "trees locust",
+                      3,
+                      55
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5c5346 @0,0",
+                      1,
+                      54
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #f6e7c4 @0,0",
+                      1,
+                      44
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "trees pear",
+                      2,
+                      26
+                    ]
+                  ],
+                  "whole": 54,
+                  "px<undefined": 73,
+                  "<300m": 17,
+                  "<200m": 2,
+                  "<400m": 7,
+                  "<600m": 2,
+                  "px?": 9
+                },
+                "other": {
+                  "calls": 27,
+                  "triangles": 114578,
+                  "names": [
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @768,512",
+                      9,
+                      2
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #ffffff map lit @768,512",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry ShaderMaterial @768,512",
+                      2,
+                      97
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #ffffff map @768,512",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #ffffff map @0,768",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #2d3213 @768,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #917410 @768,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshBasicMaterial #0c2f44 @512,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map lit @768,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh ConeGeometry MeshBasicMaterial #ffe2a2 @768,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "LineSegments BufferGeometry LineBasicMaterial #ffe1a1 @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry ShaderMaterial @768,512",
+                      2,
+                      97
+                    ],
+                    [
+                      "glow field",
+                      1,
+                      8
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @768,512",
+                      9,
+                      2
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #ffffff map lit @768,512",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #ffffff map @768,512",
+                      2,
+                      0
+                    ],
+                    [
+                      "Mesh PlaneGeometry MeshStandardMaterial #ffffff map @0,768",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #2d3213 @768,512",
+                      1,
+                      0
+                    ]
+                  ],
+                  "whole": 10,
+                  "px<undefined": 27,
+                  "<400m": 5,
+                  "<600m": 12
+                },
+                "static": {
+                  "calls": 8,
+                  "triangles": 92,
+                  "names": [
+                    [
+                      "Elevated railway",
+                      8,
+                      0
+                    ],
+                    [
+                      "Elevated railway",
+                      8,
+                      0
+                    ]
+                  ],
+                  "<300m": 4,
+                  "px<undefined": 8,
+                  "<400m": 4
+                },
+                "crowd": {
+                  "calls": 1,
+                  "triangles": 48,
+                  "names": [
+                    [
+                      "crowd pistol",
+                      1,
+                      0
+                    ],
+                    [
+                      "crowd pistol",
+                      1,
+                      0
+                    ]
+                  ],
+                  "whole": 1,
+                  "px<undefined": 1
+                },
+                "vehicle": {
+                  "calls": 66,
+                  "triangles": 165218,
+                  "names": [
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @768,512",
+                      30,
+                      94
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @768,768",
+                      6,
+                      10
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff @768,512",
+                      5,
+                      2
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffeded @768,512",
+                      5,
+                      2
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #5a2a2a map @768,512",
+                      3,
+                      44
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #121a20 @768,512",
+                      3,
+                      1
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #88bcaa map @768,512",
+                      2,
+                      2
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #7f8b90 map @768,512",
+                      2,
+                      3
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #e4e1d8 map @768,512",
+                      2,
+                      2
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #c4483c map @768,768",
+                      2,
+                      1
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshBasicMaterial #959599 @768,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #17191c @768,512",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @768,512",
+                      30,
+                      94
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #5a2a2a map @768,512",
+                      3,
+                      44
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff map @768,768",
+                      6,
+                      10
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #7f8b90 map @768,512",
+                      2,
+                      3
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #26333c @768,512",
+                      1,
+                      3
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffffff @768,512",
+                      5,
+                      2
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshStandardMaterial #ffeded @768,512",
+                      5,
+                      2
+                    ],
+                    [
+                      "Mesh BufferGeometry MeshPhysicalMaterial #88bcaa map @768,512",
+                      2,
+                      2
+                    ]
+                  ],
+                  "<600m": 55,
+                  "px<undefined": 66,
+                  "<400m": 11
+                }
+              }
+            },
+            "shadow": {
+              "calls": 116,
+              "triangles": 501172,
+              "kinds": {
+                "instanced": {
+                  "calls": 72,
+                  "triangles": 458876,
+                  "names": [
+                    [
+                      "breakable scenery",
+                      18,
+                      31
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #353a3d @0,0",
+                      3,
+                      16
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "village lanterns",
+                      3,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshBasicMaterial #ffe29e @0,0",
+                      2,
+                      7
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5f7079 @0,0",
+                      2,
+                      6
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #8b948f @0,0",
+                      2,
+                      10
+                    ],
+                    [
+                      "trees plane",
+                      2,
+                      26
+                    ],
+                    [
+                      "trees maple",
+                      2,
+                      11
+                    ],
+                    [
+                      "Mesh DodecahedronGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #ffffff @0,0",
+                      1,
+                      0
+                    ],
+                    [
+                      "tree stumps",
+                      1,
+                      2
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #5c5346 @0,0",
+                      1,
+                      54
+                    ],
+                    [
+                      "monarch lanterns",
+                      3,
+                      46
+                    ],
+                    [
+                      "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                      1,
+                      43
+                    ],
+                    [
+                      "breakable scenery",
+                      18,
+                      31
+                    ],
+                    [
+                      "trees locust",
+                      1,
+                      28
+                    ],
+                    [
+                      "trees plane",
+                      2,
+                      26
+                    ],
+                    [
+                      "trees pear",
+                      1,
+                      23
+                    ],
+                    [
+                      "Mesh CylinderGeometry MeshStandardMaterial #4e5558 @0,0",
+                      1,
+                      21
+                    ]
+                  ],
+                  "whole": 45,
+                  "px?": 3,
+                  "px<undefined": 69,
+                  "<400m": 6,
+                  "<600m": 16,
+                  "<Infinitym": 1,
+                  "<300m": 3,
+                  "<200m": 1
+                },
+                "other": {
+                  "calls": 2,
+                  "triangles": 7076,
+                  "names": [
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #0b1e36 @0,-2048",
+                      1,
+                      0
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "player body",
+                      1,
+                      7
+                    ],
+                    [
+                      "Mesh BoxGeometry MeshStandardMaterial #0b1e36 @0,-2048",
+                      1,
+                      0
+                    ]
+                  ],
+                  "<Infinitym": 1,
+                  "px<undefined": 2,
+                  "whole": 1
+                },
+                "batch": {
+                  "calls": 41,
+                  "triangles": 35204,
+                  "names": [
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map lit",
+                      14,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map",
+                      5,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #8a887e",
+                      3,
+                      2
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #353a3d",
+                      3,
+                      12
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #9a958d",
+                      2,
+                      2
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff",
+                      2,
+                      14
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #7c6d63",
+                      2,
+                      2
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #3a4247",
+                      2,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #727e80",
+                      2,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #5d6668",
+                      2,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #b7b4a6",
+                      2,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #a9b3ba",
+                      1,
+                      0
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff",
+                      2,
+                      14
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #353a3d",
+                      3,
+                      12
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #8a887e",
+                      3,
+                      2
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #9a958d",
+                      2,
+                      2
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #7c6d63",
+                      2,
+                      2
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #ffffff map lit",
+                      14,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #727e80",
+                      2,
+                      1
+                    ],
+                    [
+                      "static batch BufferGeometry MeshStandardMaterial #5d6668",
+                      2,
+                      1
+                    ]
+                  ],
+                  "<600m": 37,
+                  "px<undefined": 41,
+                  "<Infinitym": 1,
+                  "<400m": 3
+                },
+                "static": {
+                  "calls": 1,
+                  "triangles": 16,
+                  "names": [
+                    [
+                      "Elevated railway",
+                      1,
+                      0
+                    ],
+                    [
+                      "Elevated railway",
+                      1,
+                      0
+                    ]
+                  ],
+                  "<400m": 1,
+                  "px<undefined": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "ms": 26,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:37:23.551Z",
+    "op": {
+      "op": "call",
+      "method": "look",
+      "args": [
+        9700,
+        9100
+      ]
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 9700,
+        "y": 9100,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:00",
+        "renderer": "3d",
+        "vehicles": 264,
+        "pedestrians": 595
+      },
+      "ms": 2,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:37:23.556Z",
+    "op": {
+      "op": "call",
+      "method": "status",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "mode": "play",
+        "x": 9700,
+        "y": 9100,
+        "district": "FORT SENTINEL",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "13:00",
+        "renderer": "3d",
+        "vehicles": 264,
+        "pedestrians": 595
+      },
+      "ms": 2,
+      "newErrors": 0
+    }
+  },
+  {
+    "started": "2026-10-20T20:37:23.566Z",
+    "op": {
+      "op": "call",
+      "method": "military",
+      "args": []
+    },
+    "reply": {
+      "result": {
+        "alert": false,
+        "lockdown": false,
+        "challenge": 0,
+        "gate": [
+          {
+            "arm": 0,
+            "bollards": 0,
+            "slide": 0,
+            "broken": []
+          },
+          {
+            "arm": 0,
+            "bollards": 0,
+            "slide": 0,
+            "broken": []
+          }
+        ],
+        "soldiers": {
+          "gate": 3,
+          "post": 11,
+          "tower": 8,
+          "range": 4,
+          "patrol": 9,
+          "drill": 12,
+          "sergeant": 1
+        },
+        "aiming": 0,
+        "vehicles": [
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9515,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9560,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9605,
+            "y": 8950,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9665,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 8950,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9780,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9830,
+            "y": 8950,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "tank",
+            "x": 9490,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "tank",
+            "x": 9565,
+            "y": 9080,
+            "hp": 1600,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "apc",
+            "x": 9645,
+            "y": 9080,
+            "hp": 950,
+            "ai": false,
+            "role": "crewed"
+          },
+          {
+            "type": "armytruck",
+            "x": 9715,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9765,
+            "y": 9080,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9835,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9880,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9925,
+            "y": 9080,
+            "hp": 380,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 10160,
+            "y": 9042,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9470,
+            "y": 8018,
+            "hp": 380,
+            "ai": false,
+            "role": "qrf"
+          },
+          {
+            "type": "jeep",
+            "x": 9512,
+            "y": 8018,
+            "hp": 380,
+            "ai": false,
+            "role": "qrf"
+          },
+          {
+            "type": "helicopter",
+            "x": 9492,
+            "y": 7936,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "armytruck",
+            "x": 9466,
+            "y": 8234,
+            "hp": 480,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "apc",
+            "x": 9514,
+            "y": 8234,
+            "hp": 950,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "jeep",
+            "x": 9800,
+            "y": 7850,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "jeep",
+            "x": 10100,
+            "y": 9850,
+            "hp": 380,
+            "ai": true,
+            "role": "patrol"
+          },
+          {
+            "type": "helicopter",
+            "x": 9550,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 9810,
+            "y": 9522,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10340,
+            "y": 9365,
+            "hp": 220,
+            "ai": false,
+            "role": "parked"
+          },
+          {
+            "type": "helicopter",
+            "x": 10200,
+            "y": 9365,
+            "hp": 640,
+            "ai": false,
+            "role": "parked"
+          }
+        ],
+        "supply": null,
+        "drill": {
+          "x": 9650,
+          "y": 8330,
+          "active": false
+        }
+      },
+      "ms": 2,
+      "newErrors": 0
+    }
+  }
+]

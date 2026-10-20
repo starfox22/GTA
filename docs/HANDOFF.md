@@ -3,6 +3,34 @@
 Written for the next AI session (or human) picking this work up. Read `/CLAUDE.md` first (commands,
 rules, workflow), then this page, then only the area doc your task needs (`docs/README.md`).
 
+## October 20: military combat performance and downloaded weapons
+
+Continue on **`codex-reviews`**. [Play](https://starfox22.github.io/GTA/?review=c06dcb00f91c27a15)
+and [native comparisons](https://starfox22.github.io/GTA/review/?review=c06dcb00f91c27a15).
+Apache uses Andrew Swihart’s downloaded CC BY 4.0 AH-64; near source faces,
+materials, pivots and measured hardpoints are retained. Separate shared far/shadow
+meshes and exact source BVH rays bound cost. Q selects cannon, rockets, Hellfire
+or Stinger; finite stock, locks/guidance, HUD and pad replenishment use common
+combat paths. Read [Apache contracts](areas/police-and-combat-apache.md).
+Existing saved keys survive: a conflicting newly introduced aircraft default
+starts unbound; explicit saved aircraft keys and fresh Q remain.
+Polyte’s downloaded CC BY RPG-7 retains all 3,500 source near faces, measured
+wooden grips and shared instance batches; read [launcher contracts](areas/people-and-crowd-launcher.md).
+
+Combat performance: all stained cars share a single cooperative 3 ms frame
+allowance; elapsed wall time cannot refill it within a render. Dense fitting work
+yields with private scratch and exact baseline geometry. Unchanged HUD art is
+cached. Effect quads trim proved transparent atlas borders, with no particle-count
+or lifetime reduction. [Budget contracts](areas/rendering-combat-budget.md) and
+[footprint proof](areas/rendering-effects-footprint.md) record limits.
+The [audit](audit/military-combat-review-2026-10-20/README.md) retains 14 focused
+regression passes, host proofs, rendered smoke, source/licence evidence, native
+weapon checks and before/after images. Sampled warm vehicle work fell 20.75→11.32 ms,
+projected FX area ~39%; shared SwiftShader profiling does not establish hardware FPS.
+Reported fight state matches; the broader aggregate hash differs and is explicitly
+unlocalized. The source freeze pins 658 inputs, monolith `c14ca0aed95ef2dc`, split
+entry `c06dcb00f91c27a15`. Earlier mission/aviation/vehicle evidence remains below.
+
 ## October 19: airports, aircraft, flight horizon and reserve
 
 Continue on **`codex-reviews`**; never publish to `main` without the owner's approval.

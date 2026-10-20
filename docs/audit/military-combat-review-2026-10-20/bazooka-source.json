@@ -1,0 +1,186 @@
+{
+  "format": 1,
+  "title": "Low Poly RPG-7",
+  "author": "Polyte",
+  "licence": "CC-BY-4.0",
+  "source": "https://sketchfab.com/3d-models/low-poly-rpg-7-de967b52c9794d2995d4606749fcdff7",
+  "mirror": "https://codeload.github.com/Jeh3no/Godot-simple-FPS-weapon-system/zip/a7bd56c978c1abe1894e6b3822f8826f0a119cfb",
+  "metresToUnits": 8,
+  "lods": {
+    "near": {
+      "vertices": 8814,
+      "triangles": 3500,
+      "bounds": [
+        [
+          -5.638611793518066,
+          -0.3292699158191681,
+          -0.4729158282279968
+        ],
+        [
+          4.598803520202637,
+          1.9683866500854492,
+          0.4729158282279968
+        ]
+      ]
+    },
+    "far": {
+      "vertices": 369,
+      "triangles": 561,
+      "bounds": [
+        [
+          -5.638611793518066,
+          -0.3292699158191681,
+          -0.4369172751903534
+        ],
+        [
+          4.2148118019104,
+          1.9566594362258911,
+          0.4729158282279968
+        ]
+      ]
+    }
+  },
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "Dark_Metal.001",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.03282970664197667,
+          0.03282970664197667,
+          0.03282970664197667,
+          1.0
+        ],
+        "metallicFactor": 0.7481927563969718
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Glass.001",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "metallicFactor": 0.1,
+        "roughnessFactor": 0.8
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Metal.001",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.04825934533322086,
+          0.04825934533322086,
+          0.04825934533322086,
+          1.0
+        ],
+        "metallicFactor": 0.7481927563969718
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Rubber.001",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.003817572869280599,
+          0.003817572869280599,
+          0.003817572869280599,
+          1.0
+        ],
+        "metallicFactor": 0.5409540295741854
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Raketa.001",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.012532066603889249,
+          0.05729783433459911,
+          0.0,
+          1.0
+        ],
+        "metallicFactor": 0.4678109495190842,
+        "roughnessFactor": 0.8
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Drvo.001",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.0714984773486036,
+          0.027154524181000568,
+          0.00253825598810199,
+          1.0
+        ],
+        "metallicFactor": 0.2605722226962977,
+        "roughnessFactor": 0.8
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "default.001",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.789854,
+          0.813333,
+          0.694044,
+          1.0
+        ],
+        "metallicFactor": 0.1,
+        "roughnessFactor": 0.8
+      }
+    }
+  ],
+  "sourceMeshes": 22,
+  "anchors": {
+    "fire": [
+      0,
+      0,
+      0
+    ],
+    "support": [
+      -1.1140805743917033,
+      0.10610291184682877,
+      -0.0
+    ],
+    "tubeExit": [
+      1.961388113282808,
+      0.9246110889509372,
+      -0.0
+    ],
+    "roundTip": [
+      4.598803350618269,
+      0.9246110889509372,
+      -0.0
+    ],
+    "backblast": [
+      -5.63861188671719,
+      0.9246110889509372,
+      -0.0
+    ]
+  },
+  "conversion": {
+    "scale": 0.30315117670522534,
+    "sourceGrip": [
+      0.0,
+      -3.05,
+      2.2
+    ],
+    "nearGeometry": "All authored faces, positions and split normals; rigid axis change and uniform scale only",
+    "materials": "Linear source baseColorFactor, metallicFactor and roughnessFactor per vertex; double sided as source",
+    "farGeometry": "Per source mesh, welded QEM edge collapse; source vertices/normals retained"
+  },
+  "sourceHashes": {
+    "scene.gltf": "04804ab6c4e1d457895557da6a013a12cc8754611543070a6b1547d8e1e369f8",
+    "scene.bin": "b7e0453f4b966b3e8e89dd60f71dd7f45e04376e60623155e0db90a47fd1893c"
+  },
+  "assetSHA256": "7a0985052a5e4c34d84d68a79f1669209c33bbf2fc9ddeb0b74940c9925e3647",
+  "sourceLicence": "Model Information:\n* title:\tLow Poly RPG-7\n* source:\thttps://sketchfab.com/3d-models/low-poly-rpg-7-de967b52c9794d2995d4606749fcdff7\n* author:\tPolyte (https://sketchfab.com/Polyte)\n\nModel License:\n* license type:\tCC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)\n* requirements:\tAuthor must be credited. Commercial use is allowed.\n\nIf you use this 3D model in your project be sure to copy paste this credit wherever you share it:\nThis work is based on \"Low Poly RPG-7\" (https://sketchfab.com/3d-models/low-poly-rpg-7-de967b52c9794d2995d4606749fcdff7) by Polyte (https://sketchfab.com/Polyte) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+  "archiveSHA256": "4af883d9ac2465d82ddc0ae53dc4d18f44e75b76e4a852213cd2fbb390f3c540"
+}

@@ -68,7 +68,8 @@ roofs, garages): the plan is a game file, the meshes its `*3d.js` twin, coordina
   stars at once (`fortCoverBoarded`), the Apache included.
 - The AH-64 (`airframe: 'apache'`, `HELICOPTER_AIRFRAMES`) is only ever flown by the
   player; stealing it is like taking a tank plus maximum heat. Console `military()`,
-  `apache()`.
+  `apache()`. [Apache armament](police-and-combat-apache.md) documents Q weapon
+  selection, guided locks, finite ammunition and downloaded-model hardpoints.
 - Cover (fort-cover.js, -watch, -records; mission 4 drives it): `wearUniform(on)` sets `player.uniform`
   ('army' → outfit `playerArmy`, crowd rig, not the player body); `fortCoverBegin()` / `fortCoverEnd()` /
   `fortCoverReport()`; state `fortCover` {active, cleared, suspicion 0-100, alarmed, papers, insideBase,

@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "assertions": 18616,
+  "mode": "host-only; no browser",
+  "checks": [
+    "source identity and licence",
+    "all 3500 authored near faces and 8814 split-normal vertices",
+    "561 triangle far LOD",
+    "exact source PBR factors",
+    "normals and indices",
+    "0.95 metre unloaded tube",
+    "muzzle +X and backblast -X",
+    "firing and support fists enclose authored wooden grips",
+    "adult arm reach at aim, recoil and reload",
+    "shared near/far batches",
+    "standard shader patch anchors"
+  ]
+}

@@ -1204,3 +1204,23 @@ asset-specific attribution records and alternative identities:
 tools/monarch_vehicle_sources.json. Source-specific conversion recipes:
 tools/monarch-recipes/. Rebuild instructions: docs/sources/monarch-vehicles/README.md.
 The existing Brutini SVJ model and its separate attribution above are unchanged.
+
+Low Poly RPG-7 — Polyte
+Source: https://sketchfab.com/3d-models/low-poly-rpg-7-de967b52c9794d2995d4606749fcdff7
+Author: https://sketchfab.com/Polyte
+Licence: Creative Commons Attribution 4.0, https://creativecommons.org/licenses/by/4.0/
+Downloaded from the licence-preserving mirror Jeh3no/Godot-simple-FPS-weapon-system,
+commit a7bd56c978c1abe1894e6b3822f8826f0a119cfb. All 3,500 authored near triangles retained.
+Changes: rigid orientation and uniform real-size fit, measured grip origin, source material
+batching, and a separate source-derived distant LOD. No textures were authored in the source.
+
+AH-64 Helicopter — Andrew Swihart
+Author: https://sketchfab.com/andrewswihart
+Source: https://sketchfab.com/3d-models/ah-64-helicopter-56f54d3865d247c78b49c2b47454da86
+Licence: Creative Commons Attribution 4.0, https://creativecommons.org/licenses/by/4.0/
+Downloaded from the licence-preserving GitHub mirror projeto-arcanjo/modelos,
+commit d18428675ef6ca8d71c61e6ea7dc42ffc6691579, ah-64_helicopter.zip.
+https://raw.githubusercontent.com/projeto-arcanjo/modelos/d18428675ef6ca8d71c61e6ea7dc42ffc6691579/ah-64_helicopter.zip
+Changes: rigid orientation and real-size fit, separated movable rotor/gun/store assemblies,
+source material batching and source-derived distant/shadow geometry. Original aircraft near
+triangles and source PBR factors retained; derived air-defense stores are identified in source records.

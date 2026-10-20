@@ -1,0 +1,12 @@
+{
+  "candidate": "work/military-combat-review/candidate-1/game.html",
+  "expectedHTMLSHA256": "e73c7022c2659d1690b3de2a884d575f2e228d78437c1930c41e9b305051f968",
+  "actualHTMLSHA256": "e73c7022c2659d1690b3de2a884d575f2e228d78437c1930c41e9b305051f968",
+  "devserver": {
+    "port": 18235,
+    "pid": 51749,
+    "html": "/workspace/GTA/work/military-combat-review/candidate-1/game.html",
+    "flags": "dev&shadercheck&seed=1&hold"
+  },
+  "scope": "Named existing devserver operations and physical keyboard only; no reload, build, source edit or arbitrary state injection."
+}

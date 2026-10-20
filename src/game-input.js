@@ -190,7 +190,8 @@
         e.preventDefault();
         return;
       }
-      const actions = pressControlKey(code),
+      const freshControlPress = !physicalKeysDown.has(code),
+        actions = pressControlKey(code),
         is = (id) => actions.includes(id);
       // MONARCH MOTORS' purchase card owns the keyboard while it is open (dealership.js).
       if (gameMode === 'dealer') {
@@ -405,7 +406,9 @@
       if (is('fists')) selectWeapon(FISTS_INDEX);
       if (is('lockpick') && lockpickOwned()) selectWeapon(LOCKPICK_INDEX);
       if (weaponSlotKey(actions) >= 0) selectWeapon(weaponSlotKey(actions));
-      if (is('cycleWeapon')) cycleWeapon();
+      if (is('cycleAircraftWeapon') && controlContext() === 'air') {
+        if (freshControlPress) cycleApacheWeapon();
+      } else if (is('cycleWeapon') && controlContext() !== 'air') cycleWeapon();
       if (is('missionCard')) toggleMissionCard();
       // On foot the movement keys hand the aim back to the keyboard. At the wheel they only
       // steer: the pointer keeps the drive-by aim (driveby.js), or a shot aimed behind would

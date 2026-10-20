@@ -1,0 +1,18 @@
+{
+  "file": "/workspace/GTA/work/military-combat-review/candidate-1/game.html",
+  "htmlSha256": "e73c7022c2659d1690b3de2a884d575f2e228d78437c1930c41e9b305051f968",
+  "recorderSha256": "eb48a91db5f74a484aff54647e8464fb06680131eba64019674ed3954370ee92",
+  "captures": [],
+  "checks": {
+    "viewport": [
+      960,
+      600
+    ],
+    "moveTimeout": 240000,
+    "bootTimeout": 900000
+  },
+  "errors": [
+    "[smoke] page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///workspace/GTA/work/military-combat-review/candidate-1/game.html\nCall log:\n\u001b[2m  - navigating to \"file:///workspace/GTA/work/military-combat-review/candidate-1/game.html\", waiting until \"load\"\u001b[22m\n"
+  ],
+  "warnings": []
+}

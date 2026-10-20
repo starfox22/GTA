@@ -59,7 +59,7 @@
       // The id stays 'sprint' so saved bindings keep their place.
       { id: 'sprint', label: 'Pedal hard', note: 'Bicycle: stand on the pedals for speed (uses stamina)', group: 'move', keys: ['ShiftLeft', 'ShiftRight'], ctx: ['drive'] },
       { id: 'interact', label: 'Interact', note: 'Enter or leave a vehicle, payphones, shops, stations, boarding; hold for objectives', group: 'combat', keys: ['KeyE'], ctx: EVERYWHERE },
-      { id: 'fire', label: 'Fire', note: 'Fire the equipped weapon; the handgun from a vehicle; the Apache\'s 30 mm chin gun (the mouse aims it)', group: 'combat', keys: ['KeyF'], ctx: ['foot', 'drive', 'air'] },
+      { id: 'fire', label: 'Fire', note: 'Fire the equipped weapon; the handgun from a vehicle; the Apache\'s selected weapon (aim with the mouse or right stick)', group: 'combat', keys: ['KeyF'], ctx: ['foot', 'drive', 'air'] },
       // On foot Space jumps (player-jump.js: over low walls, railings and benches); its own virtual code, since
       // Space is the handbrake's, and the two may be bound apart. The id 'handbrake' keeps saved bindings.
       { id: 'jump', label: 'Jump', note: 'On foot: hop over low walls, railings, benches and fences (run at them to clear the higher ones)', group: 'move', code: 'Jump', keys: ['Space'], ctx: ['foot'] },
@@ -88,11 +88,12 @@
       { id: 'gear', label: 'Landing gear', note: 'Plane: raise or lower the landing gear (it cannot retract on the ground)', group: 'air', keys: ['KeyL'], ctx: ['air'] },
       // Its own virtual code: Space is the handbrake's, and the two may be bound apart.
       { id: 'rockets', label: 'Rockets', note: 'Apache: fire a rocket salvo along the nose, to the range of the aim (right mouse button too)', group: 'air', code: 'RocketSalvo', keys: ['Space'], ctx: ['air'] },
+      { id: 'cycleAircraftWeapon', label: 'Next aircraft weapon', note: 'Apache: cycle the 30 mm gun, rocket pods, guided anti-armour missiles and air-target missiles', group: 'air', code: 'AircraftWeapon', keys: ['KeyQ'], ctx: ['air'], overrides: 'cycleWeapon' },
       { id: 'bail', label: 'Bail out / parachute / cutaway', note: 'Aircraft: jump, release and press again to open the main. With the main fully open: press to cut away, then press again to open the single reserve. Never automatic; also dive off a boat or out of a sinking car', group: 'air', keys: ['KeyJ'], ctx: ['drive', 'air', 'chute'] },
       // V was the divert key before the chase camera took it (loadControlBindings moves an old default pair).
       { id: 'divert', label: 'Divert landing', note: 'Mission 11: change the landing site once the manifest is exposed', group: 'air', keys: ['KeyC'], ctx: ['air'] },
       { id: 'reload', label: 'Reload', note: 'Reload the equipped weapon', group: 'weapons', keys: ['KeyR'], ctx: ['foot', 'drive', 'air'] },
-      { id: 'cycleWeapon', label: 'Next weapon', note: 'Cycle through equipped weapons', group: 'weapons', keys: ['KeyQ'], ctx: ['foot', 'drive', 'air'] },
+      { id: 'cycleWeapon', label: 'Next weapon', note: 'Cycle through equipped weapons or switch a vehicle\'s mounted gun', group: 'weapons', keys: ['KeyQ'], ctx: ['foot', 'drive'] },
       { id: 'fists', label: 'Fists (no weapon)', note: 'Put every weapon away and fight with your fists', group: 'weapons', keys: ['Backquote', 'Digit8'], ctx: ['foot', 'drive', 'air'] },
       { id: 'knife', label: 'Knife', note: 'Equip the knife (no ammunition)', group: 'weapons', keys: ['KeyK', 'Digit7'], ctx: ['foot', 'drive', 'air'] },
       // Only once owned (arsenal.js giveLockpick); on foot only.
@@ -159,6 +160,12 @@
           ['divert', 'KeyV'],
         ])
           if (controlBindings[id][0] === old && !controlBindings[id][1]) controlBindings[id] = [...CONTROL_ACTION[id].keys];
+        // Older saves have no aircraft-cycle action. Q remains the fresh default,
+        // but must not also switch stores when that pilot already uses Q to fire
+        // or fly. Leave only the new conflicting slot unbound; retain saved keys.
+        if (saved && !Array.isArray(saved.cycleAircraftWeapon))
+          controlBindings.cycleAircraftWeapon = controlBindings.cycleAircraftWeapon.map((code) =>
+            code && controlConflicts('cycleAircraftWeapon', code).length ? null : code);
       } catch {}
       indexControlBindings();
     }
@@ -293,24 +300,49 @@
     function bindControl(id, slot, code, swap = false) {
       if (!CONTROL_ACTION[id] || (slot !== 0 && slot !== 1)) return false;
       if (code !== null && !validKeyCode(code)) return false;
-      const previous = controlBindings[id][slot];
-      if (code) {
-        // The same key twice on one action is pointless: move it to this slot.
-        const other = controlBindings[id][1 - slot];
-        if (other === code) controlBindings[id][1 - slot] = previous !== code ? previous : null;
-        for (const conflict of controlConflicts(id, code)) {
-          if (!swap) return false;
-          const slots = controlBindings[conflict],
-            at = slots.indexOf(code);
-          slots[at] = previous && !slots.includes(previous) ? previous : null;
-        }
-      }
-      controlBindings[id][slot] = code;
+      const plan = controlBindingPlan(id, slot, code, swap);
+      if (!plan || plan.blocked.length) return false;
+      controlBindings = plan.bindings;
       indexControlBindings();
       saveControlBindings();
       keys = {};
       physicalKeysDown.clear();
       return true;
+    }
+    // Plan the entire swap before changing a slot. Displacing a broad-context action onto
+    // a shared contextual key must not create a third-action conflict elsewhere (air Q / Fire F).
+    function controlBindingPlan(id, slot, code, swap) {
+      const bindings = Object.fromEntries(CONTROL_ACTIONS.map((a) => [a.id, [...controlBindings[a.id]]])),
+        previous = bindings[id][slot], blocked = [];
+      if (code) {
+        // The same key twice on one action is pointless: move it to this slot.
+        const other = bindings[id][1 - slot];
+        if (other === code) bindings[id][1 - slot] = previous !== code ? previous : null;
+        for (const conflict of controlConflicts(id, code)) {
+          if (!swap) return null;
+          const slots = bindings[conflict],
+            at = slots.indexOf(code);
+          slots[at] = previous && !slots.includes(previous) ? previous : null;
+        }
+      }
+      bindings[id][slot] = code;
+      for (let i = 0; i < CONTROL_ACTIONS.length; i++) {
+        const a = CONTROL_ACTIONS[i];
+        for (let j = i + 1; j < CONTROL_ACTIONS.length; j++) {
+          const b = CONTROL_ACTIONS[j];
+          if (a.overrides === b.id || b.overrides === a.id || !a.ctx.some((c) => b.ctx.includes(c))) continue;
+          for (const key of bindings[a.id])
+            if (key && bindings[b.id].includes(key) &&
+                !(controlBindings[a.id].includes(key) && controlBindings[b.id].includes(key))) {
+              if (!blocked.includes(a.id)) blocked.push(a.id);
+              if (!blocked.includes(b.id)) blocked.push(b.id);
+            }
+        }
+      }
+      return { bindings, blocked };
+    }
+    function controlSwapConflicts(id, slot, code) {
+      return controlBindingPlan(id, slot, code, true).blocked;
     }
     function resetControlBindings(id = null) {
       if (id) {

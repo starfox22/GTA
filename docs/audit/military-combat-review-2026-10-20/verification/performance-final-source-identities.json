@@ -1,0 +1,2651 @@
+{
+  "candidate": "candidate-1",
+  "flags": "dev&shadercheck&seed=1&hold",
+  "identity": {
+    "baselineCommit": "f350b4beed341d15c26aedd6976489346bac5bf9",
+    "branch": "codex-reviews",
+    "monolithSha256": "e73c7022c2659d1690b3de2a884d575f2e228d78437c1930c41e9b305051f968",
+    "javascriptSha256": "9791140789cc07719bc41df8730f9eaf53b97c412c0715a31e07b45dedd64f11",
+    "entrySha256": "fab0170d1ca670a39fa348649870f904d66e5cbb99b1f59632898d6d088c3189",
+    "files": [
+      {
+        "file": "src/acoustics-audio.js",
+        "sha256": "af43278d896d1d2d35e8d13eda3c9bc29e1db9eecebb2139830b682422fdd01e"
+      },
+      {
+        "file": "src/aerial-haze3d.js",
+        "sha256": "22081dc21780a57d4c5b9a3f998af695b2e7770bef85724c5f2bc795e8c3e5bd"
+      },
+      {
+        "file": "src/air-cover.js",
+        "sha256": "a7b4ff8a8e30fc14eb5f6cafeddf658df0cbcd950988ef53f4c963557e1ede8d"
+      },
+      {
+        "file": "src/aircraft-assets3d.js",
+        "sha256": "dc858a78f6417f17af2420e9d5cfe206c0cbca0eb754457d9de506f88540ea7a"
+      },
+      {
+        "file": "src/aircraft-audio.js",
+        "sha256": "89bb464608fb2c11812f662f604fd957dabd35fcd2be53a525bd6c5f5cf44ba0"
+      },
+      {
+        "file": "src/airfields.js",
+        "sha256": "9600a48ccdbf75fd42e83cd1a1f03f2f2fc6fdbfe1a64dab13af7e1e16c137d1"
+      },
+      {
+        "file": "src/airfields3d.js",
+        "sha256": "64ca42c8fc2d6606cbf001e406e44eede7a837cff59d98771b763f4bb2c80d47"
+      },
+      {
+        "file": "src/airport-terminal3d.js",
+        "sha256": "e4e40e3b38f7d12a976d00b195796028b133dfe37000de57d16da544273e3c25"
+      },
+      {
+        "file": "src/ambience-beds.js",
+        "sha256": "9ca2141175a94655cbf07ccb8711a1547188450231d1c501fda19e51a39e0004"
+      },
+      {
+        "file": "src/ambience.js",
+        "sha256": "0e70c58d815f84d8349bd5ba3bfd0e7cd4be22926f38531ac5f98f708fe34982"
+      },
+      {
+        "file": "src/ammo-supply.js",
+        "sha256": "63bab065265cf10843a9f234f1b85875910752cb27850f82d717f4bf0890398b"
+      },
+      {
+        "file": "src/apache-assets3d.js",
+        "sha256": "73cd85cb24a8655b99ffdf6f208327eb434159ee1d37641ef98e0bc6fbb837af"
+      },
+      {
+        "file": "src/apache-guided.js",
+        "sha256": "35d1f2780c8ed87381c365848d5ef906392d7c945cbeca15287137f1366be71f"
+      },
+      {
+        "file": "src/apache.js",
+        "sha256": "e11e54d34ecd86d214604d2c1a35b5ed3f73ed14e5b681d8e5aac03087f044af"
+      },
+      {
+        "file": "src/apache3d.js",
+        "sha256": "0e3f27615c1982aebd0dcf9ceea6d8a915fe66c1592c673ab5a6fe934ff54411"
+      },
+      {
+        "file": "src/approved-suv3d.js",
+        "sha256": "c6b81661a353b5cd9904c47d1d6a361275b129ebbd3b5bfa469c9720bfdf984d"
+      },
+      {
+        "file": "src/approved-vehicle-assets3d.js",
+        "sha256": "3424e15194aacfec19a487d72cb0f33b89143790b318a939373f68de9a7854a2"
+      },
+      {
+        "file": "src/armor.js",
+        "sha256": "2a0e6ea3b3d0f291d65696dd61f85c86c5e18a2ca6b2a53d58bf40ff944bded9"
+      },
+      {
+        "file": "src/arsenal.js",
+        "sha256": "84c916b67a609522e6a90277cc5e61635336554c211274fc3a395aeab38321af"
+      },
+      {
+        "file": "src/asset-loader.js",
+        "sha256": "988a3aa8a8d5536af0ac8c737eda722c494167a92642d40b2d577dc70b3b60fe"
+      },
+      {
+        "file": "src/audio.js",
+        "sha256": "1b13fd65586a5d4d9d6fecec688ead0b10a02d4c161f4c00d52b5ec7f1ac02a8"
+      },
+      {
+        "file": "src/aviation-flight.js",
+        "sha256": "0d7b224bf88133231dd8c123650e1fed10f3cf0b5cc690ecd174907a0775f73c"
+      },
+      {
+        "file": "src/aviation-missions.js",
+        "sha256": "0118c240feab7cd4f89b1ae7b5da40761e061a6afc576f27b2a9a7671a467e8e"
+      },
+      {
+        "file": "src/aviation.js",
+        "sha256": "66485669183a45dff2b75adb5e8caefa6091b17b5407f95c35df87c3d95c9500"
+      },
+      {
+        "file": "src/base3d-buildings.js",
+        "sha256": "932599eae937c7731d9a15d13186a7171f5f0544510bb4d38db96a421d02ce20"
+      },
+      {
+        "file": "src/base3d-facilities.js",
+        "sha256": "9bf73ff89e18f3bf229fb453bba81eede69175fd3fc99c90b57c8726c2cbd87d"
+      },
+      {
+        "file": "src/base3d-frame.js",
+        "sha256": "8acb89af0c49b0fb3a3ebe9a45a3968d9f98d6fbeb803fd5659cb72aa980b4a1"
+      },
+      {
+        "file": "src/base3d-ground.js",
+        "sha256": "b3418d28760943399e7c71edf3e980819549b19a7b85f0d8115a8a0c2c178e34"
+      },
+      {
+        "file": "src/base3d-helpers.js",
+        "sha256": "0eefa4b92116d0ccb13339ece2ee45435fc854cab646952e6df4685bba13a426"
+      },
+      {
+        "file": "src/base3d-materials.js",
+        "sha256": "cb2bcb5f50c36a20bd1bb948f0d19a57798e28a99243573382e46a009f989786"
+      },
+      {
+        "file": "src/base3d-perimeter.js",
+        "sha256": "20e8fd337f0ab7ab9aa80c2be66f83527f68356d55605f2e9c2d1faa5da89409"
+      },
+      {
+        "file": "src/base3d-vehicles.js",
+        "sha256": "906b65d99037b203be9723f00689b7003e3e46d2aaf6de7b8f3bb03f2febc0ae"
+      },
+      {
+        "file": "src/base3d.js",
+        "sha256": "78bdc032aa8667fee4808619e417dbcc0a9ba570059e43d709e6d1de6903a647"
+      },
+      {
+        "file": "src/beach-cast.js",
+        "sha256": "dd53bdc9ac761b9f176fa8ca1fb982e76b9912a085107721712b9e4b03015669"
+      },
+      {
+        "file": "src/beach-games.js",
+        "sha256": "7400c8cc3db82f72ed9130f8ccfa8c8547d261899536d101b52a01544f8604a4"
+      },
+      {
+        "file": "src/beach-plan.js",
+        "sha256": "d2f929128cde4fef93a65831ec3518572159f96447a6cf100f9429e1a9b84b62"
+      },
+      {
+        "file": "src/beach.js",
+        "sha256": "11f0af65b0b194a87676f5fbea81b552aa32f05207e237a83f64b143ee3fe576"
+      },
+      {
+        "file": "src/beach3d.js",
+        "sha256": "9abbd9a8feec8d05a1920b336bc1f112c4dc7d5c7316afc0d38282b7b6bbb4c1"
+      },
+      {
+        "file": "src/beachclub-audio.js",
+        "sha256": "02f561c823d3a7c2986f69d2f4b1433a14d771b299e33ede350a59a592826a46"
+      },
+      {
+        "file": "src/beachclub-people.js",
+        "sha256": "04022bb16f35abbcb44f14679893ad96f9d802c757015baa44533429c9486796"
+      },
+      {
+        "file": "src/beachclub-plan.js",
+        "sha256": "90e711c932448062c15a3f5a329e4b98a288073bcbf536344ce423d4cc625bef"
+      },
+      {
+        "file": "src/beachclub-queue.js",
+        "sha256": "e983ac4a16150899e5404024b16fa5f356c87b89ed296751b05f088908db5182"
+      },
+      {
+        "file": "src/beachclub.js",
+        "sha256": "70a2d4f137decd795ec42e39f098b4aa6566657e1fc27621b75523e2bd61de00"
+      },
+      {
+        "file": "src/beachclub3d-club.js",
+        "sha256": "7f3e01482bee7e4e3739b954d308f79e517c4bf4490570d4036562c2e829bc59"
+      },
+      {
+        "file": "src/beachclub3d-terrace.js",
+        "sha256": "526083aa94a39f9ce8aec1af954e92770b764932751da937993ea886c6d9de28"
+      },
+      {
+        "file": "src/beachclub3d.js",
+        "sha256": "c9d4e08a9f2881e4dd03bfcbd27d269921990dbb232938ba2d0be36aa5cba6da"
+      },
+      {
+        "file": "src/beachvolley-court.js",
+        "sha256": "e164024bd2fe73672e47c63d9915f5942686e834b8d863cc175fab648955ca62"
+      },
+      {
+        "file": "src/beachvolley-play.js",
+        "sha256": "eb3efec30d2339ff5bdf31fe5aad44270f4670c3834e7fdcb8e8030dfcffe4e6"
+      },
+      {
+        "file": "src/beachvolley.js",
+        "sha256": "3ed033059bc5d20a8d3adda814a3f834e956c6844bb4291ef7dfc9d4024e7a8d"
+      },
+      {
+        "file": "src/beachvolley3d.js",
+        "sha256": "e42937ce2aba456e0f827ff1c8950ac3d38b30a38879fe380d1945431e35b054"
+      },
+      {
+        "file": "src/blood.js",
+        "sha256": "e4382942cb5db8eca7ff81bda65f0807963b4e9a2e362f845390d267162bff39"
+      },
+      {
+        "file": "src/blood3d.js",
+        "sha256": "2def0781bdc4de956bc0759ca983e52fc104d85ae2756ff326c5e7e110beafea"
+      },
+      {
+        "file": "src/boat-assets3d.js",
+        "sha256": "120a5b906617661e309b6e18493f7c0f83a212a2c4f8eec16a6314bcb9610074"
+      },
+      {
+        "file": "src/boats3d-fittings.js",
+        "sha256": "bbcf220e54115f4a633ef70e837b55b8166d57b21fe5a387a365688752cc8346"
+      },
+      {
+        "file": "src/boats3d-kit.js",
+        "sha256": "22f322d9e419a5b9553754ec5b2dfa22ad78552c97a0bc53212c61c106c13140"
+      },
+      {
+        "file": "src/boats3d.js",
+        "sha256": "294a89da6ccd098504a0f2b656b70b660fda4ff5e8fde3cd248bca60b7fe82ab"
+      },
+      {
+        "file": "src/bridges3d-build.js",
+        "sha256": "fc547a5f240b163ed0cb3cf688d1b16fd7147dab7f5c60b8d62734e368fa5174"
+      },
+      {
+        "file": "src/bridges3d-key.js",
+        "sha256": "c8926b8f0a8580e45fa3e26aa01a59741e4d9f893d1e157befe29b1957311029"
+      },
+      {
+        "file": "src/bridges3d-kit.js",
+        "sha256": "8c34a22f66c0877694c498c119ecfeb4ae7d0a4b99ac1deca0a6c2c5e07b7655"
+      },
+      {
+        "file": "src/bridges3d.js",
+        "sha256": "c375a5d06c6f09884b9dd16ed0f00481555ce0ff6784677e4e20fc8d506fad5e"
+      },
+      {
+        "file": "src/bullets-audio.js",
+        "sha256": "12798098e378f3d0cc94c2673bf88f653f95ced52651042d096cf0fd3af70dae"
+      },
+      {
+        "file": "src/camera-comfort.js",
+        "sha256": "613bd5b2c674f3fe146392d3f4c221f110ae9a76cee410423e0b2ace9331fbb9"
+      },
+      {
+        "file": "src/camera-drive.js",
+        "sha256": "beb9cae48863813e16aafaca08419741d60834499efdd1a83629986dd33982c9"
+      },
+      {
+        "file": "src/camera-feel.js",
+        "sha256": "411596bcd4dc6f92168de761d2613b2f6b18de78c45fe837dbff3919941740df"
+      },
+      {
+        "file": "src/campaign.js",
+        "sha256": "345e01b002e2e0d5a9cea0f38dffa6665108bddf7fa8e81d6999729b0f242654"
+      },
+      {
+        "file": "src/car-radio.js",
+        "sha256": "9f704b9214bc69e929960cded032c0b020aeeb41ad650576ea2241c0eca7fab5"
+      },
+      {
+        "file": "src/car-stains.js",
+        "sha256": "0bebafec32037f8fdcc3aadfed876d27f3251c9b678535c2f710f3395497aca4"
+      },
+      {
+        "file": "src/carblood3d-fit.js",
+        "sha256": "f46b4793111d0dafc15a169e06e6c84cf9adf3a062d65c1ea0941c63798eb64a"
+      },
+      {
+        "file": "src/carblood3d-paint.js",
+        "sha256": "5de41a346fdca4833c65c461d004478d5dfca1852883935e904e9a3366a00908"
+      },
+      {
+        "file": "src/carblood3d-skin.js",
+        "sha256": "742ba18de3563c5767da5ae49b850b73c8a6a01c42ccf2cd3e873d09efeda13e"
+      },
+      {
+        "file": "src/carblood3d-streaks.js",
+        "sha256": "a6be31d2f84a544e41ad4fa14a160300c65b744c0341600a91762357b086e44b"
+      },
+      {
+        "file": "src/carblood3d.js",
+        "sha256": "12c55cf15d9ab21dc3def65b5cfec414cd944483a47cb0fcfe799a5ba50cf66b"
+      },
+      {
+        "file": "src/carjack-struggle.js",
+        "sha256": "0996f3a325d8818a15084c8d51d4c06ca8400ee9754796522002932ba1c3b155"
+      },
+      {
+        "file": "src/carjack.js",
+        "sha256": "5a655ca5c40918b065722ec5653568a4f7a454092f9b59a7a1a26628de71d2eb"
+      },
+      {
+        "file": "src/carjack3d.js",
+        "sha256": "d5f5e860a61ebe5c71a924062b63f66ec5017372957106892a1df16d01e201fe"
+      },
+      {
+        "file": "src/cars3d-badges.js",
+        "sha256": "348273d6df25cb5b5298c370e9a86e1aa5039eafa96bf54755720e333c2097a6"
+      },
+      {
+        "file": "src/cars3d-bodies-a.js",
+        "sha256": "dad6f14d1241338a9dd7531af01ab476af61e0cad48dac0a33da7f28b61bd056"
+      },
+      {
+        "file": "src/cars3d-bodies-b.js",
+        "sha256": "e64f5946334198a810f45f3541c829cc772e59ce4cd1a9baed6c21c816bc2b8e"
+      },
+      {
+        "file": "src/cars3d-body-parts.js",
+        "sha256": "ff3697b90fa41d8df83201028848e9a148056cbc61433a97b8aa2fd3994cb204"
+      },
+      {
+        "file": "src/cars3d-geometry.js",
+        "sha256": "e23763519ee7d1066e78bfe64c02220f448557d8a71c299baa017b6e1c63dac2"
+      },
+      {
+        "file": "src/cars3d-headroom.js",
+        "sha256": "159e0a94d45d1edf7d6842fe200feb8dcfb0f6b28bc34c960817d5475d6c2d1c"
+      },
+      {
+        "file": "src/cars3d-interior.js",
+        "sha256": "62a2732e807193d510015cc66a100e7dfd511e7343ad8f97dc3b19d8b94c9763"
+      },
+      {
+        "file": "src/cars3d-kit.js",
+        "sha256": "93574398a702759b35c83d33be0dc31c8c3810b5500c9777ec42ef2726a23c20"
+      },
+      {
+        "file": "src/cars3d-materials.js",
+        "sha256": "28b2553290bda50e7b1b79ac8f30bffc13c9228aae9500d2137699a0d106bbad"
+      },
+      {
+        "file": "src/cars3d-models.js",
+        "sha256": "b8afc30af84a39f6f4d0577e7ca43644cc0838067331312112d21fe54ef14236"
+      },
+      {
+        "file": "src/cars3d-wheels.js",
+        "sha256": "a0e9d716e93f905efdfaef2fbd3ddc5a0bbfd2b2f2c40a975a1c5523f436a571"
+      },
+      {
+        "file": "src/cars3d.js",
+        "sha256": "d297d4d29cc95eb589cf4198ea4f2666b2a3d10f1049bd77c25654718b2cc3f5"
+      },
+      {
+        "file": "src/casino.js",
+        "sha256": "0983ab969e93645def768c9707f6a4fcefde7a20988d3efae2829cac9d02cfbb"
+      },
+      {
+        "file": "src/challenges.js",
+        "sha256": "f4d4dd565a5456700b4a7b2e45d99f012b82292bc436fd30adbcec38e0859214"
+      },
+      {
+        "file": "src/character-near3d-head.js",
+        "sha256": "d4190c000e447fbe57fed6ee557aaa530b5ecb8a70643190f79f752b1da9bdfe"
+      },
+      {
+        "file": "src/character-near3d-shader.js",
+        "sha256": "3e6277d8aee766efd918f20887e81c2685c9d2cc913a6f1612b7155bdee2044c"
+      },
+      {
+        "file": "src/character-near3d.js",
+        "sha256": "633e32412d972ae9e760f490e4c9d7904d488a9304781dfc59cc995e7d78de7d"
+      },
+      {
+        "file": "src/character-rig3d-kit.js",
+        "sha256": "7a91b1f55657e2c2f648ffa207b6d5ff656b2aeac5fbb298cfa94f1c1614c06a"
+      },
+      {
+        "file": "src/character-rig3d-weapons.js",
+        "sha256": "9e5ded0272d4cb1b11119ea0053dcf5471f9ebb3cd4fdde287a50505833bc46b"
+      },
+      {
+        "file": "src/character-rig3d.js",
+        "sha256": "9e771bdd76a6bc1626f2acf2e93f15cd928f7c138d639c354d24c9761e6e534a"
+      },
+      {
+        "file": "src/chase-camera.js",
+        "sha256": "56936e7a0c368833617f4e1d131bc5563ea1ec68f9fd91061919f681b8b231bf"
+      },
+      {
+        "file": "src/chase-hud.js",
+        "sha256": "df4fed5d9e72049c1574859cd788c5a2c85fa59ee1bda502266677acb1a5ca56"
+      },
+      {
+        "file": "src/chase-rules.js",
+        "sha256": "1177310d008e6d1dcb08a3082b05036d5a4f91cd2fe9c484ac3e6e16828ceb4f"
+      },
+      {
+        "file": "src/chase-view3d-casters.js",
+        "sha256": "ce672fce491114fb0e1d4105baddcc4aa33d67313b6a41a1f2eca932630bc5d9"
+      },
+      {
+        "file": "src/chase-view3d-draws.js",
+        "sha256": "757a2ef5b4ebaa77825ed364109b5ebcf0b6dcd0e90b85bda16f62cd02179a39"
+      },
+      {
+        "file": "src/chase-view3d-far.js",
+        "sha256": "77665cef6e56f06cbef191c728700cce0f978bbc723c154c6a8405b037fc82a7"
+      },
+      {
+        "file": "src/chase-view3d-props.js",
+        "sha256": "e86e892764dc1262e99dee152117abf337115ec216e4deb9ca27e8ae81472ce0"
+      },
+      {
+        "file": "src/chase-view3d.js",
+        "sha256": "d66a48b5b532b767f49df6dafbee959bcb1b98d8794b9cd0b53030159234a578"
+      },
+      {
+        "file": "src/chase.js",
+        "sha256": "f4314213234727406e4f7706aa673b245cd60b31f17c4d9dffce122d3f4fd642"
+      },
+      {
+        "file": "src/chimney-smoke3d.js",
+        "sha256": "adbeb76327dfd7e471fe9d71ebb6d85f0f1fe9c110f2b0398a0b8dffed1ec1e6"
+      },
+      {
+        "file": "src/citylife-civic.js",
+        "sha256": "0c52ab1090a6052ef59f714dec41b802fbd6cc0202c5072984d3c1c03dd50c70"
+      },
+      {
+        "file": "src/citylife-places.js",
+        "sha256": "a329e332200bf6cf35fdf4f9337c40a2f68d96d0c7aa1af685360fd9e94e5086"
+      },
+      {
+        "file": "src/citylife-police.js",
+        "sha256": "a4860dc9f66124c3db77f9c8a66f2f8945cbdf0af9406449b37ac6efd6170452"
+      },
+      {
+        "file": "src/citylife.js",
+        "sha256": "317dfce1ebfbdd11981d0934766fad4cd4e3cffa95df924e67e7bfb3868cb992"
+      },
+      {
+        "file": "src/cityscape3d-frontage.js",
+        "sha256": "10531461927be73a2c50e2bc297c8d4b227ec28e7e72bda3bed037c6e83f2ee5"
+      },
+      {
+        "file": "src/cityscape3d-kit.js",
+        "sha256": "9283ca829738ea6d0efca2fad3cb6c7d1c0b05a53814bed0d6613e6836c746f4"
+      },
+      {
+        "file": "src/cityscape3d-roofplant.js",
+        "sha256": "4efea33074ea9fd0e71b0d11f2535d77b7e4895f313dc4e73d958b7436c25945"
+      },
+      {
+        "file": "src/cityscape3d-roofs.js",
+        "sha256": "eff79ac95ed0d9bfd956d31dba5e7aa6fe2e7e2b2ab8651f73731271d7c290be"
+      },
+      {
+        "file": "src/cityscape3d-shopwindows.js",
+        "sha256": "63807154ae89b524a373c9967f4c47d448c7b2dfa16e4b35d7ca055be4f7bbbf"
+      },
+      {
+        "file": "src/cityscape3d-wallskin.js",
+        "sha256": "8b0386a6df04357478bbdc153b4741ac5a0786f927b7c8e8862d63952c052dc1"
+      },
+      {
+        "file": "src/cityscape3d.js",
+        "sha256": "a40f3c5102d518b3949b03e03f6047c8c3c80fdbec7504a5ca632dfe7162e002"
+      },
+      {
+        "file": "src/civic3d-hotels.js",
+        "sha256": "760db6debfad42ff64ff4e91ab39d5aecb5ca83b4bf1b2f341221f2b413d14ed"
+      },
+      {
+        "file": "src/civic3d.js",
+        "sha256": "a52450c5b417c98c6b3ceb19f4f33eff0f5c8721c4c0893443ba2da5528c10a8"
+      },
+      {
+        "file": "src/civil-helicopters.js",
+        "sha256": "9dc96b23325157241720ef2816dd637b104c55a6abf365bad9db5d41f218f225"
+      },
+      {
+        "file": "src/clouds-audio.js",
+        "sha256": "5d4064bdeac784bd396e427afecac9429d05812ac6a671e8a750cdb1dab77c55"
+      },
+      {
+        "file": "src/clouds-console.js",
+        "sha256": "a490cd2a4f6ff15c245a2a695cc43142f743eee479b7267d6dcb1bcc0788575d"
+      },
+      {
+        "file": "src/clouds.js",
+        "sha256": "d0db98dc960fa56e0379361bdb5ea3b98f6322643273cb33d331f05819ca744b"
+      },
+      {
+        "file": "src/clouds3d-field.js",
+        "sha256": "0be8b29a057a4ade5f4ea6bcad366123727c5a43c8d977e80225b60032159253"
+      },
+      {
+        "file": "src/clouds3d-frame.js",
+        "sha256": "068747a10c6ca7d2cb79dfff155b800cea337555ca0c06c817f641330745467d"
+      },
+      {
+        "file": "src/clouds3d-lens.js",
+        "sha256": "a0bacbcd66fe6f089466f75ecfa27c19b145432a9013eb4a19830e1d868a848b"
+      },
+      {
+        "file": "src/clouds3d-march.js",
+        "sha256": "1e83f1fa104ec375b5d3013f8a2b2bc362d10844776dbbb29c6c92320cb4f81b"
+      },
+      {
+        "file": "src/clouds3d-near.js",
+        "sha256": "6412cbb643eb2b1e5b1f46b04fbdcfa7f4a35c70f821d10b4fbd91b920cad9a5"
+      },
+      {
+        "file": "src/clouds3d-shadows.js",
+        "sha256": "2d3eadd3dcfa1d0d5e83ced682459830088df170589d24d32ea3d6833a7dee64"
+      },
+      {
+        "file": "src/clouds3d-sky-history.js",
+        "sha256": "62b022f237855b30c0c597d58f991a120ac6c7146ef964825282fc2d28ba1d4f"
+      },
+      {
+        "file": "src/clouds3d-sky.js",
+        "sha256": "5c88631a372d740fb002676129ce18b0542e9bb32b64803214416c07e0eb963f"
+      },
+      {
+        "file": "src/clouds3d-wisps.js",
+        "sha256": "7889ce29c44b7cd4d79b1fa2f43b898ad47af2d490cb78b5e4c3cee02bf07fd7"
+      },
+      {
+        "file": "src/clouds3d.js",
+        "sha256": "4d8982c28941a3418c086cdab4cd916e049b498fc653d9fa9ae52eb963c89634"
+      },
+      {
+        "file": "src/clubpool.js",
+        "sha256": "95a134c59cc95fdc70ab97d8d8685524999c6fe32cead2b47248e103a907b547"
+      },
+      {
+        "file": "src/clubtalk.js",
+        "sha256": "9cbcf0b644a9e7dfe906668e07c668a927693933f31046c2d38e9a1049f6b5d8"
+      },
+      {
+        "file": "src/combat-rules.js",
+        "sha256": "2b7e65c80495793e8a1e5c8afdc7f008c4afc29eb98cecbdb00b1f925e9b7a1c"
+      },
+      {
+        "file": "src/controls.js",
+        "sha256": "d33a36f4e41a3d12ebfb5fcef5b49cb8b94e18426b866ad8f174afc6423fb0b2"
+      },
+      {
+        "file": "src/coronation-bridge.js",
+        "sha256": "15167c389c6c2b0e02fa54ebeaad7675fb42e2e19421a586ee6aedb8d9fafe53"
+      },
+      {
+        "file": "src/coronation3d.js",
+        "sha256": "0e205872cc6735e8b0745708282d88b98b40aa021d8bafd3a855872a5aae8ef3"
+      },
+      {
+        "file": "src/county-build.js",
+        "sha256": "84cbcd89a353a208ab34e81388a1604438ce3931539c962bfd48185e8beefdfa"
+      },
+      {
+        "file": "src/county-guide-signs.js",
+        "sha256": "d2a5c65d078ab30ae5acca887dd4dc41a95bcacd882ec183126a62c5e375ff61"
+      },
+      {
+        "file": "src/county-map.js",
+        "sha256": "ce4b228c1935e792a91550a0c92e30cd88db0dbf32a717d8a8c3a36e4110d550"
+      },
+      {
+        "file": "src/county.js",
+        "sha256": "ef93c6bc03e6c69d70e52b765a14b4d6ec44257762851eb67904ffbe4b02e76e"
+      },
+      {
+        "file": "src/county3d-forest.js",
+        "sha256": "f98482ac2cf6c4c9bb4fe988cca8de272fd10b140e5c6b80d0d7c51cccae0be3"
+      },
+      {
+        "file": "src/county3d-ground.js",
+        "sha256": "8d562d7b9afcef0b63b240b32fa79138898bea40fa599c34f9fa1600404d1a21"
+      },
+      {
+        "file": "src/county3d-roads.js",
+        "sha256": "50b147ce220a9b0803d9f2ce668ed84e178fc8c5345715f271293d47c668f155"
+      },
+      {
+        "file": "src/county3d-signs.js",
+        "sha256": "c3628f008627ddb23a06764aefc466e703533f4da23721f717000398279bda49"
+      },
+      {
+        "file": "src/county3d.js",
+        "sha256": "f1a2fbf642d9bee72a780f4aed685e334045c6d85679024279d8fef8faef1253"
+      },
+      {
+        "file": "src/crash-audio.js",
+        "sha256": "b2da5e96e4ea229c84817fcf1d4a76ec38f88743b4704c62286e2975d310304d"
+      },
+      {
+        "file": "src/crowd-awareness-console.js",
+        "sha256": "b7eee9c142c0f5772275fc0cc2c4dce026684fc1464e01ac1a88327712611943"
+      },
+      {
+        "file": "src/crowd-awareness.js",
+        "sha256": "718aa83b61b17ada5345773c75d55044f45742160038064c710608a431337a0d"
+      },
+      {
+        "file": "src/crowd-chatter.js",
+        "sha256": "885cf77c9380779027041bf288a6721822963298d0a6dc11378f73d3bd2a1020"
+      },
+      {
+        "file": "src/crowd-looks.js",
+        "sha256": "a5eeb9326cdaa826b18e69f28e48a60ffaa5c9476218237af97cd715eda65f27"
+      },
+      {
+        "file": "src/crowd-perception.js",
+        "sha256": "275bf7fdc63166ff245fd90774130ce00fbd56c1109801a9c4f2ba7b62a41ed8"
+      },
+      {
+        "file": "src/crowd-reactions.js",
+        "sha256": "dfc183f94a60a1ccc702da0aff56f55ab3c6b4a7403e097c36ee2dcbc4927505"
+      },
+      {
+        "file": "src/crowd-scenes.js",
+        "sha256": "1d671decacc57f033548817b25cb07f26838a4400ecd928e299af9afbb192ea9"
+      },
+      {
+        "file": "src/crowd-space.js",
+        "sha256": "dc088bc526d474363a67f7bc1a70d8f64096aa3a87a30a06b901139a991bd460"
+      },
+      {
+        "file": "src/crowd-speech.js",
+        "sha256": "0778309d56178e3e9313b6a36c2a355973c8376e3c5daf4d3720152ca9967901"
+      },
+      {
+        "file": "src/crowd-streaming.js",
+        "sha256": "a39074160e3fb5679974da665843a7855d0056caaf24fade0a855f3315c946c3"
+      },
+      {
+        "file": "src/crowd-traffic.js",
+        "sha256": "133fe2dac7eb22839e71f951b24796f8aa85a14fe04bbd0212c18a9a8897b82f"
+      },
+      {
+        "file": "src/crowd-transit.js",
+        "sha256": "f63430bdd67ae30225997e278b7c9cec2fd2d1e2089ce294ee1f9a2dba558533"
+      },
+      {
+        "file": "src/crowd-walking.js",
+        "sha256": "08df6d2fcb87ab522732f5ac9fd9fce565a6e14493572bb4041eb5dacf3eebc2"
+      },
+      {
+        "file": "src/crowd-witnesses.js",
+        "sha256": "c392057c50bf9fa72bca9a9ac95523ffa27ac0c5b1d0b8b343ab745e47854bce"
+      },
+      {
+        "file": "src/crowd.js",
+        "sha256": "b45db825c21469a9ec469acec23f11337d54bc8c6e6b51c41fdde56b74ef809d"
+      },
+      {
+        "file": "src/crowd3d-bodies.js",
+        "sha256": "9edf9d030decf2028d7caae2d2b5602df97d231db6ea29fcca6a6dd20f5b5ea7"
+      },
+      {
+        "file": "src/crowd3d-draw.js",
+        "sha256": "f2fbff520ace18abf805e097a5ab96a483a0a9a0ae3a4b9cf908a5e427c2e82e"
+      },
+      {
+        "file": "src/crowd3d-driveby.js",
+        "sha256": "a4dfa8a845e60cc0b952a86fdb959c3a810f2e62747592b7f2818f0ca1142215"
+      },
+      {
+        "file": "src/crowd3d-frame.js",
+        "sha256": "82261c3311ef50d4283eeda96bf4715524d914e4f554999736ac4951081200b2"
+      },
+      {
+        "file": "src/crowd3d-gore.js",
+        "sha256": "4c6caa4d706359a16f13fe916f81be6628d4e1c995b2c0d2934b5bad97666d5e"
+      },
+      {
+        "file": "src/crowd3d-joints.js",
+        "sha256": "71b649c22354e5a072ef81d660a23141746a1e14e621755f8db52e9c3abeb210"
+      },
+      {
+        "file": "src/crowd3d-looks.js",
+        "sha256": "b6950e658c8e4626313613b3d7f587206684275bdbbd4d67537e3691f3d41e7a"
+      },
+      {
+        "file": "src/crowd3d-parts.js",
+        "sha256": "9399fe16493badee9eeba230a1b5e7438013b3107dd02267a07bd73175a02032"
+      },
+      {
+        "file": "src/crowd3d-poses.js",
+        "sha256": "148ce2cfc202a76308387a6a784cf396b8928f05f3622cbb6c88539d6ab6e42d"
+      },
+      {
+        "file": "src/crowd3d-roofparty.js",
+        "sha256": "b8e94339a3474401494f80537966d187a6d7b3281cc09aaf9792a30099bed7be"
+      },
+      {
+        "file": "src/crowd3d-special.js",
+        "sha256": "f08a5da1d7fd75c94680a96d05e39c8296de58141ffd756b0b293f503e0dc32c"
+      },
+      {
+        "file": "src/crowd3d.js",
+        "sha256": "18f1d611fd4af9556b73b8867054243f2a91db2b50c3d5b770d4174dbbe3ffcf"
+      },
+      {
+        "file": "src/cycles.js",
+        "sha256": "56b7cd38b3d43daf7a6ace50f49b64bc3150152a44fdb254f9d45fcd4e3d6731"
+      },
+      {
+        "file": "src/cycles3d.js",
+        "sha256": "02deb2673cd870a1f3e8e015e171ee2d68bb7b5eb1cc9f0e7546325209ff4a76"
+      },
+      {
+        "file": "src/damage-crumple.js",
+        "sha256": "6e66b42bc6cae6b78df6578c2514dc861ae87c83514d4bd056edaca24c6b60e0"
+      },
+      {
+        "file": "src/damage-upkeep.js",
+        "sha256": "be4a2141a1db75bdd6fb992ca71ee35f92270dc77efcce725d7785bf4778d9f6"
+      },
+      {
+        "file": "src/damage-vehicles.js",
+        "sha256": "50fb6293c9282b154fe0a21b48208b1e8de8f37bcaa68717bbecabf242f391ac"
+      },
+      {
+        "file": "src/damage.js",
+        "sha256": "c6f497d4d2c1a535a21a20300da46e282b3453758439f3e445bf6aa18cdc8157"
+      },
+      {
+        "file": "src/damage3d-bodies.js",
+        "sha256": "e987b42e16163e50eda22d61672ff6ebfc1095a13a2afdf8092a007911f0e9d8"
+      },
+      {
+        "file": "src/damage3d-crumple.js",
+        "sha256": "309633223a2f21ed31eb312ff0cb9943e706576c333dbb36e87fc86c47d72243"
+      },
+      {
+        "file": "src/damage3d-decals.js",
+        "sha256": "42e79cac26845dac3679f89904883c6c68426f7d4403ed1ca467b04f315f30ff"
+      },
+      {
+        "file": "src/damage3d-marks.js",
+        "sha256": "9a00f733d3304db45e7c250d381946ab9caacb14e4e6e543e6dacd39513d0cdf"
+      },
+      {
+        "file": "src/damage3d-world.js",
+        "sha256": "610a30afe4d7a0082c4501bb7f60e5ab95c5df18b30e3235c562dda61ee50e63"
+      },
+      {
+        "file": "src/damage3d.js",
+        "sha256": "c2e79949f5d0cc3ddef4a484a497e7db7888a8b97913e9c10773dbf55acc236e"
+      },
+      {
+        "file": "src/dealership-lot.js",
+        "sha256": "62efd0002536b0bd2e2faea8dbbf19ed8538aca51c36ad4df94e1a04d7175846"
+      },
+      {
+        "file": "src/dealership-menu.js",
+        "sha256": "ac8c5b340f8f5f8c6bc0d075cef0d385936374acf183809e02c91e8806ba8606"
+      },
+      {
+        "file": "src/dealership-people.js",
+        "sha256": "1677bec7fc62dd062257eda79332e44e97ebd5437d7fcbe8f4e386f60af7ebe2"
+      },
+      {
+        "file": "src/dealership.js",
+        "sha256": "f43cac7111bc148ec153a1fc06fdd7c687383084afb4f63396c5c64f8a4cc859"
+      },
+      {
+        "file": "src/dealership3d-build.js",
+        "sha256": "fd2f173bceda09e1d5468279a34c8834705d9d055c1bfb152b7ab53e4f996e47"
+      },
+      {
+        "file": "src/dealership3d-canvases.js",
+        "sha256": "5c7e6be746c6f873a13869570d950071c495d6ebf7a96a296fd38a35f655a1c4"
+      },
+      {
+        "file": "src/dealership3d.js",
+        "sha256": "9ebbf2f6a95abb0c497a66b138b7ca2cb357729b58666ce03542e322650e91cb"
+      },
+      {
+        "file": "src/deck-landing.js",
+        "sha256": "0030113616e399c383b52e49de1f2007ab801be134d448c12285791312350f17"
+      },
+      {
+        "file": "src/dog3d.js",
+        "sha256": "141ae81674037699a9d0ff1bf12380a5182fb73020d3422795892495ee10ddea"
+      },
+      {
+        "file": "src/dolcati-vehicle-assets3d.js",
+        "sha256": "09a35ce918f7f7aefbcf38351ae2a4181d029e551333f03190400e7e3b34c8c8"
+      },
+      {
+        "file": "src/drawbridge-motion.js",
+        "sha256": "dcfaf1740144f56ca3de26f13e4f6c7e3212943ec6f696da945350c904d9a784"
+      },
+      {
+        "file": "src/drawbridge-opening.js",
+        "sha256": "2c82ac29d9ba43c6d17c16fcdb868c6afb22280785a528d6ddfdecca005b7ace"
+      },
+      {
+        "file": "src/drawbridge-report.js",
+        "sha256": "75e6f4e4af208763a51ae815eb5a31b32fb391272100a536ac216a825e001c82"
+      },
+      {
+        "file": "src/drawbridge-span.js",
+        "sha256": "b4fe172a7856b891aa0a541d9ef6da4b3ed1e910788797bc5e513aa2aa1f2453"
+      },
+      {
+        "file": "src/drawbridge.js",
+        "sha256": "38914ab57aa6a27b9a7e5256636deea6d303265a403999cbc407588a88eda99b"
+      },
+      {
+        "file": "src/drawbridge3d-build.js",
+        "sha256": "796cc3d52642766a36021ca06650f0639dc176a1c2aa89413b7c44f727dc8116"
+      },
+      {
+        "file": "src/drawbridge3d-houses.js",
+        "sha256": "78250bc5e7cb9670fd5f4b9442b8a06f67c2209e694ce248f1ce239730ca5f17"
+      },
+      {
+        "file": "src/drawbridge3d-kit.js",
+        "sha256": "09e2e4fd665557445767951edb8d23e1d010f571db2a471c240e977243827e6f"
+      },
+      {
+        "file": "src/drawbridge3d.js",
+        "sha256": "1693c96ff2f4dc20b77f1573707ae51ec11043a37cbf9cbe46cda39e258e8611"
+      },
+      {
+        "file": "src/driveby-seats.js",
+        "sha256": "dfaf5920de1e8745b245c92c4c6c5c079e2325d467f5efc684ff412affaf91fa"
+      },
+      {
+        "file": "src/driveby.js",
+        "sha256": "7bea8fa2a024f707003cec527a7996c2ea1dbff8d00f98bc1f46c465f972f929"
+      },
+      {
+        "file": "src/driving.js",
+        "sha256": "38dbfb4ebfec0760da08f8caba14acab61cd928e95766b4ba92160f4f32513fd"
+      },
+      {
+        "file": "src/ecology.js",
+        "sha256": "5bb1be98b4e6f985067596c6b8d6b1a037d42372fd4ea4d93ff75a64e14d8eca"
+      },
+      {
+        "file": "src/ecology3d.js",
+        "sha256": "3f054329ff52750f716c43ef4d277571f4c3493c02c49eaaf3179d96296b547a"
+      },
+      {
+        "file": "src/engine-audio.js",
+        "sha256": "8d010940d0eb8cd17d6b0a329ee3c4c4f7e8a57c0f180633c80a92f7c81ab176"
+      },
+      {
+        "file": "src/falls-body.js",
+        "sha256": "15eedd86b7677254dbda5dab86b231fe9ebe08cf48a5fd23aed3747e4f1ea030"
+      },
+      {
+        "file": "src/falls-console.js",
+        "sha256": "e47f38f174f6a2db09116a36f284ca469224d031611269faa0cd61049cc7eaa8"
+      },
+      {
+        "file": "src/falls-vehicles.js",
+        "sha256": "721f32322003919eeb4627d3d88537bb88a7948cfad8d48fdeb542a1ee4ef9d1"
+      },
+      {
+        "file": "src/falls.js",
+        "sha256": "cd52fcf2d35e8865ff47072f57e644bebab258d5b1ab09d920f700568b0dcf94"
+      },
+      {
+        "file": "src/flight-view3d-far.js",
+        "sha256": "7eb80153841ea63d0daa6098e1e550d1cf284b1de92ac95c33907ca80a5110ff"
+      },
+      {
+        "file": "src/flight-view3d.js",
+        "sha256": "11636913f7d7a8753ac9a94e3cb9da8c5ee8ca781ce63e6f932674c24074c2cd"
+      },
+      {
+        "file": "src/foliage-cutaway.js",
+        "sha256": "79138fd325c3cfbd85f1232e9529ebaab14390e189f44abe3afdd7cd041af408"
+      },
+      {
+        "file": "src/footsteps-audio.js",
+        "sha256": "e809d9f92513970b1703c174a9261a455f529089fc6078864a719db97064ed78"
+      },
+      {
+        "file": "src/footwork.js",
+        "sha256": "d1e08cabb21bf9713f5a7f3de50a44d25c1d295a9b74921f3dc2f79024b6f86a"
+      },
+      {
+        "file": "src/forest-trunks.js",
+        "sha256": "61900b623f0eaf55f1a50c3e220d7b500d6f200e40e4b008d72b6a704ce42334"
+      },
+      {
+        "file": "src/fort-cover-records.js",
+        "sha256": "41c30bc70e8a28bd54838f9f84070ddc298bbae46142d9e1ab6f72409cec83b6"
+      },
+      {
+        "file": "src/fort-cover-watch.js",
+        "sha256": "471927ed19f7c0ebdd8372289b53e62efcd1b6fbcad0ea14ed1629d7718240b1"
+      },
+      {
+        "file": "src/fort-cover.js",
+        "sha256": "321a484de00ce6787a97eeb9a43195471c80157680336f09757cdbb69df122e3"
+      },
+      {
+        "file": "src/fortjob.js",
+        "sha256": "d140853a97210a588fd05a057c20e987e6f6ce597850296a15fd8c7399e9b014"
+      },
+      {
+        "file": "src/frame-guard.js",
+        "sha256": "98061e9fa7692482927008013a07cd40005e45f7c5d9a1b7c1ac635eb06c3b86"
+      },
+      {
+        "file": "src/frame-trace.js",
+        "sha256": "bd5f1e75ee3e5d36d58280f65a4d31927aa55a02f2f27c3de301f54977e98344"
+      },
+      {
+        "file": "src/fx3d-atlas.js",
+        "sha256": "89d21cf194938fdb78561533d070627a2ad1ec0426a7b088213841e403efb740"
+      },
+      {
+        "file": "src/fx3d-particles.js",
+        "sha256": "398334efc0f5c04bce700ebf539fba22f882e5d587316e47be2d7376d052452b"
+      },
+      {
+        "file": "src/fx3d-recipes.js",
+        "sha256": "e777faa283d587e7ee7326459d85d0fa6c4cce5c5a88d791fbfc449c93c7ffcd"
+      },
+      {
+        "file": "src/game-agent-tools.js",
+        "sha256": "5c2f79b1b4fd1dc5329adee939b5b38c60a4b5fc22f87db9d3c1952414b2d00b"
+      },
+      {
+        "file": "src/game-car-spawn.js",
+        "sha256": "e36f28930967c0cb349b6eb6265367eca67fac342ea580df70c6b9981fc75eae"
+      },
+      {
+        "file": "src/game-collision.js",
+        "sha256": "bd4c614a649895a067d7476fc41c3ecf96b2955c37cee7a8d4f078e605d17e11"
+      },
+      {
+        "file": "src/game-combat.js",
+        "sha256": "7c1f48cd783778ad0db939edf2cde0a165e2912cafbbad1ba8f2d059b061a04e"
+      },
+      {
+        "file": "src/game-console-core.js",
+        "sha256": "799306732ebe363cf2e7c7cb2cc21ff30d8459c7fc966085a566634d342d0702"
+      },
+      {
+        "file": "src/game-console-crowd.js",
+        "sha256": "625eed02f76fcbf65f63720b40fe81fe6d061c4bb68151fcde406aad5045d27c"
+      },
+      {
+        "file": "src/game-console-graphics.js",
+        "sha256": "013b99a666c1e204857f81ae1424d943135bfe64e764d62ccd914231769e3cbc"
+      },
+      {
+        "file": "src/game-console-integrity.js",
+        "sha256": "dec368e76a0f14c010b95824b3a4abaf4814e71f9449e8c2dd72e6990dc63653"
+      },
+      {
+        "file": "src/game-console-leisure.js",
+        "sha256": "8830d5edc3126f0961f18dfed6d55bb38b69ae3ac333ff263a405d2ed79103c8"
+      },
+      {
+        "file": "src/game-console-missions.js",
+        "sha256": "b8bd3cde7bac6ed824b7e11e1aba8705b5032701b9cc32b9a2b33c13731ff8ed"
+      },
+      {
+        "file": "src/game-console-perf.js",
+        "sha256": "fdc386368956eb164d58a476142caf1727a0904207959447538e598ae1f721cd"
+      },
+      {
+        "file": "src/game-console-police.js",
+        "sha256": "403664c018c0510668865c3214bab37be83b5977aaa4ad3fbdd1fd4c392661ab"
+      },
+      {
+        "file": "src/game-console-rides.js",
+        "sha256": "d5aa3091da319474014e1c8f5c946a8957cc2a380490715e81ac11056638602e"
+      },
+      {
+        "file": "src/game-console-settings.js",
+        "sha256": "148d74145d3f8cac5fa2ac2e950a41ceed82d5591aec742cacae9025ff744d61"
+      },
+      {
+        "file": "src/game-console-soak.js",
+        "sha256": "cd6e1ffdc47de55628e2729453f245bfc7e601bb0ab2805f75588617bcf15786"
+      },
+      {
+        "file": "src/game-console-vehicles.js",
+        "sha256": "b1f6bd8144630d1fb0fa6bc51868e7d246c7d1dacf39a5887e8ed2a9374bb983"
+      },
+      {
+        "file": "src/game-console-world.js",
+        "sha256": "392b6b30464271243c2a8fc4e998e0f0a82abd00e358a218d5939d8bb9dd4411"
+      },
+      {
+        "file": "src/game-console.js",
+        "sha256": "da6c0be9780bf282d65d723f3624d51ecde0611595949bf39b28ed7051f52dbb"
+      },
+      {
+        "file": "src/game-cops.js",
+        "sha256": "79345ba5086475cdced247a27f0c32ccdffa6275d66e04bc7cd81d058bc03ff5"
+      },
+      {
+        "file": "src/game-draw2d.js",
+        "sha256": "1faee5ddaadf818ef44eef635b869c2b75770ff7ad47f984f9e76594c075dfbe"
+      },
+      {
+        "file": "src/game-input.js",
+        "sha256": "9f607ea39d3564e138c6988faef51cd640f9f7669d10cb8a98c1c8e341f1969f"
+      },
+      {
+        "file": "src/game-loop.js",
+        "sha256": "316e59c409341303ea075ca2c255916b8403839d1b010059d1267c95b5bf8004"
+      },
+      {
+        "file": "src/game-menus.js",
+        "sha256": "b6d45c4b73bd019614150cf8a0d3e680fe050a5446208bf0963cbd1c59086c63"
+      },
+      {
+        "file": "src/game-minimap.js",
+        "sha256": "b4642670aeea523c84ed8d65c1462c016cba13efc31da453e361a378045d85cc"
+      },
+      {
+        "file": "src/game-people.js",
+        "sha256": "acef7af6a699cd37a898e0865538e421384577692e4de00f9a8c50fd66abc063"
+      },
+      {
+        "file": "src/game-player-actions.js",
+        "sha256": "973f0d4046064e6068018eefb66259d399709bfc64726bbb3ad0d3bbb961609a"
+      },
+      {
+        "file": "src/game-populate.js",
+        "sha256": "4ab79f66fbc28a8d34705a6ee52c263ad8d7df178eb4eded1bd1fd3b4711f476"
+      },
+      {
+        "file": "src/game-state.js",
+        "sha256": "36089a955146fc51f7c6122b14e8ee374e1f0e4a1fffdba0306a336049d70820"
+      },
+      {
+        "file": "src/game-ui.js",
+        "sha256": "20aac69b06cc43207464269cc7d85c88d1205884008ab2db3e15c77565edf6bd"
+      },
+      {
+        "file": "src/game-update.js",
+        "sha256": "78f7c3b9c8800feeb9dcf822cdb7af35c871ec17af3002ee32bf14b46d32f197"
+      },
+      {
+        "file": "src/game-vehicles.js",
+        "sha256": "f7a36d5d22ecf0880e57fc11cb0d73360fb0fd563452e7eda15039870e411c6e"
+      },
+      {
+        "file": "src/game-weapons.js",
+        "sha256": "95adb64f0dc37d3df438b3d7c86bdc5e013544a1c8740bf1431db77b9d23b1cd"
+      },
+      {
+        "file": "src/game-worldgen.js",
+        "sha256": "ce2fd2d0efc9c99586b084bd22e10a4141675b33dfa69f48d05af2df199a3129"
+      },
+      {
+        "file": "src/game.js",
+        "sha256": "b7741df7e4b69ba25f79aecbec8b4ea1cb7e90a5d25115254808163cf3ab8604"
+      },
+      {
+        "file": "src/gamepad.js",
+        "sha256": "6912a19ea6f1121b09bd67914e346515e40ae4138eba79c5bd18c021a561a6e4"
+      },
+      {
+        "file": "src/garage3d-build.js",
+        "sha256": "2e7a2439da0f472eae20e6600f1e8afa06691f3a40483e002ab43764840cd61a"
+      },
+      {
+        "file": "src/garage3d-materials.js",
+        "sha256": "9ab8b95c0e865a7c8796de2cea6b5e45fa79feccc35644745d5a9d06fd806ecb"
+      },
+      {
+        "file": "src/garage3d-styles.js",
+        "sha256": "f925eec6bbd2ea519b4d8589798e7412f0d3b4583b580045b0b817881ee5cf74"
+      },
+      {
+        "file": "src/garage3d.js",
+        "sha256": "75e9ca426192f7b1a54a4978aef991edac279c8b727ef0251ac8f6fe16f65ddb"
+      },
+      {
+        "file": "src/garages-shops.js",
+        "sha256": "e4ac759a73e05d7f0fe08c896323c7463866c09333438a41c72c745e7d8d155c"
+      },
+      {
+        "file": "src/garages.js",
+        "sha256": "db832b2de3da4f84cdee93ad6267170bf0c97482efa7654314014c7aca48abe2"
+      },
+      {
+        "file": "src/geography-ground.js",
+        "sha256": "a04ea688f6218718d858ceaea30df6f45a0e4f7959de22eb5618d3161b47fdf1"
+      },
+      {
+        "file": "src/geography-key.js",
+        "sha256": "f1244d35d64925cf84e2880dd6da8a0af2a091ad5f845369e693a0862b5e64f0"
+      },
+      {
+        "file": "src/geography-land.js",
+        "sha256": "61c03c58ca94c110421caeebdf37e9b697af952adb24106c1945b3ae1fa8d8b9"
+      },
+      {
+        "file": "src/geography-regions.js",
+        "sha256": "6565f015a2817945ee41c42dd2bd8148986cdd7a7982ff8c0dc708ca02d29334"
+      },
+      {
+        "file": "src/geography.js",
+        "sha256": "80d5fa248168b21353d8482d9a5471a0fbb885048bc2188cf552c643185a256f"
+      },
+      {
+        "file": "src/god-drawbridges.js",
+        "sha256": "c9de5af27ad80f5637ef0f1748b6d9f0022facfe2e9e0cdb9ec34f4bb9fa4685"
+      },
+      {
+        "file": "src/god-panel.js",
+        "sha256": "c06bf06eef3d5713519591126edef00e1472a7417b846042bc5291f1ec4cce03"
+      },
+      {
+        "file": "src/god-splash-audio.js",
+        "sha256": "20e8435cd96703df1aa2c37128889c1dca9e2b04b93349f4ad2642ce8bc76cf1"
+      },
+      {
+        "file": "src/god-splash.js",
+        "sha256": "7579a91a5f0cc1b18107f4c9eac64f454aea773e80a2ddf6740f75053250e827"
+      },
+      {
+        "file": "src/gore-console.js",
+        "sha256": "e88e45d093dc806ead5ff1e7c0f8bbcb6f1522ccbb60b2526f016c05c7bb8b64"
+      },
+      {
+        "file": "src/gore-props.js",
+        "sha256": "516bcb865dcc16af675bfd972103444ca4f2d4f89e6d05e90aad799cce39b8e0"
+      },
+      {
+        "file": "src/gore.js",
+        "sha256": "8874a6fe7f17d07447397532da5d3cdb41a6d5cba60f6909314297a2fdf6db49"
+      },
+      {
+        "file": "src/gpu-context.js",
+        "sha256": "f528314b6f72e39d7e512abc35bb0e78d51759389dfbe76b5d45f871a958a3e0"
+      },
+      {
+        "file": "src/grass3d.js",
+        "sha256": "42399f2b2b995f01c5d8acfd62ca9685d13bd092acb51337c08891838049d213"
+      },
+      {
+        "file": "src/ground-data3d.js",
+        "sha256": "6b240e48b3d7931e08396f4fa74ce6c46ee1301ea78d4c76e8fd98a0406d69e4"
+      },
+      {
+        "file": "src/ground-shader3d-albedo.js",
+        "sha256": "476282d3f0454f6312cdd3d55dd33495260ff40a5ff543942ddb195f7a5035ac"
+      },
+      {
+        "file": "src/ground-shader3d-pars.js",
+        "sha256": "90ead17a1c50901ff4bf4a8ef670760b34160d156a3ca4e61d285582b356b722"
+      },
+      {
+        "file": "src/ground-shader3d.js",
+        "sha256": "d7265bac8f441f40580bb42546061b775e000bcb28b36320ee432ddf038e7b6a"
+      },
+      {
+        "file": "src/harbor-cargo-job.js",
+        "sha256": "66d6f327b190703fee0212a47e84ebaa89860ebe29324b41413285e9e11e2bd0"
+      },
+      {
+        "file": "src/harbor-draw.js",
+        "sha256": "a2c7e69b8bffd46a62cb339378b6b0be787f620ce4bc3d3f8b3a5a8eedb92818"
+      },
+      {
+        "file": "src/harbor-terminal.js",
+        "sha256": "4a2f1b9b3ce6d65d13d7f03b907bb307783078f28c750a6734fb192258715fbc"
+      },
+      {
+        "file": "src/harbor.js",
+        "sha256": "b98fe275435a6d7943056fcb7dc4ef6c82cf043f393971ec4607a20e1bb3ef37"
+      },
+      {
+        "file": "src/harbor3d.js",
+        "sha256": "48a675d8f2bf28277fc3a48ba2b952079eef43f71703d6d9bc335b131e0eac7b"
+      },
+      {
+        "file": "src/headlight-beam.js",
+        "sha256": "465a323c1a0815853bd4a3b5bb3ffd34dc55b57e92f8d9b61af20c7323799276"
+      },
+      {
+        "file": "src/heat.js",
+        "sha256": "ada128bb385901eaa3008d018df2fad52a2b13c1c114d6b5a97a8cad97025899"
+      },
+      {
+        "file": "src/helicopter3d-animate.js",
+        "sha256": "8e5d50ae177628536e4e847fcef1d30f9e1f5feabc40991cc664b93158ce6597"
+      },
+      {
+        "file": "src/helicopter3d-equipment.js",
+        "sha256": "d5a00285316b276f88a9e8a4d4a97d5c55b27ac56d2c59bf2226474fcf7657ad"
+      },
+      {
+        "file": "src/helicopter3d-geometry.js",
+        "sha256": "889ea541f44843df18946a4cc67574f8d62bc856d58926e6292aacd9377f0592"
+      },
+      {
+        "file": "src/helicopter3d-kit.js",
+        "sha256": "36551fa643a10eda37d2aa7b9024aab97cf4a06263a577d2889dc31f53d027b2"
+      },
+      {
+        "file": "src/helicopter3d-livery.js",
+        "sha256": "633791fe8440f780a3ecc339fde4e91979144d2ea9a0207a189f59c0b74521be"
+      },
+      {
+        "file": "src/helicopter3d-looks.js",
+        "sha256": "f8e22ea39d21479e1717a661e265d6a945a8fdfa87bf2fafe7dcdd9c9b975200"
+      },
+      {
+        "file": "src/helicopter3d-model.js",
+        "sha256": "42a9eaa4d5eafbf34e9e42238427238a4b55654e8847e5a960c3c90f465acfa8"
+      },
+      {
+        "file": "src/helicopter3d-plans.js",
+        "sha256": "490ff1b9d9a51234b785e8d964d257a2899d44017da5a9ee7e064c42862c5983"
+      },
+      {
+        "file": "src/helicopter3d.js",
+        "sha256": "fa103d68c20971678ee872c9fedb07c35b5dd69603dda8d68f49401f5c5dd756"
+      },
+      {
+        "file": "src/hotrod-vehicle-assets3d.js",
+        "sha256": "f25596a5afdbc03785ab4c47c110c7a3b9562c2ea95e4d605223b21888eb43f4"
+      },
+      {
+        "file": "src/hud-clearance.js",
+        "sha256": "5deebd53e28d49f0ef1ec5884539c153eeb1acfbadb43e5c23c8254a1a0acc10"
+      },
+      {
+        "file": "src/hud-notify.js",
+        "sha256": "3afba3605276d121a01cfe3a6d99e8b31248f7c64bc6e9c272c2fb173ae4052b"
+      },
+      {
+        "file": "src/hud-panels.js",
+        "sha256": "481b1f794490a52447aab9ec15229749cf7a470f080503bd538227cedf4372ac"
+      },
+      {
+        "file": "src/hud-state.js",
+        "sha256": "8d6b5c3de4f2f09e4f91873fba3fb80b59a9bcff70ea50fa1310fbd8f1ced00d"
+      },
+      {
+        "file": "src/hud.js",
+        "sha256": "076c0a3a3f28a1f19bf0969daa3c206a82795c36c4ee8c3c35092050bbeade1c"
+      },
+      {
+        "file": "src/hypercars.js",
+        "sha256": "f78e88363180f6e1bc8f9d7ea2b8f5c45a8fe33b47c3fc4627805a3b47115280"
+      },
+      {
+        "file": "src/hypercars3d.js",
+        "sha256": "88e0b338894a527e1f4eebeb0c617fcc57d0b568955dcb7a364fdd5f8d8d8b55"
+      },
+      {
+        "file": "src/input-hints.js",
+        "sha256": "9878c9edfc2c397c4b7deca880e2ab792a8392d3a07b5e0e1016b092be5990da"
+      },
+      {
+        "file": "src/jet-assets3d.js",
+        "sha256": "a165323397d1fe4adc6135208a63289997a46955afb14a735c6b4778dfafb26f"
+      },
+      {
+        "file": "src/landmarks3d.js",
+        "sha256": "cc662935274453e22908e2ad00bd17ef0b68fb3f1be570d348e52f3615178763"
+      },
+      {
+        "file": "src/landscape3d.js",
+        "sha256": "4d06210ba44545121e3eb64e3d5ae28a914746373d38e111e85255966a0c3861"
+      },
+      {
+        "file": "src/leisure.js",
+        "sha256": "20e65938c6d0372437e23a8ea4eb81c302453ece30dc6e83f0db7f42c299c3a2"
+      },
+      {
+        "file": "src/lighting3d-cutaway.js",
+        "sha256": "da4703d939e30a7e9bbb1e78512ea869a76490dd4a96901aa0a43fd200121f40"
+      },
+      {
+        "file": "src/lighting3d-look.js",
+        "sha256": "138c194cf7af04db787a66f49daa44f4b13dbf1a4dd894691a9dc7e49bd1400c"
+      },
+      {
+        "file": "src/lighting3d-sky-dome.js",
+        "sha256": "5968a9b3901c7e78cb8881905a9ccd69952e8f8308868dc088c9244f8c2f4de3"
+      },
+      {
+        "file": "src/lighting3d-sky.js",
+        "sha256": "967c51ed0c0337e52bfecefd7731fc6aacbea6418a0640e9b1d9bde36919845b"
+      },
+      {
+        "file": "src/lighting3d-vehicle-lights.js",
+        "sha256": "6e4b7c4512876db0b3402110ad50f3c17dbc6fc0a3911203b4d3e2c1e5dc909f"
+      },
+      {
+        "file": "src/lighting3d-vehicle-shadows.js",
+        "sha256": "13b261b5e0a07fb4bce9c0dec1f56f9342d50744a74c7d47ee54320b05371338"
+      },
+      {
+        "file": "src/lighting3d.js",
+        "sha256": "68a0b6c5a2e6f254cdbac449b8d1b14e55a9472a741f9f58f3fbdc702285d28f"
+      },
+      {
+        "file": "src/livingcity-console.js",
+        "sha256": "dd5f2f2d762a7f9a336bedf9d8be5e8f0ad18df01ebf604d515181c4f571f4e1"
+      },
+      {
+        "file": "src/livingcity-events.js",
+        "sha256": "ceb3cba746249ad1efb39464a093b7648acebffe5eab4d33db2cd0936ed65d0a"
+      },
+      {
+        "file": "src/livingcity-key.js",
+        "sha256": "997d18e82279bd76e51995d07b0d3fe077e206efb000ca4d696fc43017713b81"
+      },
+      {
+        "file": "src/livingcity-medic-routing.js",
+        "sha256": "4e490eff38a209aee7b0268d62554525c3fcb295d9068a5059d30245bd2a4a3b"
+      },
+      {
+        "file": "src/livingcity-medics.js",
+        "sha256": "0ad74409213cd0142656be89e3aec39d294d327b86f96a25bc7fa3c6adba6c1e"
+      },
+      {
+        "file": "src/livingcity-sirens.js",
+        "sha256": "83463f7324b917d1738ab7f94f4a5c87e849aa6dd00b8812826b19c34c8e4894"
+      },
+      {
+        "file": "src/livingcity-traffic.js",
+        "sha256": "6c5d419f633c042f87f184393fdd639cbf04a1a39037cb533c04aa119a3b52c8"
+      },
+      {
+        "file": "src/livingcity-wrecks.js",
+        "sha256": "230f04f996bdabff0350f55d50451824d75075b5a91beb3c29ada44deb95ae9d"
+      },
+      {
+        "file": "src/livingcity.js",
+        "sha256": "743bb1992d7f837cbb405653b1f8be71dc80d77872b455b5d812f72bf5d94b61"
+      },
+      {
+        "file": "src/lockpick-audio.js",
+        "sha256": "8e03fe84c1f59dcdda05a85e60d1fedfb6ccb5b9f25813eeb631216f1306cf23"
+      },
+      {
+        "file": "src/main.js",
+        "sha256": "3a4882d9aeb335e1f46b215447a57b8929a7629d26bfd040ffdc2669bae07c98"
+      },
+      {
+        "file": "src/map-objective.js",
+        "sha256": "f0efa1401118de3754ecd81afc1a8189c2015d39d0fa515b2015a3260dcaad5d"
+      },
+      {
+        "file": "src/map-view.js",
+        "sha256": "2f74d7333b8cc92284a750beaff29807ebb1a3326914c692b8395aa55e96cfbc"
+      },
+      {
+        "file": "src/marina-liners.js",
+        "sha256": "9b34baa84062f513e9ffac6196148b799d978f994acf03454092471e49cbac6a"
+      },
+      {
+        "file": "src/marina-superyacht.js",
+        "sha256": "0608d9b223300fb31211460e95bf90747ee79f58948bd4282ed02a6187d2a09d"
+      },
+      {
+        "file": "src/marina-voyage.js",
+        "sha256": "9e1aca3701cd972f5938e39bb8c896268c6ab2f7b897f6b6f6422d20640ce33b"
+      },
+      {
+        "file": "src/marina.js",
+        "sha256": "8b6d382df3bd383d3eb0656555ceb8ddf13938758bfeab3a279f3b724120a4f5"
+      },
+      {
+        "file": "src/marina3d-fleet.js",
+        "sha256": "31c278889b88f72952168083bddce232d1555885082f49af851be4574f22526e"
+      },
+      {
+        "file": "src/marina3d-shore.js",
+        "sha256": "d79808329c149ba119c35f7e1a63b6fb0f4a47eba9a80a22c48c427f74ba07b5"
+      },
+      {
+        "file": "src/marina3d-yachts.js",
+        "sha256": "5d9192240d0857cd6713d64034c5b951c0a6dbedaa266342c7fc720959bde4b1"
+      },
+      {
+        "file": "src/marina3d.js",
+        "sha256": "18d7e3e241cc9c2aa31784332e38f7e33e831e5e5635493a2766b57e7d654481"
+      },
+      {
+        "file": "src/markers.js",
+        "sha256": "204ab8f8007fd075be396e2de3572a3cb55bb95fa26c941113087c66598ef2af"
+      },
+      {
+        "file": "src/military-asset-wheels3d.js",
+        "sha256": "d96835f6a767c6db60abfd8d0bc75fcdb9b5fdb34cf441eb97a23a27ebd5b8bd"
+      },
+      {
+        "file": "src/military-assets3d.js",
+        "sha256": "e9b933b1cb5d8a3d57910fcbed8ad92a7239ad26d4a61ff31697fc7463ed09e1"
+      },
+      {
+        "file": "src/military-base.js",
+        "sha256": "95f76b1f33458b6860940c51f2ebbea329e600c615259ff649949ccfa3be1758"
+      },
+      {
+        "file": "src/military-life.js",
+        "sha256": "c341a8e91f4aa5715b89e3aa998893ee452c72b3a04dc42a1999c8aa6f5c2f62"
+      },
+      {
+        "file": "src/military-mark-rays3d.js",
+        "sha256": "558425059f48d781b6bbf3a6713ee6e060a628f761b93d9f16c752c9b6762f18"
+      },
+      {
+        "file": "src/military.js",
+        "sha256": "530cc96906afcc13127251deb1f2c93767b3af74eb3d0cfb01ebde809318b22e"
+      },
+      {
+        "file": "src/minimap-rules.js",
+        "sha256": "3a42a00cc855dbee93b35e6d5ff35d7e1bdf793e4694b03419c8f0f7979d7ecd"
+      },
+      {
+        "file": "src/mission-brief.js",
+        "sha256": "c7911498156cde64db84a3c870b152aeb01a9d76a2ea0711bac136a47c25e491"
+      },
+      {
+        "file": "src/mobile.js",
+        "sha256": "4d6e0317ace03c99fda2462a23272b9b577d22b6cd9fe8abb1674333bed57c2d"
+      },
+      {
+        "file": "src/monarch-blocks.js",
+        "sha256": "4070b51b4d6d8eb9d69cf031460c879640bf8f7ab19b01b0e92daa55474c7ab2"
+      },
+      {
+        "file": "src/monarch-bridges3d.js",
+        "sha256": "fd820bf2832f3c80dae60e50dfd8ff70565f110bf4aec736e1f5d45b35bd70aa"
+      },
+      {
+        "file": "src/monarch-coast.js",
+        "sha256": "a496e893d5b746365dc3037fc7d82fb33aede5bec11c14090d3c4dbf5befc9d3"
+      },
+      {
+        "file": "src/monarch-garages.js",
+        "sha256": "7f2fbf0dada5a3c6d7468cdb8d8f4c7020170a679ef4697209ea5921fe08debe"
+      },
+      {
+        "file": "src/monarch-garden3d.js",
+        "sha256": "8efaf293a009a8fe6d2c35b4983c9f33d6f02a5e6c9ee97c15f8adf642ce5993"
+      },
+      {
+        "file": "src/monarch-grid.js",
+        "sha256": "f86959db6d0c67f87db44782db3f032516d55ab9d6c95755097ecb8996831606"
+      },
+      {
+        "file": "src/monarch-ground.js",
+        "sha256": "0a465c617f2ba379d5cedc210bcc68f0f0b56eaebeea8ba7d4fb2215dcb2d227"
+      },
+      {
+        "file": "src/monarch-life-crowd.js",
+        "sha256": "b92680f5f3acdd2d41f720ea01b30902d13baa0aa80431277af0fa2571cceb83"
+      },
+      {
+        "file": "src/monarch-life-traffic.js",
+        "sha256": "7f53d11a81d3369250f563ab1959369aabc1d82b33bfc810bd8e506f41831475"
+      },
+      {
+        "file": "src/monarch-life.js",
+        "sha256": "1d7ee302f24bbded9c94b267678389d73b52f6debe78806e3a1edf755c857685"
+      },
+      {
+        "file": "src/monarch-map.js",
+        "sha256": "c1a974ea769a716cbfd81a3ab9e3a649f0f7610923edd2322f09b3d6c6dee1e8"
+      },
+      {
+        "file": "src/monarch-marina3d.js",
+        "sha256": "1514acffc3a6d0ecaa5fa8e8d95ff9b5622e50d2c1a6bbc2875bda5a2557d44f"
+      },
+      {
+        "file": "src/monarch-one.js",
+        "sha256": "a793bed444728631450865b332ef3606dffc7d85d02f94e21d82a6c3cb864f58"
+      },
+      {
+        "file": "src/monarch-one3d.js",
+        "sha256": "3ce85a460f848f655c3bc7faedb3caf7a8f5c2a8edccd1dc78e7191f1bbc69a4"
+      },
+      {
+        "file": "src/monarch-streets.js",
+        "sha256": "46acfbf593cce349003a1122114d6de2d39259c68b97c7c1505ce86f59d38d4d"
+      },
+      {
+        "file": "src/monarch-streets3d.js",
+        "sha256": "e84cb871f4a2c9e9bdbcdfbb0e64929dfb1b8ab6caaa42bf5331c468a5d06be9"
+      },
+      {
+        "file": "src/monarch-towers.js",
+        "sha256": "6594bfc5e06a8e8831e5ea01cd93331119f8e5eda523734a925e2b1c033789f3"
+      },
+      {
+        "file": "src/monarch-vehicle-assets3d.js",
+        "sha256": "305c05e7123a85e691519f38d70d82d3d7822f097b7b1f1acf1bbab99ecf7489"
+      },
+      {
+        "file": "src/monarch-villas3d.js",
+        "sha256": "b658d62f10cf2ba483a644671338f5ac3b730a7c743d05131266aa4842d54425"
+      },
+      {
+        "file": "src/monarch.js",
+        "sha256": "5b5b2a2333461d4ea2741bd1b0076677fa3222759058a2ab9f622297586dbcee"
+      },
+      {
+        "file": "src/monarch3d.js",
+        "sha256": "a381f5d5691b36e0d92a6eb78b20fdabb02a5c7f2d0a3a909e49c27102ffb8fd"
+      },
+      {
+        "file": "src/motorbike-assets3d.js",
+        "sha256": "c48eb82d0442f5859dc9701f66df05071781a7dee5e2146b757bbc7be6a2dade"
+      },
+      {
+        "file": "src/motorbikes3d.js",
+        "sha256": "568754630ce753ffde599c06a2096c68e3ab158df1032e8b46d75d1d12076f59"
+      },
+      {
+        "file": "src/mountain-club3d.js",
+        "sha256": "b1ebabfd877fbfd06fd908be15f932f22176f2b9c97b4e854e2eaaf83ab41f4b"
+      },
+      {
+        "file": "src/mountain-village.js",
+        "sha256": "6b9764f217c2e586cba516f3a2b8b09d034eacdccc594185f8833964a4b77302"
+      },
+      {
+        "file": "src/mountain-village3d-details.js",
+        "sha256": "92ae27192716e18af1c85f52382391493a1aee1ed3cb93044a05e283afe36651"
+      },
+      {
+        "file": "src/mountain-village3d-kit.js",
+        "sha256": "c0fe6be8822333a54291d13a1657c7f0568eb7981bb4dccea123f2101ca40e6a"
+      },
+      {
+        "file": "src/mountain-village3d-textures.js",
+        "sha256": "e5df07e3c1dd463bcae2279899767b77c8f65b2a54e73a9a1adff4dd24205de6"
+      },
+      {
+        "file": "src/mountain-village3d.js",
+        "sha256": "80ab496971b3a846461a048bbbfaf2f5c09fe4967651f2a0510f2f4adb295674"
+      },
+      {
+        "file": "src/mounted-guns.js",
+        "sha256": "bab4e251ff9713cdacd101a45eaf35bbbbe02189e81779ee55a703dfc9e4fdb2"
+      },
+      {
+        "file": "src/navigation.js",
+        "sha256": "280a33bdfc4b820f8c699b0c0e3e98984c797af69d89203dd256dd4dc6353a00"
+      },
+      {
+        "file": "src/npc-avatar-cast.js",
+        "sha256": "32d8518e7e06bf2b00a002ecb6822eaa43e87f6b64725611e7d2ece6f3d4583a"
+      },
+      {
+        "file": "src/npc-avatar3d-fit.js",
+        "sha256": "694c1e693ac72051b772f83958588ad8c1e1be13e2effd9fdd740f9d67afcca7"
+      },
+      {
+        "file": "src/npc-avatar3d-mid.js",
+        "sha256": "d28651e913797fca53c3283604fffc2416e3fc32b4b5bb00b81869fafe3fe97d"
+      },
+      {
+        "file": "src/npc-avatar3d-shader.js",
+        "sha256": "2fd94805c4b85a6851b46825ff0661eb4b8a27526a7db65dbab16a825b29b1ad"
+      },
+      {
+        "file": "src/npc-avatar3d.js",
+        "sha256": "9462a7dfbc7f5091d8ffa8291ff01d64dcc8082734d8f0ed1749b889f42407c3"
+      },
+      {
+        "file": "src/offroad-club.js",
+        "sha256": "f4e2603dfe7dbb03aaf847d1fa1c307194f6db97962f37de52c9be47f7fa82dd"
+      },
+      {
+        "file": "src/offroad-trails.js",
+        "sha256": "cee054a90176b201308d93a1e373801c85c818b8b931ace9cb27eb643f9be8da"
+      },
+      {
+        "file": "src/offroad.js",
+        "sha256": "d9cd45f0f73eae70d64f67e8b3c9e30a424b58b20d84db937a14954c0152a691"
+      },
+      {
+        "file": "src/offroad3d-course.js",
+        "sha256": "4e839b55d09167d521b1ab34d1c7e053dba8d65ec676663fd443ef335f2b0a8a"
+      },
+      {
+        "file": "src/offroad3d-kits.js",
+        "sha256": "af29b65495ee3041b6c37eb91ab446b91acdc5f543e301aef3ceaa42bae3b885"
+      },
+      {
+        "file": "src/offroad3d-models.js",
+        "sha256": "a0e7a03755ee47793c8b30b982e813dce1fcd861aa41f5db9d57a9f27cc4a29e"
+      },
+      {
+        "file": "src/offroad3d-mud.js",
+        "sha256": "94ac7e3405246bdc12a5d37da48a3bb889788933923f76cbbb444236917afe9a"
+      },
+      {
+        "file": "src/offroad3d-trail.js",
+        "sha256": "26df859262ca72b37cf7a0cd9771abbf0de33a312d4518fa5021be8683c34efe"
+      },
+      {
+        "file": "src/offroad3d.js",
+        "sha256": "c132af165b10c95c7ff5517b80817d560b446c5da3ae129ac7a630ff2d17b724"
+      },
+      {
+        "file": "src/parachute.js",
+        "sha256": "7ef34a896515fb0f6f8878937bac34ccf608ed9213ec331abaf03222bf8886da"
+      },
+      {
+        "file": "src/parachute3d-canopy.js",
+        "sha256": "08bf0ce3fffaa5ab51a57f3f9d8a57c7c9ee5121a8e47c32c5a902249e86d94f"
+      },
+      {
+        "file": "src/parachute3d-cutaway.js",
+        "sha256": "47667911ed3be19d80a4dde13bc4099dc09040ae13e2efac41802c4e7e600d6c"
+      },
+      {
+        "file": "src/parachute3d-pose.js",
+        "sha256": "aa758ba24d3d242c1a28f9300b935aacd7003b53251fd9cbe2dd5b3b5c5e0963"
+      },
+      {
+        "file": "src/parachute3d-rigging.js",
+        "sha256": "0f24aada7179850a4e25c95776f45950266b197100db0ac60aa7cd5eef32d2ae"
+      },
+      {
+        "file": "src/parachute3d.js",
+        "sha256": "d1e0e80b71bf8909e00943633f3ee7fe72e419c4d3552c8f761eb2de9271ba71"
+      },
+      {
+        "file": "src/park-map.js",
+        "sha256": "a2f1ae32c2e970131d4164091f1ee317d6f0754ae536a00c9d7190d70a982146"
+      },
+      {
+        "file": "src/payphone3d.js",
+        "sha256": "a9147602460d5e7b024600cfbf3d7efc562b2cf1af38ce2425192d22509071c5"
+      },
+      {
+        "file": "src/payphones.js",
+        "sha256": "07c0ba008e9c70ed751f570b20c624f4e5b4e22c6c520efaeb48a0fbacb8a0be"
+      },
+      {
+        "file": "src/physics-aircraft.js",
+        "sha256": "60dc0be0c3c0da1f1dc2de66440927f725c1ff483a7371823f5c5512216d8a22"
+      },
+      {
+        "file": "src/physics-collisions.js",
+        "sha256": "a5bf1722da93aa56e772e8127df7487e413f8bb3c0ffad677de6e05593f857bb"
+      },
+      {
+        "file": "src/physics-console.js",
+        "sha256": "c7cf2b15f5150c258684f76dce5f4de2c60d6f5f37a193cf0e43fead588d9c8d"
+      },
+      {
+        "file": "src/physics-driving.js",
+        "sha256": "386821f1bee9137bdb45e7fab88cfa75d0fa144f9d8619f27b7ea4116da33e2c"
+      },
+      {
+        "file": "src/physics-knockdowns.js",
+        "sha256": "267167327717e581527510f18b680f0e9b0e290644756bc690e21eef95251ff7"
+      },
+      {
+        "file": "src/physics-shapes.js",
+        "sha256": "fbe13a785b2b1f58bed3509adf3b60ba4fbdee52a7859b913efe59d7ae719ac9"
+      },
+      {
+        "file": "src/physics-step.js",
+        "sha256": "8ddfde5f412b9166487c87bcf2a9a0cc2b234d9fee097dfc0cdd000e53e4245a"
+      },
+      {
+        "file": "src/physics-traffic.js",
+        "sha256": "d7f1e7a89dce387402c041e0dcde4172f9ff618c8aeb34146f57964b9cf117d8"
+      },
+      {
+        "file": "src/physics-update.js",
+        "sha256": "0f21a5ed3eb40e167dc811e7f87cb1f79176ada154250d1765a0941d6b924644"
+      },
+      {
+        "file": "src/physics.js",
+        "sha256": "ccb56f13b671d75f82b1705c0348f84055ad216674bace77c56f4c3d11702f58"
+      },
+      {
+        "file": "src/plane3d-build.js",
+        "sha256": "3be338eee38cf4fd820bd8b6e1a74cff4e518a587ad08e63784fb424c0dad667"
+      },
+      {
+        "file": "src/plane3d-shapes.js",
+        "sha256": "16088152e78e958eb9dd3ef99886892a346dc7e653ad92c8f0c4d75f795ddb16"
+      },
+      {
+        "file": "src/plane3d.js",
+        "sha256": "74cdaa51951ec31db47e54b2bb368587631f4f72929fbf9c9efaaf7f58dbb39c"
+      },
+      {
+        "file": "src/player-body3d-anatomy.js",
+        "sha256": "84186ee4be5a0c07e4833098984cb9e27fb9e1911e5a9a94ec0217662476b53b"
+      },
+      {
+        "file": "src/player-body3d-asset.js",
+        "sha256": "cffd3082d29909c668f1d5a364539bdfa3ee9987146adea82ca13eb90ace2fa1"
+      },
+      {
+        "file": "src/player-body3d-build.js",
+        "sha256": "4dd4bb93a20dcd94b49badbb22c0499cc80a7725b34115c7b7f7bbb6ae536abc"
+      },
+      {
+        "file": "src/player-body3d-extremities.js",
+        "sha256": "93ae78130b023fc5eb1e700d615610b3dfa883f94b5b3860c1d0187820a42fae"
+      },
+      {
+        "file": "src/player-body3d-grips.js",
+        "sha256": "c2ec985e397ad2f0a2ccacdeba184133c5da1c91700068ffe7bd2f9430343780"
+      },
+      {
+        "file": "src/player-body3d-head.js",
+        "sha256": "30a78a81ca5c21973a6a34422d088e84a52ba4cf67b46f48f1c8b3767ad98a34"
+      },
+      {
+        "file": "src/player-body3d-mesher.js",
+        "sha256": "977a9badfe4a94cb01dd4644aecd45ec95e62e9256c999a6d1cb265a1b7b878d"
+      },
+      {
+        "file": "src/player-body3d-shader.js",
+        "sha256": "e57b8c7accaf1d3053b31e4eddd2fe706d3f7e20e607e46277b654c9ac30ad98"
+      },
+      {
+        "file": "src/player-body3d.js",
+        "sha256": "51f635a48a2f7c8642b584bab9e0f133d02c7d00ffc906ce5f7f57f7fa2d126a"
+      },
+      {
+        "file": "src/player-jump-audio.js",
+        "sha256": "11b87a21e95b3131f60fc7ffa7239735d7f3f169d8c34b68e266f445451b3bbf"
+      },
+      {
+        "file": "src/player-jump.js",
+        "sha256": "3294c754126ab83782cdf75b73fad731adafa056c420ce569a90992f8362d1ce"
+      },
+      {
+        "file": "src/police-feedback.js",
+        "sha256": "ee00d7ebfb7ae2413380b4b4747a6ec37396cbf8c32a1416bc99a9bad0fbbd35"
+      },
+      {
+        "file": "src/police3d-asset.js",
+        "sha256": "22269ba4a823546063308af6d0abd2ac509a85ab5c653f0bbb9ab99e80f19157"
+      },
+      {
+        "file": "src/police3d-cabins.js",
+        "sha256": "4edfb74289e7ec04d7ab4a0ac362e5b95639fcfbd11fdbe1b3fa1f0a6e82f936"
+      },
+      {
+        "file": "src/police3d-kits.js",
+        "sha256": "3db9a9096999bd94fd6cf43c49db704506c856ff5f007f15237fb5ffc172b427"
+      },
+      {
+        "file": "src/police3d-looks.js",
+        "sha256": "f385d30c48847ec531da779fbb05513f2415a7dcfa641607a2304faa492c75ab"
+      },
+      {
+        "file": "src/police3d.js",
+        "sha256": "2135fd8995e25497b1ba895d67afc97e310c48d23511354961099fe8a530dbd8"
+      },
+      {
+        "file": "src/postfx3d-composite.js",
+        "sha256": "f70f7456cbc1bd0134843292ab2002044ab796b96b6766d6ace6074aa2943474"
+      },
+      {
+        "file": "src/postfx3d-motion.js",
+        "sha256": "c69a08f55d89aa9b44f9a3ca919ae9669af3eec056ae2a3b5d73485a98f41da9"
+      },
+      {
+        "file": "src/postfx3d-sun.js",
+        "sha256": "9a93c4e614abc9ab58c077f05a155c927355c0a8afe75afa26c1d4a821cc76d1"
+      },
+      {
+        "file": "src/postfx3d.js",
+        "sha256": "62dc7be9c47451f5b92780c02a780459ac8294339c87d02f34e77e402d370e8e"
+      },
+      {
+        "file": "src/pursuit-dispatch.js",
+        "sha256": "a2b8eb19b023477324ad15316ea1053ff2882bd96e01908f59a5d74b4f89344e"
+      },
+      {
+        "file": "src/pursuit-officers.js",
+        "sha256": "d9f86e9e7e8cca5023bbc83aed72849dadbc460c4345c4aacf32e275e326f0a1"
+      },
+      {
+        "file": "src/pursuit-steering.js",
+        "sha256": "c29a3212066eb653ee7574faedcc2918baadcef5e322a733d3fd615fc5b6e6bc"
+      },
+      {
+        "file": "src/pursuit.js",
+        "sha256": "263adcf991457eea94004d0a72dd181c2552abefa0e5dcca58d544540b18f472"
+      },
+      {
+        "file": "src/quality.js",
+        "sha256": "f428be42c5b5637bf801641e4eb365ab7c1a8e8b626acfadbcd63212dcb17d31"
+      },
+      {
+        "file": "src/render3d-api.js",
+        "sha256": "631405483c69513b41a957ee55ae0eec47001d797977273d630e11588a94694e"
+      },
+      {
+        "file": "src/render3d-effects.js",
+        "sha256": "336d80dac3389a627c637a830e708b66570477a6dbcc27dbfa793990bbda9285"
+      },
+      {
+        "file": "src/render3d-frame.js",
+        "sha256": "be6fedb3f3e5cb6f00959121f5c44718780233ac9348448a08192f1001a782ca"
+      },
+      {
+        "file": "src/render3d-hiccups.js",
+        "sha256": "afb64cd546d5b970af805602c08aa5e3e3cfd7cccb11188be39ad1a5d2077115"
+      },
+      {
+        "file": "src/render3d-prewarm-models.js",
+        "sha256": "70364edea4e33a6bda841b6a68a4e1526483f4ef03bba6e0775f889fb6ae37d1"
+      },
+      {
+        "file": "src/render3d-resources.js",
+        "sha256": "0c8d709fdd12c23a45494f9503e259c42c2db5f01e4b3b0f34699afceb31c510"
+      },
+      {
+        "file": "src/render3d-statics.js",
+        "sha256": "635ff65490aecb6b691656f7d685ce06b3b8ba8925fe1822456ae597ff49aee4"
+      },
+      {
+        "file": "src/render3d-streetprops.js",
+        "sha256": "633ce6480161c9dd186c63b7d0064c54c02769fd43444807cb32b1525bdd2c1d"
+      },
+      {
+        "file": "src/render3d-terrain.js",
+        "sha256": "730337431e0f4c17542a6542740da3857faf039842c87daf1d8784c9fde5e25d"
+      },
+      {
+        "file": "src/render3d-vehicle-models.js",
+        "sha256": "c199e96793b0965c25b1cfc1a3f9b924647543c402023a29250e9ce2b7d46bb2"
+      },
+      {
+        "file": "src/render3d.js",
+        "sha256": "b1ec22e80a8093f089c0b56fdad050c3096bbabaeb2348344cef2b95b3f712e3"
+      },
+      {
+        "file": "src/renewal.js",
+        "sha256": "dac728711923b37c272d48361b3cf6d7993033695a5ea1c4559972299c807003"
+      },
+      {
+        "file": "src/renewal3d.js",
+        "sha256": "5b59f08edae9e2e5a5c3d179bf2102a4bdfccc9bd58aa262960a2269b9a42aa6"
+      },
+      {
+        "file": "src/ride-look.js",
+        "sha256": "5d8eed34b2b3995131cc43d56cbd44a1c6477be4ea26a1b0a5568c465b5cb091"
+      },
+      {
+        "file": "src/ride-skip.js",
+        "sha256": "5ee380f338bdfbd85903cd8306e31bad2035cf4ee353edc449d6bdc67f19af25"
+      },
+      {
+        "file": "src/ride-wheels3d.js",
+        "sha256": "0938fd8961f695ee940cd2b33e4551175d6289709174f77b183bd5c23e9711ef"
+      },
+      {
+        "file": "src/riders.js",
+        "sha256": "2f000881d5e1ee71bc233f70930514c209ea9eea2187bb03ebca266dbfd42116"
+      },
+      {
+        "file": "src/roadblocks.js",
+        "sha256": "4c80eec3674dd5923344fda4efd92318ddc5b5cd001c3be0935636688e434c27"
+      },
+      {
+        "file": "src/roadblocks3d.js",
+        "sha256": "1115e4ce64624aa7563f9321aa53392ab662384c0f69bbfe7bbddebf56ddd941"
+      },
+      {
+        "file": "src/rocket-launcher3d.js",
+        "sha256": "1ad4bfcb724c5f802f926bcb978c1879ae1f8d03ddc9d01dfe599907842e1fc7"
+      },
+      {
+        "file": "src/roof-lifts.js",
+        "sha256": "8d9f968f5efd39d40849c0cc82a1c3709ca11e01cf07acb86c46bb66ac395b10"
+      },
+      {
+        "file": "src/roofmission-entrance.js",
+        "sha256": "e77d0790fb078a81965b6f6e605d83bdd99ca2731799af5c744703ce5ee4ed11"
+      },
+      {
+        "file": "src/roofmission-layout.js",
+        "sha256": "943a1c570822b02fdad72b4c0dc6be7f284399bef91132056284e303cc59a73c"
+      },
+      {
+        "file": "src/roofmission-poison.js",
+        "sha256": "8d69f2d7714e146a871be39b26e1233b0de8fe2b1f80af9d43c57bebe33527e8"
+      },
+      {
+        "file": "src/roofmission-scene.js",
+        "sha256": "f5b14a02502b5fae98f061c20f5a88b21f8c5fe97b1f816b191f54b1effa45d0"
+      },
+      {
+        "file": "src/roofmission-stealth.js",
+        "sha256": "e601b8218b456d7f779710ed82437590bd940caa8cc3fa334fb209d721b0baa0"
+      },
+      {
+        "file": "src/roofmission-ui.js",
+        "sha256": "98783836061278a0bec04e47618be603e46ff1e821a9d4bd360c16da4a79ae06"
+      },
+      {
+        "file": "src/roofmission.js",
+        "sha256": "8aa27f6bbb9d6a348fc4cf58c51f4c814d06fff46db3f95962f9f3d64e72d69d"
+      },
+      {
+        "file": "src/roofmission3d.js",
+        "sha256": "89381e1b00db61fd04c62d9dcca78503f53190a96f0574a11b2a03a68761bc3a"
+      },
+      {
+        "file": "src/roofskin3d.js",
+        "sha256": "84df6aac2c4951570543339316b787d414e64e2b196b3579d7a4a79bfc14c44e"
+      },
+      {
+        "file": "src/rooftops.js",
+        "sha256": "b7c820f2a23e71fc608e556694f19a9465c012029cb5e7b1178b337f6e84d14f"
+      },
+      {
+        "file": "src/runover-audio.js",
+        "sha256": "aea6da29fccec70a7d935c72a075d5421d3cf93e5be6f4cbc8099bc54d6d435d"
+      },
+      {
+        "file": "src/runover.js",
+        "sha256": "6ac83a68ba40a5daa1bec9231ec4e76af590d13ed3ab9d9ab34766a1ba94c1fe"
+      },
+      {
+        "file": "src/scenery-pools3d.js",
+        "sha256": "d980973ff1307b14fb78a9e6e7fc4920f532fabe2d7465de657dea0d572e2285"
+      },
+      {
+        "file": "src/sealife-audio.js",
+        "sha256": "d4c33b2b827f649541dca8363992486929e4583390d93e6c5b40856fdf93692c"
+      },
+      {
+        "file": "src/sealife-gulls.js",
+        "sha256": "113cadc3177157b800cd7ea67d5b061f5e57e6463edc86c1bbaee258309467ea"
+      },
+      {
+        "file": "src/sealife-sea.js",
+        "sha256": "c083102bfe9a7a1c43f6e43676eab836db3a2eb631922c14e1bb81118247a833"
+      },
+      {
+        "file": "src/sealife-shark.js",
+        "sha256": "df2a2c5b63e21fd2f6a4f43d5ca1ce2e99a179c63f86dc59d179fc3f909d3aff"
+      },
+      {
+        "file": "src/sealife.js",
+        "sha256": "c7eed845065df6f52a20a4bb732a140d34ef18a61c6aaeb7d858b1e959787c68"
+      },
+      {
+        "file": "src/sealife3d-effects.js",
+        "sha256": "0ee395d4bab8c977f05fd428c94f3182ecd2125d5ede74fe216720e9d3e3519f"
+      },
+      {
+        "file": "src/sealife3d-models.js",
+        "sha256": "6d5f19ad8de649c2c8d6d4740a0c66265896202cfcd938327d126a8679e0556a"
+      },
+      {
+        "file": "src/sealife3d.js",
+        "sha256": "1f45836b5dab3e1939499c3f320d93ae61caee31081160ab52119801393efae9"
+      },
+      {
+        "file": "src/searchlight3d.js",
+        "sha256": "c019e49a9ca8f2fb592d11caae7680c3daa054e9f2a564573eb9fad3f359223e"
+      },
+      {
+        "file": "src/settings.js",
+        "sha256": "ceb7650b2098832c14264db186f0f6ee9a9ff23a05e7ccecf48904d00c9b865c"
+      },
+      {
+        "file": "src/shell.html",
+        "sha256": "46f762aa9abd2f521c0255690ee946b16f1bb9e59f2abf37dcf1d7e742220698"
+      },
+      {
+        "file": "src/sidejobs.js",
+        "sha256": "b05ce5dc9ff69b030d8516f30654d216290cea09c266a4f2bd4d4642bcc6b732"
+      },
+      {
+        "file": "src/sidejobs3d.js",
+        "sha256": "4e3ede90ab2e3f4b0bfdd793e5269cf5f13b8bd0954bd4cf036d3d49853d59e9"
+      },
+      {
+        "file": "src/signage3d.js",
+        "sha256": "88fba65bbdb2d02e65bb1cc6a6658fb89487d5084077a798b48c4a1c648cf086"
+      },
+      {
+        "file": "src/signdesigns3d-families-a.js",
+        "sha256": "8067ad4b3cf6e742ac742369debde070843e3b738071a08a3f5cbe4e3bf0ed34"
+      },
+      {
+        "file": "src/signdesigns3d-families-b.js",
+        "sha256": "126743b79897b2220f148fe7747868f1fcf055923f710d33af9367e53e526042"
+      },
+      {
+        "file": "src/signdesigns3d-styles.js",
+        "sha256": "07ce5bef0d1c107f20098d1b1af375afd25ef2edcf696a634e51c79d925168db"
+      },
+      {
+        "file": "src/signdesigns3d.js",
+        "sha256": "ef8bf11b8b66f280491bec108204dc832eb175d3d9719edaccdc7b9eb0cb1412"
+      },
+      {
+        "file": "src/signkit3d-boards.js",
+        "sha256": "3f7c8b0869f60d03b0037317e0c1f078682adc69d78bab10f1da13bce489a7f8"
+      },
+      {
+        "file": "src/signkit3d-emblems-a.js",
+        "sha256": "a7a645963cd6cab492ee250049371d791080b01c378bbedef0bdfad171da4742"
+      },
+      {
+        "file": "src/signkit3d-emblems-b.js",
+        "sha256": "359de6df603f0c204e389fd8a8c2aadc38902dcdf49fef2043515eca7389c3dd"
+      },
+      {
+        "file": "src/signkit3d-letters.js",
+        "sha256": "27df1a0bc520df2fac72842566501fef69c9aec7d162805d3ac46cb606c99030"
+      },
+      {
+        "file": "src/signkit3d.js",
+        "sha256": "7bcc0c76f4d4854b8e6c63a130ce756a158757d6f4d0a6ce81ea82f7a0fa9350"
+      },
+      {
+        "file": "src/skyline-bar.js",
+        "sha256": "80e8edfa81e8c1a98ff3749d7b12900c683540e821b7f651be16cb5ec770c644"
+      },
+      {
+        "file": "src/skyline-console.js",
+        "sha256": "25fc80280bc3efa67f9bcc88ea2e9107cada93278698d6743a2b3621de5590fc"
+      },
+      {
+        "file": "src/skyline-islet.js",
+        "sha256": "b79211afdd1b8c7a317d895c98a7a8ef47c8d90da55a70e3dc6b26efacd28221"
+      },
+      {
+        "file": "src/skyline-lift.js",
+        "sha256": "59f1c293b51b26a6bde9e2d61c8d03735097118c76c0be66811c7b162749ff8d"
+      },
+      {
+        "file": "src/skyline-meeting.js",
+        "sha256": "b2722e417a24676e101d77471657e75c49eb63548f1c8adfb3bb769c566b7afd"
+      },
+      {
+        "file": "src/skyline-plans.js",
+        "sha256": "5a3de918c65cec9d02e7e17a8d562c6a43d69c150c3717e02a61ffa8bb40e183"
+      },
+      {
+        "file": "src/skyline-towers.js",
+        "sha256": "6f9034096ae83848d8a00fdceff4293b60e0abe079bda7cc7b309caebfc1bd98"
+      },
+      {
+        "file": "src/skyline.js",
+        "sha256": "06ce86f8370de6dfdc9f7b730d698ad046e5a0897249101de6fd291384d2d2a0"
+      },
+      {
+        "file": "src/skyline3d-bar.js",
+        "sha256": "7febf685031df2250dc40533c8e61037ef1f3d4e03f0a0c6d010339061232dbb"
+      },
+      {
+        "file": "src/skyline3d-crowns.js",
+        "sha256": "54f4a569c3e50d94eaa06c158fea0c1af923fbbce3e2dfa0d4d35b8294431fb5"
+      },
+      {
+        "file": "src/skyline3d-islet.js",
+        "sha256": "e9fb701c1095314d9d043cf61bb75375abbfda17a75621a993a8f7e43ef405bb"
+      },
+      {
+        "file": "src/skyline3d-kit.js",
+        "sha256": "e8706634218acc29ef457f44064aae1a0d60705831afae8ef282762ad92b450f"
+      },
+      {
+        "file": "src/skyline3d-towers.js",
+        "sha256": "e546433ff313111fd49f30be3a4ac7bcd6d70f0b75ad5970a2ea479a36ad477e"
+      },
+      {
+        "file": "src/skyline3d.js",
+        "sha256": "607a674575d8932ad8f950a9e0bb6f345af15258f4767a3890517ddd71c3f5c2"
+      },
+      {
+        "file": "src/sports-audio.js",
+        "sha256": "bf03b94a11a50fd234b5288d6a33f1382bd9ed1bedafe9e05c041b31e2679c23"
+      },
+      {
+        "file": "src/sports-ball.js",
+        "sha256": "007dacfe532e0ea04c1057ef4d2d93acc940c11b0f94ec28d71d55afc6abd294"
+      },
+      {
+        "file": "src/sports-fixtures.js",
+        "sha256": "dee3a6fd25bce8755b4b3a4d65c0a3af9e980bb3c0c830cf7dfaab7cb90a349d"
+      },
+      {
+        "file": "src/sports-frame.js",
+        "sha256": "afc7b501f83f2d97c2fc220f39169f5bd0ae6f6293c9308ebb0289ca989f6f57"
+      },
+      {
+        "file": "src/sports-human.js",
+        "sha256": "79008355ca54b170d5e91a8c34367632020d17fda87895595fd3ce2a814d63c1"
+      },
+      {
+        "file": "src/sports-play.js",
+        "sha256": "b44cff2f6f8f7222ae4e983de2b513cd559646f69beede2578441eb4b37fd5a6"
+      },
+      {
+        "file": "src/sports-setup.js",
+        "sha256": "3a15ce2f32e08dcfe4171f7c862b3bd9e06decb0ebd57807123e3fb0cdc4ec36"
+      },
+      {
+        "file": "src/sports-timeline.js",
+        "sha256": "1917f2727328d0581eeb7451f2dbf1ac92dbcbd688fff8ced79300b4fc5eefd6"
+      },
+      {
+        "file": "src/sports-vehicle-assets3d.js",
+        "sha256": "8ba3a42e896c96fa377069e5a35aa81232d91e76c79376a5663358f15f600cd3"
+      },
+      {
+        "file": "src/sports-world.js",
+        "sha256": "b79002676c18adee6b5de4c508a637acdca85c339059090ba6327813735ddadc"
+      },
+      {
+        "file": "src/sports.js",
+        "sha256": "a1d0062ebf2ebce3be9060d4c00dcaf4be98a0936e628cd326534396e67e2c8d"
+      },
+      {
+        "file": "src/sports3d-stadium.js",
+        "sha256": "d2d56f79cbf2528e94dac458bb1ac6c77a97c0f4b6ddda9e42a1be7367159da3"
+      },
+      {
+        "file": "src/sports3d-venues.js",
+        "sha256": "324c31c96d474332578ccf5654bb5364c03947350e5b1ea4bc0d52e87ebbaa8a"
+      },
+      {
+        "file": "src/sports3d.js",
+        "sha256": "dc18dd2a1296fcabfa38a5f57fc129ddcb28b906229532313cd1ed15efb74502"
+      },
+      {
+        "file": "src/sportsbook-odds.js",
+        "sha256": "847e4a7173e3257b512ee26568870a13c5ffca45a88b718541691f840d694fd5"
+      },
+      {
+        "file": "src/sportsbook-ui.js",
+        "sha256": "cce40c04187fd610c7628e6791d8d7a084b2e0b03cc122515ffd50d3bd987a89"
+      },
+      {
+        "file": "src/sportsbook.js",
+        "sha256": "ba1dae7c569cedeca528f3cae4df60866e2d4f591d6bdaeb21fe9d7459516092"
+      },
+      {
+        "file": "src/sportsbook3d.js",
+        "sha256": "34992d090ee85ac181a6de9259492f71ec37795cd607c0f817dcacaf457251cf"
+      },
+      {
+        "file": "src/story.js",
+        "sha256": "d90bdf4ba70421eb40f2460e3e6fe5be93b26e6db4c1e453bd368cffe197466d"
+      },
+      {
+        "file": "src/streets-county-map.js",
+        "sha256": "eec2c9534c2ace0d8956a8dbe57d1654230ad8989e269a2f55477b47f86e6319"
+      },
+      {
+        "file": "src/streets-grid.js",
+        "sha256": "3954cdda6a3de7d1e2606bae8d807db49e2e10dd145376a6e0895468ac0dac71"
+      },
+      {
+        "file": "src/streets-markings.js",
+        "sha256": "186fb332fbfd34b7568ed5104cf568f6225fa7a5ea77d8dbc71d8ca1f8039db9"
+      },
+      {
+        "file": "src/streets-waterfront.js",
+        "sha256": "615b78cd0e2b15b9e035951bbc59daacc47c6bbb4687882f690c0d0d91bbe7c5"
+      },
+      {
+        "file": "src/streets.js",
+        "sha256": "14d114765d981ec48b070187fbbc06d2a3493fcee9bf735690b614613984bf87"
+      },
+      {
+        "file": "src/summitjob.js",
+        "sha256": "46feef062f50adb9e038f8a94518da2e7b92e8473df1690a3e9db3c27816fe3b"
+      },
+      {
+        "file": "src/summitjob3d.js",
+        "sha256": "beb71c0d6f7801056410cff6540dd4e013bf0c99ab98096a612b82791c5cb64e"
+      },
+      {
+        "file": "src/sun-path.js",
+        "sha256": "80ef0d81a9addf95f539df2b291f5eee47208057c1fdb5682b170ac314663526"
+      },
+      {
+        "file": "src/surfaces3d.js",
+        "sha256": "63d7ea5f5643e79f27bbe1cebcc04ef4904ed4c76648f8d50972a89379486578"
+      },
+      {
+        "file": "src/svj-vehicle-assets3d.js",
+        "sha256": "80bef91ddf2a710e12648d7ec6e51949a03fa30b564ff89482b9e4e346c309d2"
+      },
+      {
+        "file": "src/swat.js",
+        "sha256": "9dfedf3915c6d82a8b140ed794a3de3d53345e238c82a0a4d0426b61b1f38e6f"
+      },
+      {
+        "file": "src/taxi.js",
+        "sha256": "19a607bbf95fb0ba8b65c2c201177ecbabfac6e2048ba8a52a6378c2fea102a6"
+      },
+      {
+        "file": "src/terrain-field.js",
+        "sha256": "418550ad58b47aab128d20225cf22856226189353d34bb7f03388cb8641af38c"
+      },
+      {
+        "file": "src/terrain-grading.js",
+        "sha256": "8d9ecda459c9cf67a4f6c098e7f5b27326e837be367fe30a1a861bc179516cbe"
+      },
+      {
+        "file": "src/terrain-headlights.js",
+        "sha256": "f780e0a7832a29d5126f7b9d65b4eb7531e3caae61ea84cb2284535081d5d1e5"
+      },
+      {
+        "file": "src/terrain-noise.js",
+        "sha256": "9940c8a470b67c779695db8bb7f564ea60ad5532b38c2018b3db15fd6d2f969e"
+      },
+      {
+        "file": "src/terrain-roads.js",
+        "sha256": "78f255f09533d51c7dbad7d461dc8219df8bbac1dd01bb865c50c6fbc2e06720"
+      },
+      {
+        "file": "src/terrain-roadside.js",
+        "sha256": "40fda5dff654e67da307cf83b1ab1b37d59b19c17711b6419f949f43ac62ac4e"
+      },
+      {
+        "file": "src/terrain-scenery.js",
+        "sha256": "8b92beaa228a40462db59d97d305553a341a2a8209c864c35f28174bf26a7374"
+      },
+      {
+        "file": "src/terrain-suspension.js",
+        "sha256": "3f8ce4067ee794494f97f53f1f2e949193f524d92435663480324f862ef020cd"
+      },
+      {
+        "file": "src/terrain.js",
+        "sha256": "6f0b48aec9f78aef717b11211a3a16601ffccbfb2ff292b05d8cf5ca84cd6b52"
+      },
+      {
+        "file": "src/themepark-colliders.js",
+        "sha256": "27f7996b1b608572d1350edf48277d3f1c5c397b3127155943b5153a64b7d4d1"
+      },
+      {
+        "file": "src/themepark-crowd.js",
+        "sha256": "8fd01f401f0fdf1d0c8410f402fbaf4e9bc74d156c1ab44fe13642f94f2c13ff"
+      },
+      {
+        "file": "src/themepark-falcon-track.js",
+        "sha256": "5da47d272a9477a388137350ce6d7dcfff7c02541cdf8f973c9c91519f3321a1"
+      },
+      {
+        "file": "src/themepark-falcon-train.js",
+        "sha256": "92b3703fce26a8dec20a663fa7993c4ffb64d005e43dc6e15b8f1db456435a7b"
+      },
+      {
+        "file": "src/themepark-grounds.js",
+        "sha256": "842fb6ce48eb73f77443f2125955e16cae3ad7b7f593cfb960e15abc89c9da2b"
+      },
+      {
+        "file": "src/themepark-rides.js",
+        "sha256": "954c3e44088ca96ba6cfb27423618bf38fb6cd20b6a2986ab8b9ea044a282b95"
+      },
+      {
+        "file": "src/themepark-sound.js",
+        "sha256": "127adbcb35fa7d9bc3fae33d1e056a426121288e078a6ec4b56c8e8f43b34149"
+      },
+      {
+        "file": "src/themepark.js",
+        "sha256": "3bfd88ba1e0074519fe03a277fb07552b6de43616f2209a911a5bd982d9eb69a"
+      },
+      {
+        "file": "src/themepark3d-carousel.js",
+        "sha256": "491944ee955151240e69c1a8e5999cf3ab018c5f94b03cc1a1dda2fdf3238584"
+      },
+      {
+        "file": "src/themepark3d-materials.js",
+        "sha256": "5980a21cc02e8cc7ff5a6038ffd6924a1d3bcae875ad70f29b760412b676cb15"
+      },
+      {
+        "file": "src/themepark3d-rides.js",
+        "sha256": "8134fa65d6c2ea85575ae1038e51bebc60f12b58a6d50374fdd63a9a1ba0500e"
+      },
+      {
+        "file": "src/themepark3d-shows.js",
+        "sha256": "7185f39a2706368aa2c4f9bf57daddb4b012b38c17f4d8fbfd2e1ccbd67f1c7c"
+      },
+      {
+        "file": "src/themepark3d.js",
+        "sha256": "4be2483eb76435b552754a77c589a35572c46f8035a753640ca612422d1c561b"
+      },
+      {
+        "file": "src/trail-trees.js",
+        "sha256": "7af9f990d73e29439e1bdfbb9a7020a5567ba5bc9dacc860465ad3cd49e9513f"
+      },
+      {
+        "file": "src/transit-network.js",
+        "sha256": "2d51093a097738023d9d2145d7c91006b29c42f814068d650bfa4121c9076325"
+      },
+      {
+        "file": "src/transit-rails.js",
+        "sha256": "a1d1d5fee3be8ee65c7502112ce01b3e4810cd31a039fe12ad591da3b33ca7a4"
+      },
+      {
+        "file": "src/transit.js",
+        "sha256": "a3080cd254fd165ee20e03d91fac68e0a37a27b87a3fb0758b244d7558330919"
+      },
+      {
+        "file": "src/transit3d.js",
+        "sha256": "02ce73487fb8efa2cb6bfec12e1e9d50d574615f0d8e7141728fd824db243fdb"
+      },
+      {
+        "file": "src/tyre-effects.js",
+        "sha256": "f80fb5eb48d556a367ab920f612f2a3c43c0bc73bc853c752f2f351d433f18a1"
+      },
+      {
+        "file": "src/tyresmoke3d.js",
+        "sha256": "a7915e5b9f52477a988df191236785a0f22decc5172e491a59d0b1ec735220a0"
+      },
+      {
+        "file": "src/ui/base.css",
+        "sha256": "11d968c15f5f0141d4a9f82a6c7e20688ec76dbabfa97ce9ac8f7454571da351"
+      },
+      {
+        "file": "src/ui/build-header.html",
+        "sha256": "d9d27f0e6d25f6fb5c82afabeb0c2a9e5f45372bb0e68c4ca09ffdfdccde385f"
+      },
+      {
+        "file": "src/ui/casino-transit.css",
+        "sha256": "35fa90d8c8f36a787a1adb182c0024c5f6928dada5b16f4be60ad3bb7c092221"
+      },
+      {
+        "file": "src/ui/chase-view.css",
+        "sha256": "ea20055785e801eb09cb7714f0f3a8aadb5db50d5da83eaf2cb372ec0a4dc6ac"
+      },
+      {
+        "file": "src/ui/credits.html",
+        "sha256": "042e9febdb1fea0da6e9c83774bf21f183d5a40ce20d0d6ecd93c0a718e9a18f"
+      },
+      {
+        "file": "src/ui/demo.css",
+        "sha256": "b459f21a7916ee9637d4c407d377418246f6f5594eb153261979cad57755f3dc"
+      },
+      {
+        "file": "src/ui/dialogs.css",
+        "sha256": "625aaa24f6885c67cce4a9f0ed5cb7f08478c5d95c23a47bc37e8fa87ca122ad"
+      },
+      {
+        "file": "src/ui/flight-hud.css",
+        "sha256": "a7307c5bdc7a8fab2075d59405237dfe59f607c09cd3b73064add37538192d05"
+      },
+      {
+        "file": "src/ui/freefall.css",
+        "sha256": "6d7228afb787a7b4fe03af1caa8bd70c4a13a8ce646416fad475335554ae6951"
+      },
+      {
+        "file": "src/ui/god-panel.css",
+        "sha256": "e6fafadb784fed1bb1c444c1d1984021c70ba70a522257ed6a7dcb9f56b7d288"
+      },
+      {
+        "file": "src/ui/god-splash.css",
+        "sha256": "bc831903aa7afd2eaf79d4cbcd2fba1e378720569d376f1d8a73d97ca91daf9c"
+      },
+      {
+        "file": "src/ui/god-splash.html",
+        "sha256": "1bbacdf1469260836c65a12bdcea71b03465cda1957e5141249a02b31ce05c25"
+      },
+      {
+        "file": "src/ui/hud-bottom.css",
+        "sha256": "c6258fa3ec13fa2cb427831aad9855193b6f39221a052304be218bbf3ae5d03f"
+      },
+      {
+        "file": "src/ui/hud-top.css",
+        "sha256": "e9c9e5879b1fb9b1b88adeebe88d6cab66ec7eab7b5328187bd89fc8a0e256c5"
+      },
+      {
+        "file": "src/ui/hud.html",
+        "sha256": "ba9cf33a2cecae338fc4af50be6cb563c1ec58ed63c2893fff9e592c1a238238"
+      },
+      {
+        "file": "src/ui/map-panel.css",
+        "sha256": "8de3ed10519eaa0f829ae486f589e13c7c1ebba5ff31d955c68c73258231720a"
+      },
+      {
+        "file": "src/ui/menus.html",
+        "sha256": "1293ade3d27dec489c377dc9bf7dee71e4ed88ff202b019e32762c1110d3e709"
+      },
+      {
+        "file": "src/ui/mission-brief.css",
+        "sha256": "ab6c5a49fbd9401b896157957e7306eebc66c5bec7a1eeb0bb6372ba6f7b8dbc"
+      },
+      {
+        "file": "src/ui/notify.css",
+        "sha256": "e19cc13837a677336540fa63cea171e8d0e520afb6840795a109a4a79249b7b6"
+      },
+      {
+        "file": "src/ui/panels.html",
+        "sha256": "0797c8f9298e8bb5e197b51b5ef329f82bcd82b5d3c6ca379c5630268111bba1"
+      },
+      {
+        "file": "src/ui/police-arsenal.css",
+        "sha256": "cc6145c101dc9f90ba0778cca9b3aec704c4636dcb56e94dad8c879e49a59cc5"
+      },
+      {
+        "file": "src/ui/radio.css",
+        "sha256": "10e40aec35dfa06feac38325470a73f75cc39ef55cb78be03c38e0fae58852e1"
+      },
+      {
+        "file": "src/ui/reduced-motion.css",
+        "sha256": "485ba1d8dc6a9e49bb9c12f5ee7c76c3229448a4542127969c1c80a20c04ab8e"
+      },
+      {
+        "file": "src/ui/settings.css",
+        "sha256": "1c2fcf92ea9a3b4de25dedf75fbd416e5c52c5c2065fcb90d355a15ac533554c"
+      },
+      {
+        "file": "src/ui/sportsbook-bets.css",
+        "sha256": "c0834975c4528dff32e5da0aa3053408c222f5997124aa0c830996692a1b38e7"
+      },
+      {
+        "file": "src/ui/sportsbook.css",
+        "sha256": "eb648c19fb5d2303ed46d02ad658d296df41c8fef9404b00b3d34d3ed0197f3d"
+      },
+      {
+        "file": "src/ui/title-radio.css",
+        "sha256": "65322abb1726afb55be5eb20176aa7a99f1799e5dc9b225f591910705389ee5f"
+      },
+      {
+        "file": "src/ui/title.css",
+        "sha256": "ee15f5385032239d5a7149428e04bb62414b99f440672e14b4c60ac302624ec6"
+      },
+      {
+        "file": "src/ui/touch-controls.css",
+        "sha256": "2e7bbd8187d1623ddf1f8bff02d68cbd7eea45ca0dfce5d4584648ad4aeaa5e9"
+      },
+      {
+        "file": "src/ui/touch-hud.css",
+        "sha256": "e3fc0e0ebcf7be94cf2b0c1415b2573267ad988abb11ea75101d50d4599f5eb4"
+      },
+      {
+        "file": "src/ui/transit.html",
+        "sha256": "4aa7989040ad341d07d66926e06ffd43f1548c79cd29f122e2dac798c376e430"
+      },
+      {
+        "file": "src/ui/wanted-effects.css",
+        "sha256": "1c18d4b02eef70e9a632558a68edbd8e9e895a9a2fb7531ff0f5aaee624a5a2c"
+      },
+      {
+        "file": "src/ui/wheelie-score.css",
+        "sha256": "17727ec67e3eee1c7bc81e7c0b2a227ff24e590badfe466c6e9847e8c5963e74"
+      },
+      {
+        "file": "src/ui/world-edge.css",
+        "sha256": "fcfaa2265e479451bcdb203573ab4789b4f99ff3d17d36881ab93e681499b8f3"
+      },
+      {
+        "file": "src/unicorn3d.js",
+        "sha256": "a36b9ff40ea9e8368fd9af0e37d057904828e32c3158ae06e4c9a46a6e17b333"
+      },
+      {
+        "file": "src/vegetation3d-atlas.js",
+        "sha256": "1b8f8c3205fbb54720443f409b0c635df9453c684edd912c1db05f78a6e8eabe"
+      },
+      {
+        "file": "src/vegetation3d-cutaway.js",
+        "sha256": "d27562f1498b6774b8812d2df1733819a5b28b86d89fc1ab2a53bb3df689f019"
+      },
+      {
+        "file": "src/vegetation3d-landscape.js",
+        "sha256": "17bca02ca4b163160cb8e1c6e433892782151cd59de22c3ffa2fa5cd045d5187"
+      },
+      {
+        "file": "src/vegetation3d-material.js",
+        "sha256": "5cb0eeb97bf62232a631d832cb9ea6a5becb9ec8de22b24c205758f2ae86a521"
+      },
+      {
+        "file": "src/vegetation3d-species.js",
+        "sha256": "23c3fa396215bdaac1d2f79d11c599f2ab37832d62f038e888c0eca4b28e147a"
+      },
+      {
+        "file": "src/vegetation3d.js",
+        "sha256": "8b6010ca86512addeddd9133812f284c070b4d642a96dca92fef29bc87c89beb"
+      },
+      {
+        "file": "src/vehicle-assets3d.js",
+        "sha256": "c004bd085288d3762f6c7b15be22f917e90fad8c19a90623c17ea7350ecf2f70"
+      },
+      {
+        "file": "src/vehicle-char3d.js",
+        "sha256": "dea45636041dd028e7bb315bd4430d9688ab53e47d1fd1988cfccc3ec2e61b52"
+      },
+      {
+        "file": "src/vehicle-doors3d.js",
+        "sha256": "1f0f47884045db7ddbf8e38e3856eb8e8bbd7f4d36ad163b5eb7ce3945d81772"
+      },
+      {
+        "file": "src/vehicle-entrances.js",
+        "sha256": "faf7ece68f34569c3673ef1b48c5083e4656a87d0018642c04aacfab9d1d9392"
+      },
+      {
+        "file": "src/vehicle-foley-audio.js",
+        "sha256": "47c1f7aabcf985110f548e74854f0aa1df5528066d2bc548956ff23bed4b71c5"
+      },
+      {
+        "file": "src/vehicle-gunfire.js",
+        "sha256": "7da6fa3d62faf46505e039bbcc4862d34cb9e33ed4060db1556a868df228166e"
+      },
+      {
+        "file": "src/vehicle-merge3d.js",
+        "sha256": "b7eeb31c06a2d920a39445e6817a557a96c117748428040a4c9d7e725b2115db"
+      },
+      {
+        "file": "src/vehicle-trunk.js",
+        "sha256": "4b5d3e0bf7952cff04ae301207f1ba9ee6751a911d2adabfe0a94568ba32567e"
+      },
+      {
+        "file": "src/vehicles3d.js",
+        "sha256": "21ade38c60d376ade55a0608758d0c75ba7f70623d4fc74edd212c33a3c8fe2a"
+      },
+      {
+        "file": "src/vinnytruck3d.js",
+        "sha256": "ad7e5021c9064696ace05aa25102a6431a3a7bdeebdb9f10b7593772137c04d1"
+      },
+      {
+        "file": "src/voices.js",
+        "sha256": "d853b132f5142b806f700295f59dee43ec2a85e1b42cecc4fb921b55fdf16025"
+      },
+      {
+        "file": "src/wakes3d.js",
+        "sha256": "619ed3a993e0f866781f553fa0ab7f4e2b096715115e3276028a5b8e7b1824f8"
+      },
+      {
+        "file": "src/water-audio.js",
+        "sha256": "6e04703d1a288ba8df3860c16b0d3c19d3bf909650fb65071782db158ed9ea12"
+      },
+      {
+        "file": "src/water.js",
+        "sha256": "9c3cc1990b05ec0751ed619911564e3d4db58c6a24317509be1079623e73cc70"
+      },
+      {
+        "file": "src/weather-audio.js",
+        "sha256": "8e0b82f361919f3dfb9de4255f4b531cf2bf324eec58e29d34414b3d6c81ee30"
+      },
+      {
+        "file": "src/weather.js",
+        "sha256": "f5d8a62611aa0c7ae9c44b93a80cbb8cf96f1a83d685b26a660c481beec23a46"
+      },
+      {
+        "file": "src/weather3d-chase.js",
+        "sha256": "a9e016ae9b25c8964f80ec220db4c916038f390a8d386a70582bad926abccc38"
+      },
+      {
+        "file": "src/weather3d.js",
+        "sha256": "89404db9e7b7ed0bb5413218f63eb683d3f9bb9fa78a3277a2cdbe79bdfec02f"
+      },
+      {
+        "file": "src/wet-glints3d.js",
+        "sha256": "87c83611a873bf3324e4b79a9e935ca7153098dc95b8886efb6d50c693dbab7b"
+      },
+      {
+        "file": "src/wheelie-score.js",
+        "sha256": "0cbf757dca5f2769207e7bfccf79d022df08c55bdba5f59fe75c5a1f98ae4e16"
+      },
+      {
+        "file": "src/wheelie.js",
+        "sha256": "cfb1fcb5bc50e03a9eaf74e53a2ec0c72ae1d9c640372c8456503c6e1d7a7a09"
+      },
+      {
+        "file": "src/witnesses.js",
+        "sha256": "7bd41d429ffbcd1b70202451612a86b656aab71abcc3b2e86737c24a3fb0627e"
+      },
+      {
+        "file": "src/world-edge.js",
+        "sha256": "9b14af0512081a0b3b5f7fa418a9a0be302b0514ee192b0bc795a8cc67b8ef76"
+      },
+      {
+        "file": "src/world-reset.js",
+        "sha256": "3f4b1362d80d4e48256452c19014a7eb06783abdcd08e02214419d32d7d9a6d4"
+      },
+      {
+        "file": "src/world-view.js",
+        "sha256": "8d9509c29b43b677b62c65bd826dc18f8192cd6d43ffb144e0a94e3ea1708155"
+      },
+      {
+        "file": "src/world3d-bluehour-entrance.js",
+        "sha256": "44da1ac3c51b8936ec38559a0b48ea494b1a9a7beee8d1d0e770dae3c2c83e3c"
+      },
+      {
+        "file": "src/world3d-bluehour-table.js",
+        "sha256": "31fcef4f7c094e37c936ffce90abb60a69abcf6d3b71df7a579268878d012e51"
+      },
+      {
+        "file": "src/world3d-bluehour-terrace.js",
+        "sha256": "ebea935c7740852260acc66b2f42ce7f7dfb3ef213d3aacbba47342a5f3c5511"
+      },
+      {
+        "file": "src/world3d-resort.js",
+        "sha256": "ad74e8c0ffcfebd59f83ef8ec460f891d289a242a4568b98a748460bf23924b5"
+      },
+      {
+        "file": "src/world3d-shore.js",
+        "sha256": "10a914041f36e2d1b1c8a45fb5012818671d6a8ee33b77f352d21bafb82f24eb"
+      },
+      {
+        "file": "src/world3d-water.js",
+        "sha256": "7f261d62a6860c2c12bccf419d5bcb8ed46018ad0e1d4b2b5c1358fcaa3b54f3"
+      },
+      {
+        "file": "src/world3d.js",
+        "sha256": "efd3b06b1c976e32f341a50a65ef1534aa200dacfc6fcf6b582ffe1a4083a5be"
+      },
+      {
+        "file": "src/wounds.js",
+        "sha256": "9a80f5cde97e622da68c8d45fffbaa64bcedf99672a8060d966ee13084adaf1c"
+      },
+      {
+        "file": "assets/manifest.json",
+        "sha256": "801e96fef4b38049adfcc0adbf4449363072ca33b813eab6b9424c49f770a550"
+      },
+      {
+        "file": "assets/apache-model.bin",
+        "sha256": "9ea86120bc1295a807ddfcdf1d3f24a22a54d547b83e480e571ae107ef06bd55"
+      },
+      {
+        "file": "assets/rocket-launcher-model.bin",
+        "sha256": "7a0985052a5e4c34d84d68a79f1669209c33bbf2fc9ddeb0b74940c9925e3647"
+      }
+    ]
+  },
+  "server": {
+    "port": 18235,
+    "pid": 51749,
+    "html": "/workspace/GTA/work/military-combat-review/candidate-1/game.html",
+    "flags": "dev&shadercheck&seed=1&hold"
+  }
+}

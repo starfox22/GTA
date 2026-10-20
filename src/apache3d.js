@@ -119,6 +119,8 @@
         return geometry;
       }
       function makeApache(vehicle) {
+        const downloaded = makeDownloadedApache(vehicle);
+        if (downloaded) return downloaded;
         const group = new Three.Group(),
           body = new Three.Group();
         group.add(body);
@@ -422,8 +424,9 @@
       }
       /* Gun laying, recoil and lights (the vehicle pass, after the shared rotor spin). */
       function animateApache(c, m) {
+        if (m.apacheKit) animateDownloadedApache(c, m);
         const flying = c.hp > 0 && (c === player.car || (c.abandonedFlight && entityElevation(c) > terrainHeight(c.x, c.y) + 2));
-        m.gunYaw.rotation.y = -normalizeAngle((c.turretA ?? c.a) - c.a);
+        m.gunYaw.rotation.y = m.apacheKit && typeof apacheGunYaw === 'function' ? -apacheGunYaw(c) : -normalizeAngle((c.turretA ?? c.a) - c.a);
         m.gunPitch.rotation.z = c.gunPitch || 0;
         // The barrel runs back a little with each round.
         const sinceShot = gameTime - (c.arms?.gunReadyAt ?? -1) + 0.1;

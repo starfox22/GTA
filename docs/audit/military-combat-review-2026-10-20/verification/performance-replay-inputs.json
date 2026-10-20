@@ -1,0 +1,848 @@
+{
+  "startingBuild": "work/aviation-review/candidate-5/game.html",
+  "flags": "dev&seed=1&hold",
+  "calls": [
+    {
+      "phase": "01-setup",
+      "op": {
+        "op": "call",
+        "method": "holdSimulation",
+        "args": [
+          true
+        ]
+      }
+    },
+    {
+      "phase": "01-setup",
+      "op": {
+        "op": "call",
+        "method": "god",
+        "args": [
+          true
+        ]
+      }
+    },
+    {
+      "phase": "01-setup",
+      "op": {
+        "op": "call",
+        "method": "graphics",
+        "args": [
+          "high"
+        ]
+      }
+    },
+    {
+      "phase": "01-setup",
+      "op": {
+        "op": "call",
+        "method": "setClock",
+        "args": [
+          13
+        ]
+      }
+    },
+    {
+      "phase": "01-setup",
+      "op": {
+        "op": "call",
+        "method": "sky",
+        "args": [
+          "clear"
+        ]
+      }
+    },
+    {
+      "phase": "01-setup",
+      "op": {
+        "op": "call",
+        "method": "viewMode",
+        "args": [
+          "street"
+        ]
+      }
+    },
+    {
+      "phase": "01-setup",
+      "op": {
+        "op": "call",
+        "method": "look",
+        "args": [
+          9700,
+          9100
+        ]
+      }
+    },
+    {
+      "phase": "01-setup",
+      "op": {
+        "op": "call",
+        "method": "status",
+        "args": []
+      }
+    },
+    {
+      "phase": "01-setup",
+      "op": {
+        "op": "call",
+        "method": "military",
+        "args": []
+      }
+    },
+    {
+      "phase": "02-quiet-fort-render",
+      "op": {
+        "op": "call",
+        "method": "hitchRun",
+        "args": [
+          0.05,
+          [],
+          5,
+          false,
+          true
+        ],
+        "cpu": true,
+        "profile": 35
+      }
+    },
+    {
+      "phase": "02-quiet-fort-render",
+      "op": {
+        "op": "call",
+        "method": "drawProfile",
+        "args": [
+          15
+        ]
+      }
+    },
+    {
+      "phase": "02-quiet-fort-render",
+      "op": {
+        "op": "call",
+        "method": "effectParticles",
+        "args": []
+      }
+    },
+    {
+      "phase": "02-quiet-fort-render",
+      "op": {
+        "op": "call",
+        "method": "stats",
+        "args": []
+      }
+    },
+    {
+      "phase": "03-quiet-fort-warm",
+      "op": {
+        "op": "call",
+        "method": "hitchRun",
+        "args": [
+          0.05,
+          [],
+          5,
+          false,
+          true
+        ],
+        "cpu": true,
+        "profile": 35
+      }
+    },
+    {
+      "phase": "03-quiet-fort-warm",
+      "op": {
+        "op": "call",
+        "method": "drawProfile",
+        "args": [
+          18
+        ]
+      }
+    },
+    {
+      "phase": "03-quiet-fort-warm",
+      "op": {
+        "op": "call",
+        "method": "stats",
+        "args": []
+      }
+    },
+    {
+      "phase": "03-quiet-fort-warm",
+      "op": {
+        "op": "call",
+        "method": "soakReport",
+        "args": []
+      }
+    },
+    {
+      "phase": "04-arm-fight",
+      "op": {
+        "op": "call",
+        "method": "driveArmed",
+        "args": [
+          "apc",
+          3.141592653589793
+        ]
+      }
+    },
+    {
+      "phase": "04-arm-fight",
+      "op": {
+        "op": "call",
+        "method": "wanted",
+        "args": [
+          5
+        ]
+      }
+    },
+    {
+      "phase": "04-arm-fight",
+      "op": {
+        "op": "call",
+        "method": "mountedGunAim",
+        "args": [
+          9490,
+          9080
+        ]
+      }
+    },
+    {
+      "phase": "04-arm-fight",
+      "op": {
+        "op": "call",
+        "method": "hitchRun",
+        "args": [
+          4,
+          [
+            "KeyF"
+          ],
+          3,
+          false,
+          false
+        ],
+        "cpu": true
+      }
+    },
+    {
+      "phase": "04-arm-fight",
+      "op": {
+        "op": "call",
+        "method": "status",
+        "args": []
+      }
+    },
+    {
+      "phase": "04-arm-fight",
+      "op": {
+        "op": "call",
+        "method": "military",
+        "args": []
+      }
+    },
+    {
+      "phase": "04-arm-fight",
+      "op": {
+        "op": "call",
+        "method": "mountedGuns",
+        "args": []
+      }
+    },
+    {
+      "phase": "05-fight-render-cold",
+      "op": {
+        "op": "call",
+        "method": "hitchRun",
+        "args": [
+          0.05,
+          [
+            "KeyF"
+          ],
+          5,
+          false,
+          true
+        ],
+        "cpu": true,
+        "profile": 35
+      }
+    },
+    {
+      "phase": "05-fight-render-cold",
+      "op": {
+        "op": "call",
+        "method": "drawProfile",
+        "args": [
+          20
+        ]
+      }
+    },
+    {
+      "phase": "05-fight-render-cold",
+      "op": {
+        "op": "call",
+        "method": "effectParticles",
+        "args": []
+      }
+    },
+    {
+      "phase": "05-fight-render-cold",
+      "op": {
+        "op": "call",
+        "method": "damageReport",
+        "args": []
+      }
+    },
+    {
+      "phase": "05-fight-render-cold",
+      "op": {
+        "op": "call",
+        "method": "soakReport",
+        "args": []
+      }
+    },
+    {
+      "phase": "06-damage-stage",
+      "op": {
+        "op": "call",
+        "method": "blast",
+        "args": [
+          9605,
+          8950,
+          1
+        ]
+      }
+    },
+    {
+      "phase": "06-damage-stage",
+      "op": {
+        "op": "call",
+        "method": "blast",
+        "args": [
+          9665,
+          8950,
+          1
+        ]
+      }
+    },
+    {
+      "phase": "06-damage-stage",
+      "op": {
+        "op": "call",
+        "method": "blast",
+        "args": [
+          9715,
+          8950,
+          1
+        ]
+      }
+    },
+    {
+      "phase": "06-damage-stage",
+      "op": {
+        "op": "call",
+        "method": "blast",
+        "args": [
+          9605,
+          8950,
+          1
+        ]
+      }
+    },
+    {
+      "phase": "06-damage-stage",
+      "op": {
+        "op": "call",
+        "method": "blast",
+        "args": [
+          9665,
+          8950,
+          1
+        ]
+      }
+    },
+    {
+      "phase": "06-damage-stage",
+      "op": {
+        "op": "call",
+        "method": "blast",
+        "args": [
+          9715,
+          8950,
+          1
+        ]
+      }
+    },
+    {
+      "phase": "06-damage-stage",
+      "op": {
+        "op": "call",
+        "method": "mountedGunAim",
+        "args": [
+          9645,
+          9080
+        ]
+      }
+    },
+    {
+      "phase": "06-damage-stage",
+      "op": {
+        "op": "call",
+        "method": "hitchRun",
+        "args": [
+          2,
+          [
+            "KeyF"
+          ],
+          5,
+          false,
+          false
+        ],
+        "cpu": true
+      }
+    },
+    {
+      "phase": "06-damage-stage",
+      "op": {
+        "op": "call",
+        "method": "military",
+        "args": []
+      }
+    },
+    {
+      "phase": "06-damage-stage",
+      "op": {
+        "op": "call",
+        "method": "soakReport",
+        "args": []
+      }
+    },
+    {
+      "phase": "07-heavy-render-first",
+      "op": {
+        "op": "call",
+        "method": "hitchRun",
+        "args": [
+          0.05,
+          [
+            "KeyF"
+          ],
+          5,
+          false,
+          true
+        ],
+        "cpu": true,
+        "profile": 40
+      }
+    },
+    {
+      "phase": "07-heavy-render-first",
+      "op": {
+        "op": "call",
+        "method": "drawProfile",
+        "args": [
+          25
+        ]
+      }
+    },
+    {
+      "phase": "07-heavy-render-first",
+      "op": {
+        "op": "call",
+        "method": "effectParticles",
+        "args": []
+      }
+    },
+    {
+      "phase": "07-heavy-render-first",
+      "op": {
+        "op": "call",
+        "method": "damageReport",
+        "args": []
+      }
+    },
+    {
+      "phase": "07-heavy-render-first",
+      "op": {
+        "op": "call",
+        "method": "stats",
+        "args": []
+      }
+    },
+    {
+      "phase": "07-heavy-render-first",
+      "op": {
+        "op": "call",
+        "method": "soakReport",
+        "args": []
+      }
+    },
+    {
+      "phase": "07-heavy-render-first",
+      "op": {
+        "op": "call",
+        "method": "renderHiccups",
+        "args": []
+      }
+    },
+    {
+      "phase": "08-heavy-render-warm",
+      "op": {
+        "op": "call",
+        "method": "hitchRun",
+        "args": [
+          0.1,
+          [
+            "KeyF"
+          ],
+          6,
+          false,
+          true
+        ],
+        "cpu": true,
+        "profile": 45
+      }
+    },
+    {
+      "phase": "08-heavy-render-warm",
+      "op": {
+        "op": "call",
+        "method": "drawProfile",
+        "args": [
+          25
+        ]
+      }
+    },
+    {
+      "phase": "08-heavy-render-warm",
+      "op": {
+        "op": "call",
+        "method": "effectParticles",
+        "args": []
+      }
+    },
+    {
+      "phase": "08-heavy-render-warm",
+      "op": {
+        "op": "call",
+        "method": "stats",
+        "args": []
+      }
+    },
+    {
+      "phase": "08-heavy-render-warm",
+      "op": {
+        "op": "call",
+        "method": "uploadChurn",
+        "args": [
+          3,
+          [
+            "KeyF"
+          ]
+        ]
+      }
+    },
+    {
+      "phase": "08-heavy-render-warm",
+      "op": {
+        "op": "call",
+        "method": "soakReport",
+        "args": []
+      }
+    },
+    {
+      "phase": "09-heavy-render-steady",
+      "op": {
+        "op": "call",
+        "method": "hitchRun",
+        "args": [
+          0.1,
+          [
+            "KeyF"
+          ],
+          6,
+          false,
+          true
+        ],
+        "cpu": true,
+        "profile": 45
+      }
+    },
+    {
+      "phase": "09-heavy-render-steady",
+      "op": {
+        "op": "call",
+        "method": "drawProfile",
+        "args": [
+          25
+        ]
+      }
+    },
+    {
+      "phase": "09-heavy-render-steady",
+      "op": {
+        "op": "call",
+        "method": "effectParticles",
+        "args": []
+      }
+    },
+    {
+      "phase": "09-heavy-render-steady",
+      "op": {
+        "op": "call",
+        "method": "stats",
+        "args": []
+      }
+    },
+    {
+      "phase": "09-heavy-render-steady",
+      "op": {
+        "op": "call",
+        "method": "renderHiccups",
+        "args": []
+      }
+    },
+    {
+      "phase": "09-heavy-render-steady",
+      "op": {
+        "op": "call",
+        "method": "holdSimulation",
+        "args": [
+          true
+        ]
+      }
+    },
+    {
+      "phase": "10-visible-wrecks-stage",
+      "op": {
+        "op": "call",
+        "method": "look",
+        "args": [
+          9700,
+          8975
+        ]
+      }
+    },
+    {
+      "phase": "10-visible-wrecks-stage",
+      "op": {
+        "op": "call",
+        "method": "driveArmed",
+        "args": [
+          "apc",
+          3.141592653589793
+        ]
+      }
+    },
+    {
+      "phase": "10-visible-wrecks-stage",
+      "op": {
+        "op": "call",
+        "method": "wanted",
+        "args": [
+          5
+        ]
+      }
+    },
+    {
+      "phase": "10-visible-wrecks-stage",
+      "op": {
+        "op": "call",
+        "method": "mountedGunAim",
+        "args": [
+          9560,
+          8950
+        ]
+      }
+    },
+    {
+      "phase": "10-visible-wrecks-stage",
+      "op": {
+        "op": "call",
+        "method": "hitchRun",
+        "args": [
+          0.05,
+          [
+            "KeyF"
+          ],
+          5,
+          false,
+          true
+        ],
+        "cpu": true,
+        "profile": 40
+      }
+    },
+    {
+      "phase": "10-visible-wrecks-stage",
+      "op": {
+        "op": "call",
+        "method": "drawProfile",
+        "args": [
+          25
+        ]
+      }
+    },
+    {
+      "phase": "10-visible-wrecks-stage",
+      "op": {
+        "op": "call",
+        "method": "stats",
+        "args": []
+      }
+    },
+    {
+      "phase": "10-visible-wrecks-stage",
+      "op": {
+        "op": "call",
+        "method": "effectParticles",
+        "args": []
+      }
+    },
+    {
+      "phase": "10-visible-wrecks-stage",
+      "op": {
+        "op": "call",
+        "method": "soakReport",
+        "args": []
+      }
+    },
+    {
+      "phase": "10-visible-wrecks-stage",
+      "op": {
+        "op": "call",
+        "method": "status",
+        "args": []
+      }
+    },
+    {
+      "phase": "11-visible-heavy-warm",
+      "op": {
+        "op": "call",
+        "method": "hitchRun",
+        "args": [
+          0.1,
+          [
+            "KeyF"
+          ],
+          6,
+          false,
+          true
+        ],
+        "cpu": true,
+        "profile": 45
+      }
+    },
+    {
+      "phase": "11-visible-heavy-warm",
+      "op": {
+        "op": "call",
+        "method": "drawProfile",
+        "args": [
+          25
+        ]
+      }
+    },
+    {
+      "phase": "11-visible-heavy-warm",
+      "op": {
+        "op": "call",
+        "method": "stats",
+        "args": []
+      }
+    },
+    {
+      "phase": "11-visible-heavy-warm",
+      "op": {
+        "op": "call",
+        "method": "effectParticles",
+        "args": []
+      }
+    },
+    {
+      "phase": "11-visible-heavy-warm",
+      "op": {
+        "op": "call",
+        "method": "renderHiccups",
+        "args": []
+      }
+    },
+    {
+      "phase": "11-visible-heavy-warm",
+      "op": {
+        "op": "call",
+        "method": "soakReport",
+        "args": []
+      }
+    },
+    {
+      "phase": "12-final-state",
+      "op": {
+        "op": "call",
+        "method": "carBloodReport",
+        "args": [
+          false
+        ]
+      }
+    },
+    {
+      "phase": "12-final-state",
+      "op": {
+        "op": "call",
+        "method": "damageReport",
+        "args": []
+      }
+    },
+    {
+      "phase": "12-final-state",
+      "op": {
+        "op": "call",
+        "method": "military",
+        "args": []
+      }
+    },
+    {
+      "phase": "12-final-state",
+      "op": {
+        "op": "call",
+        "method": "shotLog",
+        "args": []
+      }
+    },
+    {
+      "phase": "12-final-state",
+      "op": {
+        "op": "call",
+        "method": "holdSimulation",
+        "args": [
+          true
+        ]
+      }
+    },
+    {
+      "phase": "12-final-state",
+      "op": {
+        "op": "call",
+        "method": "status",
+        "args": []
+      }
+    },
+    {
+      "phase": "12-final-state",
+      "op": {
+        "op": "call",
+        "method": "stateHash",
+        "args": []
+      }
+    }
+  ],
+  "shots": [
+    {
+      "afterPhase": "09-heavy-render-steady",
+      "name": "fort-heavy-baseline",
+      "full": true
+    },
+    {
+      "afterPhase": "12-final-state",
+      "name": "fort-heavy-visible-baseline",
+      "full": true
+    }
+  ]
+}

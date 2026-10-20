@@ -1,0 +1,74 @@
+{
+  "entrySha256": "c06dcb00f91c27a15c2d82d904cc7e22c80139bfcd3a5e1d44393304e16b319b",
+  "errors": [],
+  "warnings": [
+    "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ],
+  "requestsFailed": [],
+  "faults": {
+    "count": 0,
+    "gameTime": 2.62,
+    "drill": null,
+    "kinds": []
+  },
+  "integrity": {
+    "problems": [],
+    "mode": "play",
+    "overlays": [],
+    "player": {
+      "x": 5200,
+      "y": 9904,
+      "hp": 100,
+      "vehicle": null,
+      "onFoot": true
+    },
+    "carriers": {
+      "swimming": false,
+      "wading": false,
+      "parachute": false,
+      "fall": false,
+      "jump": false,
+      "climbing": false,
+      "carjack": false,
+      "thrown": false,
+      "tumble": false,
+      "coaster": false,
+      "pool": false,
+      "deck": false,
+      "roof": false,
+      "transit": false,
+      "taxi": false,
+      "loot": false,
+      "rideSkip": false,
+      "hidden": false,
+      "conversation": false
+    },
+    "counts": {
+      "vehicles": 280,
+      "pedestrians": 595,
+      "officers": 2,
+      "particles": 107,
+      "skids": 0,
+      "debris": 1,
+      "bullets": 3,
+      "fires": 1,
+      "notices": 1,
+      "carsInBuildings": 0,
+      "carsOff": 0,
+      "carsBroken": 0,
+      "peopleInBuildings": 0,
+      "peopleBroken": 0,
+      "stuckReactions": 0
+    },
+    "stuckPeople": []
+  },
+  "gpu": {
+    "watched": true,
+    "lost": false,
+    "losses": 0,
+    "restores": 0,
+    "reloadPending": false,
+    "lostSeconds": 0
+  },
+  "browserClosed": true
+}

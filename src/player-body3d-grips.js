@@ -16,7 +16,8 @@
         shotgun: { fire: { angle: -1.0, at: [-0.62, 0.02], along: 0 }, support: { kind: 'under', at: [3.36, 0.1] }, trigger: true },
         rifle: { fire: { angle: 0.3, at: [-0.06, -0.36], along: 0.12 }, support: { kind: 'under', at: [3.0, 0.27] }, trigger: true },
         sniper: { fire: { angle: 0.3, at: [-0.096, -0.36], along: 0.12 }, support: { kind: 'under', at: [2.28, 0.04] }, trigger: true },
-        rocket: { fire: { angle: 0.25, at: [-0.06, -0.12], along: 0.1 }, support: { kind: 'vertical', at: [2.16, -0.1] }, trigger: true },
+        // Downloaded RPG-7: front pistol grip beside the source trigger/guard; rear wooden support grip.
+        rocket: { fire: { angle: -0.06, at: [0, 0], along: 0 }, support: { kind: 'vertical', at: [-1.114080574, 0.106102912] }, trigger: true },
         knife: { fire: { angle: -Math.PI / 2, at: [0.02, 0], along: 0 }, support: null, trigger: false },
         // The pick's grip along the fist like the knife's; the left hand on the tension wrench comes from WEAPON_HOLDS.
         lockpick: { fire: { angle: -Math.PI / 2, at: [0.02, 0], along: 0 }, support: null, trigger: false },

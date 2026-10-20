@@ -1261,5 +1261,17 @@
     "file": "assets/monarch-wayron-orm.webp",
     "mime": "image/webp",
     "original": "tools/monarch_vehicle_models.py (downloaded real-car sources; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-rocket-launcher-model",
+    "file": "assets/rocket-launcher-model.bin",
+    "mime": "application/octet-stream",
+    "original": "tools/rocket_launcher_model.py (Polyte Low Poly RPG-7, CC BY 4.0; docs/THIRD_PARTY_CREDITS.txt)"
+  },
+  {
+    "id": "media-apache-model",
+    "file": "assets/apache-model.bin",
+    "mime": "application/octet-stream",
+    "original": "tools/apache_model.py (Andrew Swihart AH-64 Helicopter, CC BY 4.0; docs/THIRD_PARTY_CREDITS.txt)"
   }
 ]

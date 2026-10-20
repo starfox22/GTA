@@ -32,7 +32,7 @@
       // Y jumps (player-jump.js); on a ride, where nobody jumps, it skips the ride.
       foot: [['interact'], ['poison'], ['reload'], ['skipRide', 'jump'], ['cycleWeapon'], ['arsenal'], ['walk'], ['fire'], ['map'], [], ['missionCard'], ['cameraView'], ['zoomIn'], ['zoomOut'], ['skipStop'], ['help']],
       drive: [['interact'], ['handbrake'], ['reload'], ['bail'], ['horn'], ['fire'], ['back'], ['forward'], ['map'], [], ['sprint'], ['cameraView'], ['zoomIn'], ['zoomOut'], ['radioPower'], ['radioNext']],
-      air: [['interact'], ['rockets', 'flapsUp'], ['reload'], ['bail'], ['flapsDown'], ['fire'], ['back'], ['forward'], ['map'], [], ['gear'], ['divert'], ['zoomIn'], ['zoomOut'], ['radioPower'], ['radioNext']],
+      air: [['interact'], ['rockets', 'flapsUp'], ['reload'], ['bail'], ['flapsDown', 'cycleAircraftWeapon'], ['fire'], ['back'], ['forward'], ['map'], [], ['gear'], ['divert'], ['zoomIn'], ['zoomOut'], ['radioPower'], ['radioNext']],
       chute: [[], [], [], ['bail'], [], [], ['back'], ['forward'], ['map'], [], [], ['cameraView'], ['zoomIn'], ['zoomOut'], [], []],
     };
     /* The left stick's four ways, per context (null: that way does nothing there). */

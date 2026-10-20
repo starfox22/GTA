@@ -1,0 +1,64 @@
+{
+  "method": "Production scheduler with deterministic clock, no browser/GL timing claim",
+  "runs": [
+    {
+      "name": "baseline",
+      "sourceSha256": "54fd27d3157f6c57e478b35c1d291cfa3db27f2fa81d6f65241acb7715db20bc",
+      "pass": 10,
+      "fail": 2,
+      "failures": [
+        "a long render does not refill the allowance for another car",
+        "one indivisible overrun blocks all later jobs in that frame"
+      ],
+      "result": {
+        "outputs": [
+          "a:0",
+          "a:1",
+          "a:2",
+          "d:0",
+          "d:1",
+          "d:2",
+          "slow:0",
+          "a:3",
+          "a:4",
+          "a:5",
+          "quick:0",
+          "a:6",
+          "a:7",
+          "slow:1"
+        ],
+        "workMax": 10,
+        "worstSlice": 7,
+        "slices": 12
+      }
+    },
+    {
+      "name": "final",
+      "sourceSha256": "742ba18de3563c5767da5ae49b850b73c8a6a01c42ccf2cd3e873d09efeda13e",
+      "pass": 12,
+      "fail": 0,
+      "failures": [],
+      "result": {
+        "outputs": [
+          "a:0",
+          "a:1",
+          "a:2",
+          "d:0",
+          "d:1",
+          "d:2",
+          "slow:0",
+          "quick:0",
+          "a:3",
+          "a:4",
+          "a:5",
+          "a:6",
+          "a:7",
+          "slow:1"
+        ],
+        "workMax": 9,
+        "worstSlice": 7,
+        "slices": 9
+      }
+    }
+  ]
+}

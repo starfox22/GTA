@@ -1,0 +1,905 @@
+{
+  "file": "/workspace/GTA/work/military-combat-review/candidate-1/game.html",
+  "htmlSha256": "e73c7022c2659d1690b3de2a884d575f2e228d78437c1930c41e9b305051f968",
+  "recorderSha256": "eb48a91db5f74a484aff54647e8464fb06680131eba64019674ed3954370ee92",
+  "captures": [
+    {
+      "file": "01-menu.png",
+      "sha256": "f0a52d001875996e48225f7feaa1aaf02d4c990144ae3ee55f29c6e37242fb50",
+      "viewport": [
+        960,
+        600
+      ]
+    },
+    {
+      "file": "02-start.png",
+      "sha256": "5243779ccf3d334f39058b1c0d167f18eb11602e38863c991bd4b7917ef17f5c",
+      "viewport": [
+        960,
+        600
+      ]
+    },
+    {
+      "file": "03-walk.png",
+      "sha256": "5daac0686379baa8c61709c0e931482a422a4f84ff2f24052c933e9e27c3656a",
+      "viewport": [
+        960,
+        600
+      ]
+    },
+    {
+      "file": "04-drive.png",
+      "sha256": "23fc6d85e69ea48b28e2b1f9792e0f423d86586f3c2117177ecd06c587d61bbe",
+      "viewport": [
+        960,
+        600
+      ]
+    },
+    {
+      "file": "05-map.png",
+      "sha256": "d194a8bbb435e6ae80069eaab0a2a4f34cab48e7cd551ccc9f013c020daf75d2",
+      "viewport": [
+        960,
+        600
+      ]
+    },
+    {
+      "file": "06-chase.png",
+      "sha256": "a1cdd2ae864ee7ecaa8fc31d252e45bb4d16ad4dbeedbee38e80ac3d8908b56b",
+      "viewport": [
+        960,
+        600
+      ]
+    }
+  ],
+  "checks": {
+    "viewport": [
+      960,
+      600
+    ],
+    "moveTimeout": 240000,
+    "bootTimeout": 900000,
+    "menu": {
+      "mode": "menu",
+      "x": 748,
+      "y": 584,
+      "district": "NORTHBANK · OLD QUARTER",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "17:20",
+      "renderer": "3d",
+      "vehicles": 264,
+      "pedestrians": 595
+    },
+    "defaultFps": "0 FPS · 3316.5 ms",
+    "started": {
+      "mode": "play",
+      "x": 748,
+      "y": 584,
+      "district": "NORTHBANK · OLD QUARTER",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": null,
+      "weapon": "9MM PISTOL",
+      "clock": "17:20",
+      "renderer": "3d",
+      "vehicles": 264,
+      "pedestrians": 595
+    },
+    "walk": {
+      "before": {
+        "mode": "play",
+        "x": 420,
+        "y": 4400,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:20",
+        "renderer": "3d",
+        "vehicles": 284,
+        "pedestrians": 607
+      },
+      "after": {
+        "mode": "play",
+        "x": 420,
+        "y": 4384,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": null,
+        "weapon": "9MM PISTOL",
+        "clock": "17:20",
+        "renderer": "3d",
+        "vehicles": 284,
+        "pedestrians": 607
+      },
+      "distance": 16
+    },
+    "boarded": {
+      "mode": "play",
+      "x": 480,
+      "y": 4400,
+      "district": "SOUTHPORT AIRPORT",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": "sedan",
+      "weapon": "9MM PISTOL",
+      "clock": "17:20",
+      "renderer": "3d",
+      "vehicles": 285,
+      "pedestrians": 607
+    },
+    "drive": {
+      "before": {
+        "mode": "play",
+        "x": 480,
+        "y": 4400,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "sedan",
+        "weapon": "9MM PISTOL",
+        "clock": "17:20",
+        "renderer": "3d",
+        "vehicles": 285,
+        "pedestrians": 607
+      },
+      "after": {
+        "mode": "play",
+        "x": 480,
+        "y": 4424,
+        "district": "SOUTHPORT AIRPORT",
+        "hp": 100,
+        "cash": 0,
+        "wanted": 0,
+        "mission": null,
+        "completed": 0,
+        "vehicle": "sedan",
+        "weapon": "9MM PISTOL",
+        "clock": "17:21",
+        "renderer": "3d",
+        "vehicles": 284,
+        "pedestrians": 585
+      },
+      "distance": 24
+    },
+    "map": {
+      "mode": "map",
+      "x": 480,
+      "y": 4429,
+      "district": "SOUTHPORT AIRPORT",
+      "hp": 100,
+      "cash": 0,
+      "wanted": 0,
+      "mission": null,
+      "completed": 0,
+      "vehicle": "sedan",
+      "weapon": "9MM PISTOL",
+      "clock": "17:21",
+      "renderer": "3d",
+      "vehicles": 284,
+      "pedestrians": 585
+    },
+    "chase": {
+      "mode": "chase",
+      "live": true,
+      "ready": true,
+      "locked": false,
+      "position": [
+        480,
+        4382,
+        23.7
+      ],
+      "pivot": [
+        480,
+        4416.3,
+        14.6
+      ],
+      "yawDeg": 90,
+      "pitchDeg": 15,
+      "lookYawDeg": 0,
+      "fov": 52,
+      "boomMetres": 4.43,
+      "wantMetres": 4.43,
+      "heightMetres": 2.96,
+      "aiming": 0,
+      "behind": false,
+      "craneMetres": 0,
+      "lockOn": null,
+      "aimAssist": true,
+      "speedBlend": 0.01,
+      "zoom": 1,
+      "aim": {
+        "metres": 11.5,
+        "at": [
+          480,
+          4471.1,
+          0
+        ],
+        "hit": null,
+        "headingDeg": 90
+      },
+      "sensitivity": 100,
+      "invert": false,
+      "motionBlur": false,
+      "view": {
+        "active": true,
+        "drawMetres": 325,
+        "aerialBlend": 0,
+        "near": 4,
+        "far": 2808,
+        "viewReach": 2151,
+        "viewZoom": 1.101,
+        "fogNear": 416,
+        "fogDensity": 0.0007418,
+        "motionBlur": {
+          "active": false,
+          "strength": 0,
+          "setting": false,
+          "comfort": false
+        },
+        "farMetres": 175,
+        "farCells": 165,
+        "farMeshes": 11,
+        "shadowCells": {
+          "tested": 0,
+          "hidden": 0,
+          "proxies": 0
+        },
+        "props": {
+          "detail": 2401,
+          "detailHidden": 459,
+          "detailNoShadow": 67,
+          "parts": 829,
+          "partsHidden": 144,
+          "pools": 825,
+          "poolsHidden": 35,
+          "poolsNoShadow": 31,
+          "loose": 195,
+          "looseHidden": 54,
+          "signs": 208,
+          "signsHidden": 82
+        },
+        "draws": {
+          "view": {
+            "calls": 231,
+            "triangles": 600275,
+            "kinds": {
+              "instanced": {
+                "calls": 64,
+                "triangles": 444196,
+                "names": [
+                  [
+                    "breakable scenery",
+                    4,
+                    23
+                  ],
+                  [
+                    "Mesh BoxGeometry MeshStandardMaterial #353a3d @0,0",
+                    3,
+                    16
+                  ],
+                  [
+                    "Mesh BoxGeometry MeshStandardMaterial #ffffff @0,0",
+                    2,
+                    0
+                  ],
+                  [
+                    "Mesh BoxGeometry MeshBasicMaterial #ffe5a0 @0,0",
+                    2,
+                    7
+                  ],
+                  [
+                    "trees seagrape mid",
+                    2,
+                    1
+                  ],
+                  [
+                    "Mesh BoxGeometry MeshStandardMaterial #8b948f @0,0",
+                    2,
+                    10
+                  ],
+                  [
+                    "Mesh BoxGeometry MeshStandardMaterial #5f7079 @0,0",
+                    2,
+                    6
+                  ],
+                  [
+                    "damage decals",
+                    2,
+                    0
+                  ],
+                  [
+                    "Mesh BoxGeometry MeshStandardMaterial #1d2a33 @0,0",
+                    1,
+                    0
+                  ],
+                  [
+                    "Mesh BufferGeometry MeshStandardMaterial #353a3d @0,0",
+                    1,
+                    4
+                  ],
+                  [
+                    "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                    1,
+                    43
+                  ],
+                  [
+                    "trees linden",
+                    1,
+                    3
+                  ],
+                  [
+                    "Mesh SphereGeometry MeshBasicMaterial #ffffff @0,0",
+                    1,
+                    91
+                  ],
+                  [
+                    "Mesh BoxGeometry MeshStandardMaterial #5c5346 @0,0",
+                    1,
+                    54
+                  ],
+                  [
+                    "Mesh SphereGeometry MeshStandardMaterial #f6e7c4 @0,0",
+                    1,
+                    44
+                  ],
+                  [
+                    "Mesh SphereGeometry MeshStandardMaterial #4e654a @0,0",
+                    1,
+                    43
+                  ],
+                  [
+                    "breakable scenery",
+                    4,
+                    23
+                  ],
+                  [
+                    "Mesh CylinderGeometry MeshStandardMaterial #4e5558 @0,0",
+                    1,
+                    21
+                  ],
+                  [
+                    "Mesh CylinderGeometry MeshStandardMaterial #3d4447 @0,0",
+                    1,
+                    17
+                  ],
+                  [
+                    "Mesh CylinderGeometry MeshStandardMaterial #8a8f92 @0,0",
+                    1,
+                    17
+                  ]
+                ],
+                "whole": 49,
+                "px<Infinity": 53,
+                "<50m": 7,
+                "<400m": 2,
+                "px<32": 2,
+                "<600m": 2,
+                "px?": 7,
+                "px<2": 1,
+                "<150m": 1,
+                "<100m": 3,
+                "px<8": 1
+              },
+              "batch": {
+                "calls": 61,
+                "triangles": 15520,
+                "names": [
+                  [
+                    "static batch BufferGeometry MeshStandardMaterial #ffffff map",
+                    7,
+                    0
+                  ],
+                  [
+                    "static batch BufferGeometry MeshBasicMaterial #4f7dff",
+                    4,
+                    1
+                  ],
+                  [
+                    "static batch BufferGeometry MeshStandardMaterial #8a887e",
+                    3,
+                    1
+                  ],
+                  [
+                    "static batch BufferGeometry MeshStandardMaterial #353a3d",
+                    3,
+                    6
+                  ],
+                  [
+                    "static batch BufferGeometry MeshStandardMaterial #727e80",
+                    3,
+                    1
+                  ],
+                  [
+                    "static batch BufferGeometry MeshStandardMaterial #5d6668",
+                    3,
+                    1
+                  ],
+                  [
+                    "static batch BufferGeometry MeshStandardMaterial #c5a443",
+                    3,
+                    0
+                  ],
+                  [
+                    "static batch BufferGeometry MeshStandardMaterial #777f79",
+                    3,
+                    0
+                  ],
+                  [
+                    "static batch BufferGeometry MeshBasicMaterial #fff4dc",
+                    3,
+                    0
+                  ],
+                  [
+                    "static batch BufferGeometry MeshStandardMaterial #ffffff",
+                    2,
+                    1
+                  ],
+                  [
+                    "static batch BufferGeometry MeshStandardMaterial #c4cfcc",
+                    2,
+                    0
+                  ],
+                  [
+                    "static batch BufferGeometry MeshStandardMaterial #e1e3d9",
+                    2,
+                    0
+                  ],
+                  [
+                    "static batch BufferGeometry MeshStandardMaterial #353a3d",
+                    3,
+                    6
+                  ],
+                  [
+                    "static batch BufferGeometry MeshBasicMaterial #4f7dff",
+                    4,
+                    1
+                  ],
+                  [
+                    "static batch BufferGeometry MeshStandardMaterial #8a887e",
+                    3,
+                    1
+                  ],
+                  [
+                    "static batch BufferGeometry MeshStandardMaterial #727e80",
+                    3,
+                    1
+                  ],
+                  [
+                    "static batch BufferGeometry MeshStandardMaterial #5d6668",
+                    3,
+                    1
+                  ],
+                  [
+                    "static batch BufferGeometry MeshStandardMaterial #ffffff",
+                    2,
+                    1
+                  ],
+                  [
+                    "static batch BufferGeometry MeshStandardMaterial #6b7e82",
+                    2,
+                    1
+                  ],
+                  [
+                    "static batch BufferGeometry MeshStandardMaterial #d7b43c",
+                    2,
+                    1
+                  ]
+                ],
+                "<50m": 15,
+                "px<Infinity": 59,
+                "<150m": 26,
+                "<100m": 16,
+                "<400m": 2,
+                "px<32": 1,
+                "px<16": 1,
+                "<300m": 2
+              },
+              "other": {
+                "calls": 35,
+                "triangles": 113464,
+                "names": [
+                  [
+                    "airfield moving parts",
+                    9,
+                    0
+                  ],
+                  [
+                    "SOUTHPORT taxiway",
+                    6,
+                    0
+                  ],
+                  [
+                    "Mesh PlaneGeometry MeshStandardMaterial #ffffff map lit @2304,7168",
+                    2,
+                    0
+                  ],
+                  [
+                    "Mesh PlaneGeometry MeshStandardMaterial #ffffff map @0,768",
+                    1,
+                    0
+                  ],
+                  [
+                    "Mesh BoxGeometry MeshStandardMaterial #917410 @2304,7168",
+                    1,
+                    0
+                  ],
+                  [
+                    "Mesh BoxGeometry MeshStandardMaterial #7b7053 @2304,7168",
+                    1,
+                    0
+                  ],
+                  [
+                    "Mesh PlaneGeometry MeshStandardMaterial #ffffff map lit @2560,7168",
+                    1,
+                    0
+                  ],
+                  [
+                    "Mesh BoxGeometry MeshStandardMaterial #2d1d11 @2560,7168",
+                    1,
+                    0
+                  ],
+                  [
+                    "Mesh PlaneGeometry ShaderMaterial @512,5632",
+                    1,
+                    97
+                  ],
+                  [
+                    "Mesh PlaneGeometry MeshBasicMaterial #0c2f44 @512,5376",
+                    1,
+                    0
+                  ],
+                  [
+                    "Mesh PlaneGeometry MeshStandardMaterial #e2e4de map @2816,8448",
+                    1,
+                    0
+                  ],
+                  [
+                    "Mesh PlaneGeometry MeshStandardMaterial #e2e4de map @8448,8448",
+                    1,
+                    0
+                  ],
+                  [
+                    "Mesh PlaneGeometry ShaderMaterial @512,5632",
+                    1,
+                    97
+                  ],
+                  [
+                    "glow field",
+                    1,
+                    8
+                  ],
+                  [
+                    "player body",
+                    1,
+                    7
+                  ],
+                  [
+                    "sky dome",
+                    1,
+                    1
+                  ],
+                  [
+                    "airfield moving parts",
+                    9,
+                    0
+                  ],
+                  [
+                    "SOUTHPORT taxiway",
+                    6,
+                    0
+                  ],
+                  [
+                    "Mesh PlaneGeometry MeshStandardMaterial #ffffff map lit @2304,7168",
+                    2,
+                    0
+                  ],
+                  [
+                    "Mesh PlaneGeometry MeshStandardMaterial #ffffff map @0,768",
+                    1,
+                    0
+                  ]
+                ],
+                "whole": 13,
+                "px<Infinity": 15,
+                "<600m": 6,
+                "px<32": 6,
+                "<50m": 5,
+                "<150m": 5,
+                "px<2": 13,
+                "<300m": 5,
+                "<100m": 1,
+                "px<4": 1
+              },
+              "far": {
+                "calls": 13,
+                "triangles": 5524,
+                "names": [
+                  [
+                    "far scenery",
+                    13,
+                    6
+                  ],
+                  [
+                    "far scenery",
+                    13,
+                    6
+                  ]
+                ],
+                "<600m": 7,
+                "px<Infinity": 13,
+                "<400m": 2,
+                "<200m": 4
+              },
+              "static": {
+                "calls": 14,
+                "triangles": 966,
+                "names": [
+                  [
+                    "Elevated railway",
+                    12,
+                    1
+                  ],
+                  [
+                    "drawbridge water",
+                    2,
+                    0
+                  ],
+                  [
+                    "Elevated railway",
+                    12,
+                    1
+                  ],
+                  [
+                    "drawbridge water",
+                    2,
+                    0
+                  ]
+                ],
+                "<150m": 4,
+                "px<Infinity": 12,
+                "<200m": 4,
+                "<400m": 4,
+                "<50m": 1,
+                "px<2": 2,
+                "<100m": 1
+              },
+              "crowd": {
+                "calls": 2,
+                "triangles": 460,
+                "names": [
+                  [
+                    "crowd far body",
+                    1,
+                    0
+                  ],
+                  [
+                    "crowd far leg",
+                    1,
+                    0
+                  ],
+                  [
+                    "crowd far body",
+                    1,
+                    0
+                  ],
+                  [
+                    "crowd far leg",
+                    1,
+                    0
+                  ]
+                ],
+                "whole": 2,
+                "px<8": 2
+              },
+              "vehicle": {
+                "calls": 31,
+                "triangles": 20145,
+                "names": [
+                  [
+                    "Cessna172 (skyhawk)",
+                    14,
+                    10
+                  ],
+                  [
+                    "Mesh BufferGeometry MeshStandardMaterial #ffffff map @512,4352",
+                    9,
+                    7
+                  ],
+                  [
+                    "Mesh BufferGeometry MeshPhysicalMaterial #b9bdc1 map @512,4352",
+                    3,
+                    3
+                  ],
+                  [
+                    "Mesh BufferGeometry MeshStandardMaterial #ffffff @512,4352",
+                    2,
+                    0
+                  ],
+                  [
+                    "Mesh BufferGeometry MeshStandardMaterial #ffeded @512,4352",
+                    2,
+                    0
+                  ],
+                  [
+                    "Mesh BufferGeometry MeshStandardMaterial #121a20 @512,4352",
+                    1,
+                    0
+                  ],
+                  [
+                    "Cessna172 (skyhawk)",
+                    14,
+                    10
+                  ],
+                  [
+                    "Mesh BufferGeometry MeshStandardMaterial #ffffff map @512,4352",
+                    9,
+                    7
+                  ],
+                  [
+                    "Mesh BufferGeometry MeshPhysicalMaterial #b9bdc1 map @512,4352",
+                    3,
+                    3
+                  ],
+                  [
+                    "Mesh BufferGeometry MeshStandardMaterial #ffffff @512,4352",
+                    2,
+                    0
+                  ],
+                  [
+                    "Mesh BufferGeometry MeshStandardMaterial #ffeded @512,4352",
+                    2,
+                    0
+                  ],
+                  [
+                    "Mesh BufferGeometry MeshStandardMaterial #121a20 @512,4352",
+                    1,
+                    0
+                  ]
+                ],
+                "<50m": 17,
+                "px<Infinity": 14,
+                "px<32": 11,
+                "<100m": 14,
+                "px<16": 3,
+                "px<2": 3
+              },
+              "sprite": {
+                "calls": 11,
+                "triangles": 0,
+                "names": [
+                  [
+                    "Sprite BufferGeometry SpriteMaterial #ffe1b3 map @1792,6400",
+                    2,
+                    0
+                  ],
+                  [
+                    "Sprite BufferGeometry SpriteMaterial #ffe1b3 map @1536,5888",
+                    2,
+                    0
+                  ],
+                  [
+                    "Sprite BufferGeometry SpriteMaterial #ffe1b3 map @1280,5632",
+                    2,
+                    0
+                  ],
+                  [
+                    "Sprite BufferGeometry SpriteMaterial #ffe1b3 map @2048,7168",
+                    1,
+                    0
+                  ],
+                  [
+                    "Sprite BufferGeometry SpriteMaterial #ffe1b3 map @2048,6912",
+                    1,
+                    0
+                  ],
+                  [
+                    "Sprite BufferGeometry SpriteMaterial #ffe1b3 map @2048,6656",
+                    1,
+                    0
+                  ],
+                  [
+                    "Sprite BufferGeometry SpriteMaterial #ffe1b3 map @1792,6144",
+                    1,
+                    0
+                  ],
+                  [
+                    "Cessna172 (skyhawk)",
+                    1,
+                    0
+                  ],
+                  [
+                    "Sprite BufferGeometry SpriteMaterial #ffe1b3 map @1792,6400",
+                    2,
+                    0
+                  ],
+                  [
+                    "Sprite BufferGeometry SpriteMaterial #ffe1b3 map @1536,5888",
+                    2,
+                    0
+                  ],
+                  [
+                    "Sprite BufferGeometry SpriteMaterial #ffe1b3 map @1280,5632",
+                    2,
+                    0
+                  ],
+                  [
+                    "Sprite BufferGeometry SpriteMaterial #ffe1b3 map @2048,7168",
+                    1,
+                    0
+                  ],
+                  [
+                    "Sprite BufferGeometry SpriteMaterial #ffe1b3 map @2048,6912",
+                    1,
+                    0
+                  ],
+                  [
+                    "Sprite BufferGeometry SpriteMaterial #ffe1b3 map @2048,6656",
+                    1,
+                    0
+                  ],
+                  [
+                    "Sprite BufferGeometry SpriteMaterial #ffe1b3 map @1792,6144",
+                    1,
+                    0
+                  ],
+                  [
+                    "Cessna172 (skyhawk)",
+                    1,
+                    0
+                  ]
+                ],
+                "<400m": 4,
+                "px<4": 1,
+                "px<8": 8,
+                "<300m": 4,
+                "<200m": 2,
+                "px<16": 1,
+                "<100m": 1,
+                "px<32": 1
+              }
+            }
+          },
+          "shadow": {
+            "calls": 0,
+            "triangles": 0,
+            "kinds": {}
+          }
+        }
+      }
+    },
+    "returnedToStreet": true,
+    "browser": {
+      "ua": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+      "badge": "SOUTH COAST · DAY · FAIR",
+      "district": "SOUTHPORT AIRPORT"
+    }
+  },
+  "errors": [],
+  "warnings": [
+    "[warning] Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ]
+}
